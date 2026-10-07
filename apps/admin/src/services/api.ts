@@ -41,7 +41,12 @@ function getHeaders(): HeadersInit {
   return headers;
 }
 
-export async function loginAdmin(username: string, password: string): Promise<UserAuthResponse> {
+export async function loginAdmin(
+  username: string,
+  password: string
+): Promise<UserAuthResponse> {
+  const API_BASE = import.meta.env.VITE_API_BASE_URL;
+
   const res = await fetch(`${API_BASE}/auth/login`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -54,12 +59,14 @@ export async function loginAdmin(username: string, password: string): Promise<Us
   }
 
   const json = await res.json();
+
   if (json.data.user.role !== 'admin') {
     throw new Error('Access denied. Administrator privileges required.');
   }
 
   setStoredToken(json.data.token);
   setStoredUser(json.data.user);
+
   return json.data;
 }
 
