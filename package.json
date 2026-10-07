@@ -1,0 +1,24 @@
+{
+  "name": "bar-pos-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "shared",
+    "backend",
+    "apps/*"
+  ],
+  "scripts": {
+    "dev": "npm run dev:all",
+    "dev:all": "concurrently -k -p \"[{name}]\" -n \"BACKEND,CUSTOMER,POS,ADMIN\" -c \"blue,green,magenta,yellow\" \"npm run dev:backend\" \"npm run dev:customer\" \"npm run dev:pos\" \"npm run dev:admin\"",
+    "dev:backend": "npm run --workspace=backend dev",
+    "dev:customer": "npm run --workspace=apps/customer dev",
+    "dev:pos": "npm run --workspace=apps/pos dev",
+    "dev:admin": "npm run --workspace=apps/admin dev",
+    "electron:dev": "npm run --workspace=apps/pos electron:dev",
+    "build:all": "npm run --workspace=shared build && npm run --workspace=backend build && npm run --workspace=apps/customer build && npm run --workspace=apps/pos build && npm run --workspace=apps/admin build",
+    "db:init": "npm run --workspace=backend db:init"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}

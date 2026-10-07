@@ -1,0 +1,60 @@
+{
+  "name": "@barpos/pos",
+  "version": "1.0.0",
+  "private": true,
+  "main": "dist-electron/main.js",
+  "scripts": {
+    "dev": "vite --port 3002",
+    "build": "tsc && vite build",
+    "preview": "vite preview --port 3002",
+    "compile:electron": "tsc -p electron/tsconfig.json",
+    "electron:dev": "concurrently -k -n \"VITE,ELECTRON\" -c \"cyan,magenta\" \"vite --port 3002\" \"wait-on tcp:3002 && npm run compile:electron && cross-env ELECTRON_START_URL=http://localhost:3002 electron .\"",
+    "electron:pack": "npm run build && npm run compile:electron && electron-builder --dir",
+    "electron:dist": "npm run build && npm run compile:electron && electron-builder"
+  },
+  "build": {
+    "appId": "com.barpos.desktop",
+    "productName": "BarPOS Terminal",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/**/*",
+      "dist-electron/**/*"
+    ],
+    "win": {
+      "target": "nsis"
+    },
+    "publish": {
+      "provider": "github",
+      "owner": "barpos",
+      "repo": "bar-pos"
+    }
+  },
+  "dependencies": {
+    "@barpos/shared": "*",
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
+    "@mui/joy": "^5.0.0-beta.51",
+    "electron-updater": "^6.3.9",
+    "lucide-react": "^0.473.0",
+    "qrcode.react": "^4.2.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-hook-form": "^7.54.2",
+    "react-router-dom": "^7.1.3"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "@types/react": "^18.3.18",
+    "@types/react-dom": "^18.3.5",
+    "@vitejs/plugin-react": "^4.3.4",
+    "concurrently": "^9.1.2",
+    "cross-env": "^7.0.3",
+    "electron": "^33.2.1",
+    "electron-builder": "^25.1.8",
+    "typescript": "^5.7.3",
+    "vite": "^6.0.7",
+    "wait-on": "^8.0.1"
+  }
+}
