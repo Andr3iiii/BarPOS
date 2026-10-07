@@ -158,26 +158,35 @@ export async function fetchTables(includeInactive = true): Promise<BarTable[]> {
   return json.data;
 }
 
-export async function createTable(table_number: string, label?: string): Promise<BarTable> {
+export async function createTable(
+  table_number: string,
+  label?: string
+): Promise<BarTable> {
   const res = await fetch(`${API_BASE}/tables`, {
     method: 'POST',
     headers: getHeaders(),
     body: JSON.stringify({ table_number, label })
   });
+
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
     throw new Error(err.message || 'Failed to create table.');
   }
+
   const json = await res.json();
   return json.data;
 }
 
-export async function updateTable(id: number, data: any): Promise<BarTable> {
+export async function updateTable(
+  id: number,
+  data: any
+): Promise<BarTable> {
   const res = await fetch(`${API_BASE}/tables/${id}`, {
     method: 'PUT',
     headers: getHeaders(),
     body: JSON.stringify(data)
   });
+
   const json = await res.json();
   return json.data;
 }
