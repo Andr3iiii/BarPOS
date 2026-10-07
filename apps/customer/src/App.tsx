@@ -11,13 +11,25 @@ export const App: React.FC = () => {
       <CssBaseline />
       <BrowserRouter>
         <Routes>
-          {/* Main QR route: /order/table/:tableNumber */}
-          <Route path="/order/table/:tableNumber" element={<CustomerOrderPage />} />
-          <Route path="/order/confirmed/:reference" element={<OrderConfirmationPage />} />
-          
-          {/* Default redirect to Table 1 for demonstration */}
-          <Route path="/" element={<Navigate to="/order/table/1" replace />} />
-          <Route path="*" element={<Navigate to="/order/table/1" replace />} />
+          <Route
+            path="/order/table/:tableNumber"
+            element={<CustomerOrderPage />}
+          />
+
+          <Route
+            path="/order/confirmed/:reference"
+            element={<OrderConfirmationPage />}
+          />
+
+          <Route
+            path="/"
+            element={<Navigate to="/order/table/1" replace />}
+          />
+
+          <Route
+            path="*"
+            element={<Navigate to="/order/table/1" replace />}
+          />
         </Routes>
       </BrowserRouter>
     </CssVarsProvider>
