@@ -2,6 +2,9 @@ import { contextBridge, ipcRenderer } from 'electron';
 
 contextBridge.exposeInMainWorld('electronAPI', {
   isElectron: true,
+  getVersion: () => ipcRenderer.invoke('get-app-version'),
+  toggleFullScreen: () => ipcRenderer.invoke('toggle-fullscreen'),
+  printReceipt: (options?: any) => ipcRenderer.invoke('print-receipt', options),
   onUpdateAvailable: (callback: (info: any) => void) => {
     ipcRenderer.on('update-available', (_event, value) => callback(value));
   },

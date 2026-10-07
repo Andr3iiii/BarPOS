@@ -124,15 +124,21 @@ npm run dev:pos
 npm run dev:admin
 ```
 
-### 5. Run Cashier Desktop Application (Electron)
-To launch the native Windows Electron window:
+### 5. Run & Build Cashier Desktop Application (Electron)
+To launch the native Windows Electron window in development mode:
 ```bash
 npm run electron:dev
 ```
-To build the installable Windows NSIS installer (`.exe`):
+
+To build downloadable standalone Windows executables (`.exe`):
 ```bash
-npm run --workspace=apps/pos electron:dist
+npm run electron:dist
+# or: npm run --workspace=apps/pos electron:dist
 ```
+Generated release outputs are saved to `apps/pos/release/`:
+* **`BarPOS Terminal Setup 1.0.0.exe`**: Complete Windows NSIS Setup Wizard (creates desktop & Start Menu shortcuts, clean uninstaller).
+* **`BarPOS Terminal 1.0.0.exe`**: Standalone Portable Executable (runs immediately without installation).
+* **`win-unpacked/BarPOS Terminal.exe`**: Directly extracted executable directory for rapid testing.
 
 ---
 

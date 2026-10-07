@@ -12,6 +12,7 @@ function createWindow(): void {
     minHeight: 700,
     title: 'The Velvet Tap — Bar POS Terminal',
     backgroundColor: '#0c0e17',
+    autoHideMenuBar: false,
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
@@ -19,10 +20,14 @@ function createWindow(): void {
     }
   });
 
-  const startUrl = process.env.ELECTRON_START_URL || `file://${path.join(__dirname, '../dist/index.html')}`;
-
-  console.log(`[Electron Main] Loading URL: ${startUrl}`);
-  mainWindow.loadURL(startUrl);
+  if (process.env.ELECTRON_START_URL) {
+    console.log(`[Electron Main] Loading Dev URL: ${process.env.ELECTRON_START_URL}`);
+    mainWindow.loadURL(process.env.ELECTRON_START_URL);
+  } else {
+    const indexPath = path.join(__dirname, '../dist/index.html');
+    console.log(`[Electron Main] Loading File: ${indexPath}`);
+    mainWindow.loadFile(indexPath);
+  }
 
   // Open DevTools in dev mode
   if (process.env.ELECTRON_START_URL) {
@@ -43,7 +48,39 @@ function createWindow(): void {
   }
 }
 
-// Auto-updater event handlers (Section 28)
+// POS Hardware / System IPC Handlers
+ipcMain.handle('print-receipt', async (_event, options) => {
+  if (mainWindow) {
+    return new Promise((resolve) => {
+      mainWindow?.webContents.print(
+        {
+          silent: false,
+          printBackground: true,
+          ...options
+        },
+        (success, failureReason) => {
+          resolve({ success, failureReason });
+        }
+      );
+    });
+  }
+  return { success: false, failureReason: 'No window available' };
+});
+
+ipcMain.handle('get-app-version', () => {
+  return app.getVersion();
+});
+
+ipcMain.handle('toggle-fullscreen', () => {
+  if (mainWindow) {
+    const current = mainWindow.isFullScreen();
+    mainWindow.setFullScreen(!current);
+    return !current;
+  }
+  return false;
+});
+
+// Auto-updater event handlers
 autoUpdater.on('update-available', (info) => {
   if (mainWindow) {
     mainWindow.webContents.send('update-available', info);

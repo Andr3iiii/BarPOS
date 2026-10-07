@@ -8,7 +8,36 @@ import {
   UserAuthResponse
 } from '../types';
 
-export const API_BASE = (import.meta.env.VITE_API_BASE_URL || '/api/v1').replace(/\/+$/, '');
+function resolveApiBase(): string {
+  if (typeof window !== 'undefined') {
+    const custom = localStorage.getItem('barpos_api_url');
+    if (custom && custom.trim() !== '') {
+      return custom.trim().replace(/\/+$/, '');
+    }
+  }
+
+  const envUrl = import.meta.env.VITE_API_BASE_URL;
+  if (envUrl && envUrl.trim() !== '') {
+    return envUrl.trim().replace(/\/+$/, '');
+  }
+
+  // Running inside Electron desktop application via file:// protocol
+  if (typeof window !== 'undefined' && window.location.protocol === 'file:') {
+    return 'http://localhost:4000/api/v1';
+  }
+
+  return '/api/v1';
+}
+
+export const API_BASE = resolveApiBase();
+
+export function setCustomApiUrl(url: string): void {
+  if (!url || url.trim() === '') {
+    localStorage.removeItem('barpos_api_url');
+  } else {
+    localStorage.setItem('barpos_api_url', url.trim().replace(/\/+$/, ''));
+  }
+}
 
 export function getStoredToken(): string | null {
   return localStorage.getItem('barpos_token');

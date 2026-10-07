@@ -26,7 +26,11 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({ open, onClose, recei
   if (!receiptData) return null;
 
   const handlePrint = () => {
-    window.print();
+    if (window.electronAPI?.isElectron) {
+      window.electronAPI.printReceipt();
+    } else {
+      window.print();
+    }
   };
 
   const handleCopyText = () => {

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { CssVarsProvider } from '@mui/joy/styles';
 import CssBaseline from '@mui/joy/CssBaseline';
 import { LoginPage } from './pages/LoginPage';
@@ -32,7 +32,7 @@ export const App: React.FC = () => {
   return (
     <CssVarsProvider defaultMode="dark">
       <CssBaseline />
-      <BrowserRouter>
+      <HashRouter>
         <Routes>
           <Route path="/login" element={<LoginPage />} />
 
@@ -88,7 +88,7 @@ export const App: React.FC = () => {
           receiptData={activeReceipt}
           onClose={() => setActiveReceipt(null)}
         />
-      </BrowserRouter>
+      </HashRouter>
     </CssVarsProvider>
   );
 };
