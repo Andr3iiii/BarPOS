@@ -10,7 +10,7 @@ import {
   SalesFilter
 } from '../types';
 
-const API_BASE = '/api/v1';
+const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
 export function getStoredToken(): string | null {
   return localStorage.getItem('baradmin_token');
@@ -45,7 +45,6 @@ export async function loginAdmin(
   username: string,
   password: string
 ): Promise<UserAuthResponse> {
-  const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
   const res = await fetch(`${API_BASE}/auth/login`, {
     method: 'POST',

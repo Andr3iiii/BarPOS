@@ -1,6 +1,6 @@
 import { Product, Category, BarTable, CreateOrderInput, Order } from '../types';
 
-const API_BASE = '/api/v1';
+const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
 export async function fetchPublicMenu(): Promise<Product[]> {
   const res = await fetch(`${API_BASE}/products/menu`);

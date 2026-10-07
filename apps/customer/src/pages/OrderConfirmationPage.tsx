@@ -31,11 +31,12 @@ export const OrderConfirmationPage: React.FC = () => {
   // Poll backend every 4 seconds to detect when Cashier marks order PAID!
   useEffect(() => {
     let intervalId: any;
+    const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
     async function checkOrderStatus() {
       if (!reference) return;
       try {
-        const res = await fetch(`/api/v1/orders/ref/${encodeURIComponent(reference)}`);
+        const res = await fetch(`${API_BASE}/orders/ref/${encodeURIComponent(reference)}`);
         if (res.ok) {
           const json = await res.json();
           if (json.data) {
