@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "private": true,
   "workspaces": [
-    "shared",
     "backend",
     "apps/*"
   ],
@@ -15,8 +14,12 @@
     "dev:pos": "npm run --workspace=apps/pos dev",
     "dev:admin": "npm run --workspace=apps/admin dev",
     "electron:dev": "npm run --workspace=apps/pos electron:dev",
-    "build:all": "npm run --workspace=shared build && npm run --workspace=backend build && npm run --workspace=apps/customer build && npm run --workspace=apps/pos build && npm run --workspace=apps/admin build",
-    "db:init": "npm run --workspace=backend db:init"
+    "build:all": "npm run --workspace=backend build && npm run --workspace=apps/customer build && npm run --workspace=apps/pos build && npm run --workspace=apps/admin build",
+    "db:init": "npm run --workspace=backend db:init",
+    "docker:build": "docker compose build",
+    "docker:up": "docker compose up -d",
+    "docker:down": "docker compose down",
+    "docker:logs": "docker compose logs -f"
   },
   "devDependencies": {
     "concurrently": "^9.1.2"

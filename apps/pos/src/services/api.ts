@@ -6,7 +6,7 @@ import {
   CreateOrderInput,
   User,
   UserAuthResponse
-} from '@barpos/shared';
+} from '../types';
 
 const API_BASE = '/api/v1';
 

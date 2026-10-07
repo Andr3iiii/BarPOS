@@ -11,7 +11,7 @@ import {
   Chip
 } from '@mui/joy';
 import { DollarSign, Clock, CheckCircle2, TrendingUp, CreditCard, Banknote, QrCode } from 'lucide-react';
-import { DashboardMetrics, SalesSummary } from '@barpos/shared';
+import { DashboardMetrics, SalesSummary } from '../types';
 import { fetchDashboardMetrics, fetchSalesReports } from '../services/api';
 
 export const DashboardPage: React.FC = () => {

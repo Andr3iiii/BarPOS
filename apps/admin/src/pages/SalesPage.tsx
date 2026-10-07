@@ -13,7 +13,7 @@ import {
   Input
 } from '@mui/joy';
 import { Download, Filter, TrendingUp, DollarSign, Receipt, CreditCard } from 'lucide-react';
-import { SalesSummary, SalesRecord, PaymentMethod } from '@barpos/shared';
+import { SalesSummary, SalesRecord, PaymentMethod } from '../types';
 import { fetchSalesReports } from '../services/api';
 
 export const SalesPage: React.FC = () => {

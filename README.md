@@ -48,7 +48,6 @@ BarPOS/
 │   └── admin/          # Admin portal for products, categories, tables, sales (Port 3003)
 ├── backend/            # Express REST API, PostgreSQL pool, JWT auth (Port 4000)
 ├── database/           # PostgreSQL schema (schema.sql) and seed scripts
-├── shared/             # TypeScript shared types, constants, business contracts
 ├── package.json        # NPM workspaces configuration
 └── README.md
 ```
@@ -137,7 +136,45 @@ npm run --workspace=apps/pos electron:dist
 
 ---
 
-## 6. Applications Overview
+## 6. Docker Deployment (All-in-One)
+
+You can run the entire Bar POS system (PostgreSQL database, Backend API, Customer Web App, Cashier POS Web App, and Admin Portal) in isolated containers with a single command:
+
+### Prerequisites
+* [Docker Desktop](https://www.docker.com/products/docker-desktop/) installed and running.
+
+### 1. Build and Start All Containers
+```bash
+docker compose up -d --build
+```
+
+### 2. Services & Port Mappings
+| Service | Container Name | Port | Description |
+| :--- | :--- | :--- | :--- |
+| **Customer App** | `barpos-customer` | [`http://localhost:3001`](http://localhost:3001) | Mobile QR ordering page (`/order/table/1`) |
+| **Cashier POS** | `barpos-pos` | [`http://localhost:3002`](http://localhost:3002) | Cashier Web POS terminal (`/orders`) |
+| **Admin Portal** | `barpos-admin` | [`http://localhost:3003`](http://localhost:3003) | Admin management portal (`/dashboard`) |
+| **Backend API** | `barpos-backend` | [`http://localhost:4000`](http://localhost:4000) | Express REST API & Health check (`/api/health`) |
+| **PostgreSQL** | `barpos-postgres` | `localhost:5434` | PostgreSQL 16 database with persistent volume |
+
+### 3. Management Commands
+```bash
+# View live logs
+docker compose logs -f
+
+# Check container health status
+docker compose ps
+
+# Stop all containers
+docker compose down
+
+# Stop all containers and reset database volume
+docker compose down -v
+```
+
+---
+
+## 7. Applications Overview
 
 ### 📱 Customer Mobile App (`apps/customer`)
 * Accessed directly via table QR: `http://localhost:3001/order/table/1` (Table 1 .. 10).

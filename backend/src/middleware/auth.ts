@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import { config } from '../config/env';
-import { UserRole } from '@barpos/shared';
+import { UserRole } from '../types.js';
 
 export interface AuthenticatedUser {
   id: number;

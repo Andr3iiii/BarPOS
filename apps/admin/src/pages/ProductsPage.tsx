@@ -22,7 +22,7 @@ import {
   Switch
 } from '@mui/joy';
 import { Plus, Edit2, Trash2, Search, Wine, CheckCircle2, XCircle } from 'lucide-react';
-import { Product, Category } from '@barpos/shared';
+import { Product, Category } from '../types';
 import {
   fetchProducts,
   fetchCategories,

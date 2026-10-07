@@ -20,7 +20,7 @@ import {
 } from '@mui/joy';
 import { Plus, QrCode, Printer, Download, ExternalLink, Sparkles } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
-import { BarTable, BAR_SETTINGS } from '@barpos/shared';
+import { BarTable, BAR_SETTINGS } from '../types';
 import { fetchTables, createTable, updateTable } from '../services/api';
 
 export const TablesPage: React.FC = () => {

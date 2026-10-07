@@ -30,7 +30,7 @@ import {
   Sparkles,
   Download
 } from 'lucide-react';
-import { BAR_SETTINGS } from '@barpos/shared';
+import { BAR_SETTINGS } from '../types';
 import { getStoredUser, clearSession } from '../services/api';
 
 interface POSLayoutProps {

@@ -1,4 +1,4 @@
-import { Product } from '@barpos/shared';
+import { Product } from '../types';
 
 // High-definition curated photography for fallback & presets
 export const CATEGORY_FALLBACK_IMAGES: Record<string, string> = {

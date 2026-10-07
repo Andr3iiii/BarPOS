@@ -18,7 +18,7 @@ import {
   Chip
 } from '@mui/joy';
 import { Plus, Minus, Search, ShoppingBag, X } from 'lucide-react';
-import { Product, Order } from '@barpos/shared';
+import { Product, Order } from '../types';
 import { fetchProducts, createDirectOrder } from '../services/api';
 
 interface WalkInOrderModalProps {

@@ -10,7 +10,7 @@ import { WalkInOrderModal } from './components/WalkInOrderModal';
 import { PaymentModal } from './components/PaymentModal';
 import { ReceiptModal } from './components/ReceiptModal';
 import { getStoredToken } from './services/api';
-import { Order } from '@barpos/shared';
+import { Order } from './types';
 
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const token = getStoredToken();

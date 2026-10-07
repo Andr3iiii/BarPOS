@@ -31,7 +31,7 @@ import {
   Coffee,
   Beer
 } from 'lucide-react';
-import { Order, OrderStatus } from '@barpos/shared';
+import { Order, OrderStatus } from '../types';
 import { fetchOrders, cancelOrder, fetchReceiptData } from '../services/api';
 import { PaymentModal } from '../components/PaymentModal';
 import { ReceiptModal } from '../components/ReceiptModal';

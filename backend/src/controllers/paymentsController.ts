@@ -1,7 +1,7 @@
 import { Response } from 'express';
 import { getClient, query } from '../database/db';
 import { AuthenticatedRequest } from '../middleware/auth';
-import { ProcessPaymentInput, BAR_SETTINGS } from '@barpos/shared';
+import { ProcessPaymentInput, BAR_SETTINGS } from '../types.js';
 
 export const processPayment = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
   const client = await getClient();

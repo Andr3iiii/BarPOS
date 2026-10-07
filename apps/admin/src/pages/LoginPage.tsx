@@ -14,7 +14,7 @@ import {
   Chip
 } from '@mui/joy';
 import { Lock, User, Shield, Beer } from 'lucide-react';
-import { BAR_SETTINGS } from '@barpos/shared';
+import { BAR_SETTINGS } from '../types';
 import { loginAdmin } from '../services/api';
 
 export const LoginPage: React.FC = () => {

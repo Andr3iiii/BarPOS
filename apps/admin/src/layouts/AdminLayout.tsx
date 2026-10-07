@@ -21,7 +21,7 @@ import {
   Beer,
   ExternalLink
 } from 'lucide-react';
-import { BAR_SETTINGS } from '@barpos/shared';
+import { BAR_SETTINGS } from '../types';
 import { getStoredUser, clearAdminSession } from '../services/api';
 
 export const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {

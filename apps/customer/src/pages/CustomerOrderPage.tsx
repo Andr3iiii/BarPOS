@@ -37,7 +37,7 @@ import {
   X,
   RotateCcw
 } from 'lucide-react';
-import { Product, Category, BarTable, BAR_SETTINGS } from '@barpos/shared';
+import { Product, Category, BarTable, BAR_SETTINGS } from '../types';
 import { fetchPublicMenu, fetchCategories, verifyTable, submitOrder } from '../services/api';
 import { ProductGridCard } from '../components/ProductGridCard';
 import { ProductDetailModal } from '../components/ProductDetailModal';

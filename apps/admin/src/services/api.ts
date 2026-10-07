@@ -8,7 +8,7 @@ import {
   SalesSummary,
   DashboardMetrics,
   SalesFilter
-} from '@barpos/shared';
+} from '../types';
 
 const API_BASE = '/api/v1';
 

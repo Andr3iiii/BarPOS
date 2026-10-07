@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { getClient, query } from '../database/db';
 import { generateOrderReference } from '../utils/referenceGenerator';
-import { CreateOrderInput } from '@barpos/shared';
+import { CreateOrderInput } from '../types.js';
 
 export const createOrder = async (req: Request, res: Response): Promise<void> => {
   const client = await getClient();

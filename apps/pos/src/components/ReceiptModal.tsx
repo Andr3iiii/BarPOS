@@ -12,7 +12,7 @@ import {
   Sheet
 } from '@mui/joy';
 import { Printer, CheckCircle, Copy, Check } from 'lucide-react';
-import { BAR_SETTINGS } from '@barpos/shared';
+import { BAR_SETTINGS } from '../types';
 
 interface ReceiptModalProps {
   open: boolean;

@@ -17,7 +17,7 @@ import {
   Sheet
 } from '@mui/joy';
 import { CreditCard, Banknote, QrCode, AlertCircle, CheckCircle2 } from 'lucide-react';
-import { Order, PaymentMethod, BAR_SETTINGS } from '@barpos/shared';
+import { Order, PaymentMethod, BAR_SETTINGS } from '../types';
 import { processOrderPayment } from '../services/api';
 
 interface PaymentModalProps {

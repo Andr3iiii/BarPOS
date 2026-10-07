@@ -1,4 +1,4 @@
-import { Product, Category, BarTable, CreateOrderInput, Order } from '@barpos/shared';
+import { Product, Category, BarTable, CreateOrderInput, Order } from '../types';
 
 const API_BASE = '/api/v1';
 

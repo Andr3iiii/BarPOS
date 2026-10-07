@@ -12,7 +12,7 @@ import {
   Divider
 } from '@mui/joy';
 import { X, Plus, Minus, ShoppingBag } from 'lucide-react';
-import { Product } from '@barpos/shared';
+import { Product } from '../types';
 import { getProductImageUrl, CATEGORY_FALLBACK_IMAGES } from '../utils/productImages';
 
 interface ProductDetailModalProps {

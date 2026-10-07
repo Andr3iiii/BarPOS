@@ -11,7 +11,7 @@ import {
   Button
 } from '@mui/joy';
 import { DollarSign, Clock, CheckCircle2, ShoppingBag, ArrowUpRight, RefreshCw } from 'lucide-react';
-import { DashboardMetrics } from '@barpos/shared';
+import { DashboardMetrics } from '../types';
 import { fetchDashboardMetrics } from '../services/api';
 
 export const DashboardPage: React.FC = () => {

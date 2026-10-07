@@ -19,7 +19,7 @@ import {
   Alert
 } from '@mui/joy';
 import { Plus, Edit2, Trash2 } from 'lucide-react';
-import { Category } from '@barpos/shared';
+import { Category } from '../types';
 import {
   fetchCategories,
   createCategory,

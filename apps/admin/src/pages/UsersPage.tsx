@@ -22,7 +22,7 @@ import {
   Switch
 } from '@mui/joy';
 import { Plus, Edit2, UserPlus, Shield, User as UserIcon } from 'lucide-react';
-import { User, UserRole } from '@barpos/shared';
+import { User, UserRole } from '../types';
 import { fetchUsers, createUser, updateUser } from '../services/api';
 
 export const UsersPage: React.FC = () => {

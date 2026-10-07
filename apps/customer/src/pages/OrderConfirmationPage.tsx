@@ -13,7 +13,7 @@ import {
   Alert
 } from '@mui/joy';
 import { CheckCircle2, Clock, Sparkles, ArrowLeft, RefreshCw, AlertCircle } from 'lucide-react';
-import { Order, BAR_SETTINGS } from '@barpos/shared';
+import { Order, BAR_SETTINGS } from '../types';
 
 export const OrderConfirmationPage: React.FC = () => {
   const { reference } = useParams<{ reference: string }>();
