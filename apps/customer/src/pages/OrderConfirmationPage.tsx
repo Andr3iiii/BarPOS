@@ -14,6 +14,7 @@ import {
 } from '@mui/joy';
 import { CheckCircle2, Clock, Sparkles, ArrowLeft, RefreshCw, AlertCircle } from 'lucide-react';
 import { Order, BAR_SETTINGS } from '../types';
+import { fetchOrderByRef } from '../services/api';
 
 export const OrderConfirmationPage: React.FC = () => {
   const { reference } = useParams<{ reference: string }>();
@@ -31,20 +32,16 @@ export const OrderConfirmationPage: React.FC = () => {
   // Poll backend every 4 seconds to detect when Cashier marks order PAID!
   useEffect(() => {
     let intervalId: any;
-    const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
     async function checkOrderStatus() {
       if (!reference) return;
       try {
-        const res = await fetch(`${API_BASE}/orders/ref/${encodeURIComponent(reference)}`);
-        if (res.ok) {
-          const json = await res.json();
-          if (json.data) {
-            setOrder(json.data);
-            setPollingStatus(json.data.status);
-            if (json.data.table_number) {
-              setTableNumber(json.data.table_number);
-            }
+        const orderData = await fetchOrderByRef(reference);
+        if (orderData) {
+          setOrder(orderData);
+          setPollingStatus(orderData.status);
+          if (orderData.table_number) {
+            setTableNumber(orderData.table_number);
           }
         }
       } catch (err) {

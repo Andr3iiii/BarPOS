@@ -8,7 +8,7 @@ import {
   UserAuthResponse
 } from '../types';
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL;
+export const API_BASE = (import.meta.env.VITE_API_BASE_URL || '/api/v1').replace(/\/+$/, '');
 
 export function getStoredToken(): string | null {
   return localStorage.getItem('barpos_token');

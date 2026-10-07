@@ -1,6 +1,6 @@
 import { Product, Category, BarTable, CreateOrderInput, Order } from '../types';
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL;
+export const API_BASE = (import.meta.env.VITE_API_BASE_URL || '/api/v1').replace(/\/+$/, '');
 
 export async function fetchPublicMenu(): Promise<Product[]> {
   const res = await fetch(`${API_BASE}/products/menu`);
@@ -49,6 +49,16 @@ export async function submitOrder(input: CreateOrderInput): Promise<Order> {
 export async function fetchOrderById(id: number): Promise<Order> {
   // Public or ref query
   const res = await fetch(`${API_BASE}/orders/${id}`);
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.message || 'Order not found.');
+  }
+  const json = await res.json();
+  return json.data;
+}
+
+export async function fetchOrderByRef(reference: string): Promise<Order> {
+  const res = await fetch(`${API_BASE}/orders/ref/${encodeURIComponent(reference.trim())}`);
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
     throw new Error(err.message || 'Order not found.');
