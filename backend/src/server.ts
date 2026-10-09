@@ -11,9 +11,6 @@ async function startServer() {
     const dbTest = await query('SELECT NOW()');
     console.log('✅ PostgreSQL connected successfully at:', dbTest.rows[0].now);
 
-    // Initialize tables and initial seed data if needed
-    await initializeDatabase();
-
     const httpServer = createServer(app);
     initializeRealtime(httpServer);
     console.log('📡 Socket.IO realtime server initialized on /socket.io');
@@ -22,6 +19,9 @@ async function startServer() {
       console.log(`🚀 Bar POS Backend API server is running on http://localhost:${config.port}`);
       console.log(`📡 API Endpoints base URL: http://localhost:${config.port}/api/v1`);
     });
+
+    // Initialize tables and initial seed data if needed
+    await initializeDatabase();
   } catch (err: any) {
     console.error('❌ Failed to start server:', err.message);
     process.exit(1);
