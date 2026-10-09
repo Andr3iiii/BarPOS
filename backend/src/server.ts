@@ -1,7 +1,9 @@
+import { createServer } from 'http';
 import app from './app';
 import { config } from './config/env';
 import { query } from './database/db';
 import { initializeDatabase } from './database/init';
+import { initializeRealtime } from './realtime';
 
 async function startServer() {
   try {
@@ -12,7 +14,10 @@ async function startServer() {
     // Initialize tables and initial seed data if needed
     await initializeDatabase();
 
-    app.listen(config.port, () => {
+    const httpServer = createServer(app);
+    initializeRealtime(httpServer);
+
+    httpServer.listen(config.port, () => {
       console.log(`🚀 Bar POS Backend API server is running on http://localhost:${config.port}`);
       console.log(`📡 API Endpoints base URL: http://localhost:${config.port}/api/v1`);
     });

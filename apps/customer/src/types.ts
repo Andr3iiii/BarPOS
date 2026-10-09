@@ -82,6 +82,7 @@ export interface BarTable {
   label: string;
   is_active: boolean;
   created_at: string;
+  realtime_token?: string;
 }
 
 export interface OrderItem {
@@ -111,6 +112,7 @@ export interface Order {
   updated_at: string;
   items?: OrderItem[];
   payment?: Payment | null;
+  realtime_token?: string;
 }
 
 export interface CreateOrderItemInput {
@@ -123,6 +125,7 @@ export interface CreateOrderInput {
   table_number: string;
   customer_notes?: string;
   items: CreateOrderItemInput[];
+  idempotency_key?: string;
 }
 
 export interface Payment {

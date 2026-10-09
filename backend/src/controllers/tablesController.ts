@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { query } from '../database/db';
+import { createCustomerAccessToken } from '../realtime';
 
 export const getAllTables = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -35,7 +36,10 @@ export const getTableByNumber = async (req: Request, res: Response): Promise<voi
 
     res.json({
       success: true,
-      data: result.rows[0]
+      data: {
+        ...result.rows[0],
+        realtime_token: createCustomerAccessToken(result.rows[0].table_number)
+      }
     });
   } catch (err: any) {
     res.status(500).json({ success: false, message: err.message || 'Failed to find table.' });

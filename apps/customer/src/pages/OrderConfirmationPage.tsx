@@ -14,45 +14,58 @@ import {
 } from '@mui/joy';
 import { CheckCircle2, Clock, Sparkles, ArrowLeft, RefreshCw, AlertCircle } from 'lucide-react';
 import { Order, BAR_SETTINGS } from '../types';
-import { fetchOrderByRef } from '../services/api';
+import { API_BASE } from '../services/api';
+import { connectRealtime } from '../../../../shared/realtime';
 
 export const OrderConfirmationPage: React.FC = () => {
   const { reference } = useParams<{ reference: string }>();
   const location = useLocation();
   const navigate = useNavigate();
 
-  const [order, setOrder] = useState<Order | null>(
-    (location.state as any)?.order || null
-  );
+  const initialOrder = (location.state as any)?.order as Order | null;
+  const [order, setOrder] = useState<Order | null>(initialOrder);
   const [tableNumber, setTableNumber] = useState<string>(
     (location.state as any)?.tableNumber || ''
   );
-  const [pollingStatus, setPollingStatus] = useState<string>('PENDING');
+  const [pollingStatus, setPollingStatus] = useState<string>(initialOrder?.status || 'PENDING');
+  const [realtimeToken] = useState<string | null>(() =>
+    initialOrder?.realtime_token || (reference ? sessionStorage.getItem(`barpos-order:${reference}`) : null)
+  );
 
-  // Poll backend every 4 seconds to detect when Cashier marks order PAID!
   useEffect(() => {
-    let intervalId: any;
-
-    async function checkOrderStatus() {
-      if (!reference) return;
-      try {
-        const orderData = await fetchOrderByRef(reference);
-        if (orderData) {
-          setOrder(orderData);
-          setPollingStatus(orderData.status);
-          if (orderData.table_number) {
-            setTableNumber(orderData.table_number);
-          }
-        }
-      } catch (err) {
-        // Silent background check error
-      }
+    if (reference && realtimeToken) {
+      sessionStorage.setItem(`barpos-order:${reference}`, realtimeToken);
     }
+  }, [reference, realtimeToken]);
 
-    checkOrderStatus();
-    intervalId = setInterval(checkOrderStatus, 4000);
-    return () => clearInterval(intervalId);
-  }, [reference]);
+  useEffect(() => {
+    if (!reference || !realtimeToken) return;
+    const socket = connectRealtime({ apiBase: API_BASE, token: realtimeToken });
+    const applyStatus = (payload: {
+      referenceNo: string;
+      status: string;
+      paymentStatus: string;
+      tableNumber?: string;
+    }) => {
+      if (payload.referenceNo.toLowerCase() !== reference.toLowerCase()) return;
+      setPollingStatus(payload.status);
+      setOrder((current) => current ? {
+        ...current,
+        status: payload.status as Order['status'],
+        payment_status: payload.paymentStatus as Order['payment_status']
+      } : current);
+      if (payload.tableNumber) setTableNumber(payload.tableNumber);
+    };
+    const requestCurrentStatus = () => socket.emit('order.status.request');
+    socket.on('order.status', applyStatus);
+    socket.on('order.status.changed', applyStatus);
+    socket.on('connect', requestCurrentStatus);
+
+    return () => {
+      socket.removeAllListeners();
+      socket.disconnect();
+    };
+  }, [reference, realtimeToken]);
 
   const isPaid = pollingStatus === 'PAID' || order?.status === 'PAID';
 

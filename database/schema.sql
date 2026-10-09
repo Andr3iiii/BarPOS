@@ -78,10 +78,17 @@ CREATE TABLE IF NOT EXISTS orders (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Safe retries for customer/cashier order submission. The unique index also
+-- protects against duplicate writes when two requests arrive concurrently.
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS idempotency_key VARCHAR(100);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_orders_idempotency_key
+    ON orders(idempotency_key) WHERE idempotency_key IS NOT NULL;
+
 CREATE INDEX IF NOT EXISTS idx_orders_status ON orders(status);
 CREATE INDEX IF NOT EXISTS idx_orders_payment_status ON orders(payment_status);
 CREATE INDEX IF NOT EXISTS idx_orders_created_at ON orders(created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_orders_reference ON orders(reference_no);
+CREATE INDEX IF NOT EXISTS idx_orders_reference_lower ON orders(LOWER(reference_no));
 
 -- 8. ORDER ITEMS (Saves snapshot of product name & unit price to protect historical records)
 CREATE TABLE IF NOT EXISTS order_items (

@@ -75,6 +75,7 @@ export const ProductGridCard: React.FC<ProductGridCardProps> = ({
           src={imageSrc}
           alt={product.name}
           loading="lazy"
+          decoding="async"
           onError={handleImageError}
           sx={{
             width: '100%',

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
   Box,
@@ -38,7 +38,9 @@ import {
   RotateCcw
 } from 'lucide-react';
 import { Product, Category, BarTable, BAR_SETTINGS } from '../types';
-import { fetchPublicMenu, fetchCategories, verifyTable, submitOrder } from '../services/api';
+import { API_BASE, fetchPublicMenu, fetchCategories, verifyTable, submitOrder } from '../services/api';
+import { connectRealtime } from '../../../../shared/realtime';
+import { createIdempotencyKey } from '../../../../shared/idempotency';
 import { ProductGridCard } from '../components/ProductGridCard';
 import { ProductDetailModal } from '../components/ProductDetailModal';
 import { getProductImageUrl } from '../utils/productImages';
@@ -68,6 +70,7 @@ export const CustomerOrderPage: React.FC = () => {
   const [isCartOpen, setIsCartOpen] = useState<boolean>(false);
   const [customerNotes, setCustomerNotes] = useState<string>('');
   const [submitting, setSubmitting] = useState<boolean>(false);
+  const orderSubmissionKey = useRef<string | null>(null);
   const [submitError, setSubmitError] = useState<string | null>(null);
 
   // Product detail modal state
@@ -104,6 +107,38 @@ export const CustomerOrderPage: React.FC = () => {
 
     loadData();
   }, [tableNumber]);
+
+  useEffect(() => {
+    const token = table?.realtime_token;
+    if (!token) return;
+
+    const socket = connectRealtime({ apiBase: API_BASE, token });
+    let refreshTimer: ReturnType<typeof setTimeout> | undefined;
+    let hasConnected = false;
+    const refreshMenu = () => {
+      if (refreshTimer) clearTimeout(refreshTimer);
+      refreshTimer = setTimeout(async () => {
+        try {
+          const [menuData, categoryData] = await Promise.all([fetchPublicMenu(), fetchCategories()]);
+          setProducts(menuData);
+          setCategories(categoryData);
+        } catch {
+          // Keep the last known menu visible until the API is reachable again.
+        }
+      }, 150);
+    };
+    socket.on('inventory.updated', refreshMenu);
+    socket.on('connect', () => {
+      if (hasConnected) refreshMenu();
+      hasConnected = true;
+    });
+
+    return () => {
+      if (refreshTimer) clearTimeout(refreshTimer);
+      socket.removeAllListeners();
+      socket.disconnect();
+    };
+  }, [table?.realtime_token]);
 
   // Cart helpers
   const addToCart = (product: Product) => {
@@ -178,6 +213,7 @@ export const CustomerOrderPage: React.FC = () => {
       const orderResult = await submitOrder({
         table_number: table.table_number,
         customer_notes: customerNotes,
+        idempotency_key: orderSubmissionKey.current || (orderSubmissionKey.current = createIdempotencyKey()),
         items: cart.map((item) => ({
           product_id: item.product.id,
           quantity: item.quantity,
@@ -187,6 +223,7 @@ export const CustomerOrderPage: React.FC = () => {
 
       // Clear cart
       setCart([]);
+      orderSubmissionKey.current = null;
       setIsCartOpen(false);
 
       // Navigate to order confirmation

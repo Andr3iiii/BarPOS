@@ -32,7 +32,8 @@ import {
   Beer
 } from 'lucide-react';
 import { Order, OrderStatus } from '../types';
-import { fetchOrders, cancelOrder, fetchReceiptData } from '../services/api';
+import { API_BASE, expireSession, fetchOrders, cancelOrder, fetchReceiptData, getStoredToken } from '../services/api';
+import { connectRealtime } from '../../../../shared/realtime';
 import { PaymentModal } from '../components/PaymentModal';
 import { ReceiptModal } from '../components/ReceiptModal';
 import { WalkInOrderModal } from '../components/WalkInOrderModal';
@@ -72,13 +73,35 @@ export const OrdersPage: React.FC<OrdersPageProps> = () => {
     }
   }, []);
 
-  // Initial load + 3-second live polling
+  // Initial load plus event-driven refreshes. Reconnection performs a REST
+  // refresh so a temporary disconnect cannot leave the order list stale.
   useEffect(() => {
     loadOrders(false);
-    const interval = setInterval(() => {
-      loadOrders(true);
-    }, 3000);
-    return () => clearInterval(interval);
+
+    const token = getStoredToken();
+    if (!token) return;
+
+    const socket = connectRealtime({ apiBase: API_BASE, token, onUnauthorized: expireSession });
+    let refreshTimer: ReturnType<typeof setTimeout> | undefined;
+    let hasConnected = false;
+    const scheduleRefresh = () => {
+      if (refreshTimer) clearTimeout(refreshTimer);
+      refreshTimer = setTimeout(() => loadOrders(true), 150);
+    };
+    const handleConnect = () => {
+      if (hasConnected) scheduleRefresh();
+      hasConnected = true;
+    };
+
+    socket.on('connect', handleConnect);
+    socket.on('order.created', scheduleRefresh);
+    socket.on('order.status.changed', scheduleRefresh);
+
+    return () => {
+      if (refreshTimer) clearTimeout(refreshTimer);
+      socket.removeAllListeners();
+      socket.disconnect();
+    };
   }, [loadOrders]);
 
   // Cancel order handler

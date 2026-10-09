@@ -1,8 +1,12 @@
 import { Request, Response } from 'express';
 import { query } from '../database/db';
+import { emitInventoryUpdated } from '../realtime';
 
 export const getAllCategories = async (req: Request, res: Response): Promise<void> => {
   try {
+    if (!req.headers.authorization && req.query.includeInactive !== 'true') {
+      res.setHeader('Cache-Control', 'public, max-age=60, stale-while-revalidate=120');
+    }
     const includeInactive = req.query.includeInactive === 'true';
     let sql = 'SELECT * FROM categories';
     if (!includeInactive) {
@@ -45,6 +49,7 @@ export const createCategory = async (req: Request, res: Response): Promise<void>
       data: result.rows[0],
       message: 'Category created successfully.'
     });
+    emitInventoryUpdated({ entity: 'category', entityId: result.rows[0].id, action: 'created' });
   } catch (err: any) {
     res.status(500).json({ success: false, message: err.message || 'Failed to create category.' });
   }
@@ -90,6 +95,7 @@ export const updateCategory = async (req: Request, res: Response): Promise<void>
       data: result.rows[0],
       message: 'Category updated successfully.'
     });
+    emitInventoryUpdated({ entity: 'category', entityId: result.rows[0].id, action: 'updated' });
   } catch (err: any) {
     res.status(500).json({ success: false, message: err.message || 'Failed to update category.' });
   }
@@ -103,6 +109,7 @@ export const deactivateCategory = async (req: Request, res: Response): Promise<v
       success: true,
       message: 'Category deactivated successfully.'
     });
+    emitInventoryUpdated({ entity: 'category', entityId: Number(id), action: 'deactivated' });
   } catch (err: any) {
     res.status(500).json({ success: false, message: err.message || 'Failed to deactivate category.' });
   }

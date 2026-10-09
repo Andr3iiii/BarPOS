@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Box,
@@ -15,14 +15,18 @@ import {
 } from '@mui/joy';
 import { Lock, User, Shield, Beer } from 'lucide-react';
 import { BAR_SETTINGS } from '../types';
-import { loginAdmin } from '../services/api';
+import { clearSessionMessage, getSessionMessage, loginAdmin } from '../services/api';
 
 export const LoginPage: React.FC = () => {
   const navigate = useNavigate();
   const [username, setUsername] = useState<string>('admin');
   const [password, setPassword] = useState<string>('admin123');
   const [loading, setLoading] = useState<boolean>(false);
-  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [errorMsg, setErrorMsg] = useState<string | null>(() => getSessionMessage());
+
+  useEffect(() => {
+    clearSessionMessage();
+  }, []);
 
   const handleLogin = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();

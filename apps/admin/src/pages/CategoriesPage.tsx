@@ -21,10 +21,14 @@ import {
 import { Plus, Edit2, Trash2 } from 'lucide-react';
 import { Category } from '../types';
 import {
+  API_BASE,
+  expireSession,
   fetchCategories,
   createCategory,
   updateCategory
 } from '../services/api';
+import { getStoredToken } from '../services/api';
+import { connectRealtime } from '../../../../shared/realtime';
 
 export const CategoriesPage: React.FC = () => {
   const [categories, setCategories] = useState<Category[]>([]);
@@ -51,6 +55,25 @@ export const CategoriesPage: React.FC = () => {
 
   useEffect(() => {
     loadData();
+    const token = getStoredToken();
+    if (!token) return;
+    const socket = connectRealtime({ apiBase: API_BASE, token, onUnauthorized: expireSession });
+    let refreshTimer: ReturnType<typeof setTimeout> | undefined;
+    let hasConnected = false;
+    const scheduleRefresh = () => {
+      if (refreshTimer) clearTimeout(refreshTimer);
+      refreshTimer = setTimeout(() => loadData(), 150);
+    };
+    socket.on('inventory.updated', scheduleRefresh);
+    socket.on('connect', () => {
+      if (hasConnected) scheduleRefresh();
+      hasConnected = true;
+    });
+    return () => {
+      if (refreshTimer) clearTimeout(refreshTimer);
+      socket.removeAllListeners();
+      socket.disconnect();
+    };
   }, []);
 
   const openAdd = () => {

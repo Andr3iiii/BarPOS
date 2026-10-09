@@ -24,12 +24,16 @@ import {
 import { Plus, Edit2, Trash2, Search, Wine, CheckCircle2, XCircle } from 'lucide-react';
 import { Product, Category } from '../types';
 import {
+  API_BASE,
+  expireSession,
   fetchProducts,
   fetchCategories,
   createProduct,
   updateProduct,
   deleteOrDeactivateProduct
 } from '../services/api';
+import { getStoredToken } from '../services/api';
+import { connectRealtime } from '../../../../shared/realtime';
 
 export const ProductsPage: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
@@ -66,6 +70,25 @@ export const ProductsPage: React.FC = () => {
 
   useEffect(() => {
     loadData();
+    const token = getStoredToken();
+    if (!token) return;
+    const socket = connectRealtime({ apiBase: API_BASE, token, onUnauthorized: expireSession });
+    let refreshTimer: ReturnType<typeof setTimeout> | undefined;
+    let hasConnected = false;
+    const scheduleRefresh = () => {
+      if (refreshTimer) clearTimeout(refreshTimer);
+      refreshTimer = setTimeout(() => loadData(), 150);
+    };
+    socket.on('inventory.updated', scheduleRefresh);
+    socket.on('connect', () => {
+      if (hasConnected) scheduleRefresh();
+      hasConnected = true;
+    });
+    return () => {
+      if (refreshTimer) clearTimeout(refreshTimer);
+      socket.removeAllListeners();
+      socket.disconnect();
+    };
   }, []);
 
   const openAddModal = () => {

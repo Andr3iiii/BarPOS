@@ -16,6 +16,7 @@ RUN npm ci --workspace=apps/pos
 
 # Copy source code
 COPY apps/pos/ ./apps/pos/
+COPY shared/ ./shared/
 
 # Build POS web app
 RUN npm run --workspace=apps/pos build

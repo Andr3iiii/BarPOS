@@ -14,7 +14,8 @@ import {
 } from '@mui/joy';
 import { Download, Filter, TrendingUp, DollarSign, Receipt, CreditCard } from 'lucide-react';
 import { SalesSummary, SalesRecord, PaymentMethod } from '../types';
-import { fetchSalesReports } from '../services/api';
+import { API_BASE, expireSession, fetchSalesReports, getStoredToken } from '../services/api';
+import { connectRealtime } from '../../../../shared/realtime';
 
 export const SalesPage: React.FC = () => {
   const [period, setPeriod] = useState<'today' | 'yesterday' | 'week' | 'month' | 'custom'>('today');
@@ -43,6 +44,26 @@ export const SalesPage: React.FC = () => {
 
   useEffect(() => {
     loadSales();
+    const token = getStoredToken();
+    if (!token) return;
+    const socket = connectRealtime({ apiBase: API_BASE, token, onUnauthorized: expireSession });
+    let refreshTimer: ReturnType<typeof setTimeout> | undefined;
+    let hasConnected = false;
+    const scheduleRefresh = () => {
+      if (refreshTimer) clearTimeout(refreshTimer);
+      refreshTimer = setTimeout(() => loadSales(), 150);
+    };
+    socket.on('order.created', scheduleRefresh);
+    socket.on('order.status.changed', scheduleRefresh);
+    socket.on('connect', () => {
+      if (hasConnected) scheduleRefresh();
+      hasConnected = true;
+    });
+    return () => {
+      if (refreshTimer) clearTimeout(refreshTimer);
+      socket.removeAllListeners();
+      socket.disconnect();
+    };
   }, [period, paymentMethod]);
 
   const handleExportCSV = () => {

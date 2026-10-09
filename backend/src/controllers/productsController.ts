@@ -1,8 +1,10 @@
 import { Request, Response } from 'express';
 import { query } from '../database/db';
+import { emitInventoryUpdated } from '../realtime';
 
 export const getPublicMenu = async (req: Request, res: Response): Promise<void> => {
   try {
+    res.setHeader('Cache-Control', 'no-store');
     const result = await query(`
       SELECT 
         p.id, 
@@ -143,6 +145,7 @@ export const createProduct = async (req: Request, res: Response): Promise<void> 
       data: result.rows[0],
       message: 'Product created successfully.'
     });
+    emitInventoryUpdated({ entity: 'product', entityId: result.rows[0].id, action: 'created' });
   } catch (err: any) {
     res.status(500).json({ success: false, message: err.message || 'Failed to create product.' });
   }
@@ -203,6 +206,7 @@ export const updateProduct = async (req: Request, res: Response): Promise<void> 
       data: result.rows[0],
       message: 'Product updated successfully.'
     });
+    emitInventoryUpdated({ entity: 'product', entityId: result.rows[0].id, action: 'updated' });
   } catch (err: any) {
     res.status(500).json({ success: false, message: err.message || 'Failed to update product.' });
   }
@@ -222,6 +226,7 @@ export const deleteOrDeactivateProduct = async (req: Request, res: Response): Pr
         success: true,
         message: 'Product is associated with existing orders. It has been deactivated to preserve transaction records.'
       });
+      emitInventoryUpdated({ entity: 'product', entityId: Number(id), action: 'deactivated' });
       return;
     }
 
@@ -231,6 +236,7 @@ export const deleteOrDeactivateProduct = async (req: Request, res: Response): Pr
       success: true,
       message: 'Product deleted successfully.'
     });
+    emitInventoryUpdated({ entity: 'product', entityId: Number(id), action: 'deleted' });
   } catch (err: any) {
     res.status(500).json({ success: false, message: err.message || 'Failed to delete product.' });
   }

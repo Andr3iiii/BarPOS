@@ -16,6 +16,7 @@ RUN npm ci --workspace=apps/customer
 
 # Copy source code
 COPY apps/customer/ ./apps/customer/
+COPY shared/ ./shared/
 
 # Build customer web app
 RUN npm run --workspace=apps/customer build

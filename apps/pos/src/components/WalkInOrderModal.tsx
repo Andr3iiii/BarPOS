@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import {
   Modal,
   ModalDialog,
@@ -20,6 +20,7 @@ import {
 import { Plus, Minus, Search, ShoppingBag, X } from 'lucide-react';
 import { Product, Order } from '../types';
 import { fetchProducts, createDirectOrder } from '../services/api';
+import { createIdempotencyKey } from '../../../../shared/idempotency';
 
 interface WalkInOrderModalProps {
   open: boolean;
@@ -34,6 +35,7 @@ export const WalkInOrderModal: React.FC<WalkInOrderModalProps> = ({ open, onClos
   const [cart, setCart] = useState<Map<number, number>>(new Map());
   const [submitting, setSubmitting] = useState<boolean>(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const orderSubmissionKey = useRef<string | null>(null);
 
   useEffect(() => {
     if (open) {
@@ -91,9 +93,11 @@ export const WalkInOrderModal: React.FC<WalkInOrderModalProps> = ({ open, onClos
       const newOrder = await createDirectOrder({
         table_number: tableNumber,
         customer_notes: 'Walk-in / Bar Counter Order',
+        idempotency_key: orderSubmissionKey.current || (orderSubmissionKey.current = createIdempotencyKey()),
         items
       });
 
+      orderSubmissionKey.current = null;
       onOrderCreated(newOrder);
       onClose();
     } catch (err: any) {

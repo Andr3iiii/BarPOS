@@ -16,19 +16,31 @@ export interface AuthenticatedRequest extends Request {
 
 export const authenticateToken = (req: AuthenticatedRequest, res: Response, next: NextFunction): void => {
   const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1];
+  const [scheme, token] = authHeader?.split(' ') ?? [];
 
-  if (!token) {
+  if (scheme !== 'Bearer' || !token) {
     res.status(401).json({ success: false, message: 'Authentication required. No token provided.' });
     return;
   }
 
   jwt.verify(token, config.jwtSecret, (err, decoded) => {
-    if (err) {
-      res.status(403).json({ success: false, message: 'Invalid or expired session token.' });
+    if (err || !decoded || typeof decoded === 'string') {
+      res.status(401).json({ success: false, message: 'Invalid or expired session token.' });
       return;
     }
-    req.user = decoded as AuthenticatedUser;
+
+    const user = decoded as Partial<AuthenticatedUser>;
+    if (
+      typeof user.id !== 'number' ||
+      typeof user.username !== 'string' ||
+      typeof user.full_name !== 'string' ||
+      (user.role !== 'admin' && user.role !== 'cashier')
+    ) {
+      res.status(401).json({ success: false, message: 'Invalid session token.' });
+      return;
+    }
+
+    req.user = user as AuthenticatedUser;
     next();
   });
 };

@@ -16,6 +16,7 @@ RUN npm ci --workspace=apps/admin
 
 # Copy source code
 COPY apps/admin/ ./apps/admin/
+COPY shared/ ./shared/
 
 # Build admin web app
 RUN npm run --workspace=apps/admin build

@@ -123,6 +123,7 @@ export interface CreateOrderInput {
   table_number: string;
   customer_notes?: string;
   items: CreateOrderItemInput[];
+  idempotency_key?: string;
 }
 
 export interface Payment {

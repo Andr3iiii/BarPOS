@@ -2,11 +2,15 @@ import { Request, Response } from 'express';
 import { getClient, query } from '../database/db';
 import { generateOrderReference } from '../utils/referenceGenerator';
 import { CreateOrderInput } from '../types.js';
+import { createOrderAccessToken, emitOrderCreated, emitOrderStatusChanged } from '../realtime';
 
 export const createOrder = async (req: Request, res: Response): Promise<void> => {
   const client = await getClient();
   try {
-    const { table_number, customer_notes, items }: CreateOrderInput = req.body;
+    const { table_number, customer_notes, items, idempotency_key }: CreateOrderInput = req.body;
+    const headerKey = req.headers['idempotency-key'];
+    const rawIdempotencyKey = typeof headerKey === 'string' ? headerKey : idempotency_key;
+    const idempotencyKey = rawIdempotencyKey ? String(rawIdempotencyKey).trim().slice(0, 100) : null;
 
     if (!table_number) {
       res.status(400).json({ success: false, message: 'Table number is required.' });
@@ -95,11 +99,48 @@ export const createOrder = async (req: Request, res: Response): Promise<void> =>
 
     // 4. Insert order
     const orderRes = await client.query(
-      `INSERT INTO orders (reference_no, table_id, status, payment_status, subtotal, tax, total, customer_notes)
-       VALUES ($1, $2, 'PENDING', 'UNPAID', $3, 0.00, $4, $5)
+      `INSERT INTO orders (reference_no, table_id, status, payment_status, subtotal, tax, total, customer_notes, idempotency_key)
+       VALUES ($1, $2, 'PENDING', 'UNPAID', $3, 0.00, $4, $5, $6)
+       ON CONFLICT (idempotency_key) WHERE idempotency_key IS NOT NULL DO NOTHING
        RETURNING *`,
-      [referenceNo, table.id, subtotal, total, customer_notes ? customer_notes.trim() : null]
+      [referenceNo, table.id, subtotal, total, customer_notes ? customer_notes.trim() : null, idempotencyKey]
     );
+
+    if (orderRes.rows.length === 0 && idempotencyKey) {
+      const existingOrderRes = await client.query(
+        `SELECT o.*, t.table_number, t.label AS table_label
+         FROM orders o JOIN tables t ON t.id = o.table_id
+         WHERE o.idempotency_key = $1`,
+        [idempotencyKey]
+      );
+      const existingOrder = existingOrderRes.rows[0];
+      if (!existingOrder) throw new Error('Unable to resolve the existing order request.');
+      const existingItems = await client.query(
+        `SELECT id, product_id, product_name, unit_price, quantity, subtotal, item_notes
+         FROM order_items WHERE order_id = $1 ORDER BY id ASC`,
+        [existingOrder.id]
+      );
+      await client.query('COMMIT');
+      res.status(200).json({
+        success: true,
+        data: {
+          id: existingOrder.id,
+          reference_no: existingOrder.reference_no,
+          table_number: existingOrder.table_number,
+          table_label: existingOrder.table_label,
+          status: existingOrder.status,
+          payment_status: existingOrder.payment_status,
+          subtotal: parseFloat(existingOrder.subtotal),
+          total: parseFloat(existingOrder.total),
+          customer_notes: existingOrder.customer_notes,
+          created_at: existingOrder.created_at,
+          items: existingItems.rows,
+          realtime_token: createOrderAccessToken(existingOrder.reference_no)
+        },
+        message: 'Order already submitted.'
+      });
+      return;
+    }
 
     const createdOrder = orderRes.rows[0];
 
@@ -135,9 +176,16 @@ export const createOrder = async (req: Request, res: Response): Promise<void> =>
         total: parseFloat(createdOrder.total),
         customer_notes: createdOrder.customer_notes,
         created_at: createdOrder.created_at,
-        items: validatedItems
+        items: validatedItems,
+        realtime_token: createOrderAccessToken(referenceNo)
       },
       message: 'Order created successfully. Please proceed to the counter to pay.'
+    });
+
+    emitOrderCreated({
+      orderId: createdOrder.id,
+      referenceNo,
+      tableNumber: table.table_number
     });
   } catch (err: any) {
     await client.query('ROLLBACK');
@@ -374,8 +422,12 @@ export const getOrderByReference = async (req: Request, res: Response): Promise<
 export const cancelOrder = async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
-
-    const check = await query('SELECT status, payment_status FROM orders WHERE id = $1', [id]);
+    const check = await query(
+      `SELECT o.status, o.payment_status, o.reference_no, t.table_number
+       FROM orders o JOIN tables t ON t.id = o.table_id
+       WHERE o.id = $1`,
+      [id]
+    );
     if (check.rows.length === 0) {
       res.status(404).json({ success: false, message: 'Order not found.' });
       return;
@@ -394,6 +446,13 @@ export const cancelOrder = async (req: Request, res: Response): Promise<void> =>
     res.json({
       success: true,
       message: 'Order cancelled successfully.'
+    });
+    emitOrderStatusChanged({
+      orderId: Number(id),
+      referenceNo: check.rows[0].reference_no || '',
+      status: 'CANCELLED',
+      paymentStatus: check.rows[0].payment_status,
+      tableNumber: check.rows[0].table_number
     });
   } catch (err: any) {
     res.status(500).json({ success: false, message: err.message || 'Failed to cancel order.' });

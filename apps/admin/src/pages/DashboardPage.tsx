@@ -12,7 +12,8 @@ import {
 } from '@mui/joy';
 import { DollarSign, Clock, CheckCircle2, TrendingUp, CreditCard, Banknote, QrCode } from 'lucide-react';
 import { DashboardMetrics, SalesSummary } from '../types';
-import { fetchDashboardMetrics, fetchSalesReports } from '../services/api';
+import { API_BASE, expireSession, fetchDashboardMetrics, fetchSalesReports, getStoredToken } from '../services/api';
+import { connectRealtime } from '../../../../shared/realtime';
 
 export const DashboardPage: React.FC = () => {
   const [metrics, setMetrics] = useState<DashboardMetrics | null>(null);
@@ -20,6 +21,7 @@ export const DashboardPage: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
+    let refreshTimer: ReturnType<typeof setTimeout> | undefined;
     async function loadData() {
       try {
         setLoading(true);
@@ -36,6 +38,27 @@ export const DashboardPage: React.FC = () => {
       }
     }
     loadData();
+
+    const token = getStoredToken();
+    if (!token) return;
+    const socket = connectRealtime({ apiBase: API_BASE, token, onUnauthorized: expireSession });
+    let hasConnected = false;
+    const scheduleRefresh = () => {
+      if (refreshTimer) clearTimeout(refreshTimer);
+      refreshTimer = setTimeout(() => loadData(), 150);
+    };
+    socket.on('order.created', scheduleRefresh);
+    socket.on('order.status.changed', scheduleRefresh);
+    socket.on('connect', () => {
+      if (hasConnected) scheduleRefresh();
+      hasConnected = true;
+    });
+
+    return () => {
+      if (refreshTimer) clearTimeout(refreshTimer);
+      socket.removeAllListeners();
+      socket.disconnect();
+    };
   }, []);
 
   if (loading) {

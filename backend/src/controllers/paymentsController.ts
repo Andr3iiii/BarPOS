@@ -2,6 +2,7 @@ import { Response } from 'express';
 import { getClient, query } from '../database/db';
 import { AuthenticatedRequest } from '../middleware/auth';
 import { ProcessPaymentInput, BAR_SETTINGS } from '../types.js';
+import { emitOrderStatusChanged } from '../realtime';
 
 export const processPayment = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
   const client = await getClient();
@@ -20,16 +21,23 @@ export const processPayment = async (req: AuthenticatedRequest, res: Response): 
       return;
     }
 
+    // Lock the order for the entire payment transaction. Concurrent cashier
+    // requests then observe the committed PAID state instead of inserting a
+    // second payment and relying on a late unique-constraint failure.
+    await client.query('BEGIN');
+
     // Check order
     const orderRes = await client.query(
       `SELECT o.*, t.table_number, t.label AS table_label 
        FROM orders o 
        JOIN tables t ON o.table_id = t.id 
-       WHERE o.id = $1`,
+       WHERE o.id = $1
+       FOR UPDATE`,
       [order_id]
     );
 
     if (orderRes.rows.length === 0) {
+      await client.query('ROLLBACK');
       res.status(404).json({ success: false, message: 'Order not found.' });
       return;
     }
@@ -37,11 +45,13 @@ export const processPayment = async (req: AuthenticatedRequest, res: Response): 
     const order = orderRes.rows[0];
 
     if (order.status === 'PAID' || order.payment_status === 'PAID') {
+      await client.query('ROLLBACK');
       res.status(400).json({ success: false, message: 'This order has already been paid.' });
       return;
     }
 
     if (order.status === 'CANCELLED') {
+      await client.query('ROLLBACK');
       res.status(400).json({ success: false, message: 'Cannot process payment for a cancelled order.' });
       return;
     }
@@ -50,12 +60,14 @@ export const processPayment = async (req: AuthenticatedRequest, res: Response): 
     const received = parseFloat(String(amount_received));
 
     if (isNaN(received) || received <= 0) {
+      await client.query('ROLLBACK');
       res.status(400).json({ success: false, message: 'Please enter a valid amount received.' });
       return;
     }
 
     // Critical validation: For cash, prevent confirmation if insufficient
     if (payment_method === 'CASH' && received < totalAmount) {
+      await client.query('ROLLBACK');
       res.status(400).json({
         success: false,
         message: `Insufficient cash received. Order total is ₱${totalAmount.toFixed(2)}, but received ₱${received.toFixed(2)}.`
@@ -65,8 +77,6 @@ export const processPayment = async (req: AuthenticatedRequest, res: Response): 
 
     const changeAmount = payment_method === 'CASH' ? Math.max(0, received - totalAmount) : 0;
     const effectiveReceived = payment_method === 'CASH' ? received : totalAmount;
-
-    await client.query('BEGIN');
 
     // 1. Insert into payments table
     const paymentRes = await client.query(
@@ -140,6 +150,13 @@ export const processPayment = async (req: AuthenticatedRequest, res: Response): 
         payment,
         receipt: receiptData
       }
+    });
+    emitOrderStatusChanged({
+      orderId: order.id,
+      referenceNo: order.reference_no,
+      status: 'PAID',
+      paymentStatus: 'PAID',
+      tableNumber: order.table_number
     });
   } catch (err: any) {
     await client.query('ROLLBACK');
