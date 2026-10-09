@@ -16,6 +16,7 @@ async function startServer() {
 
     const httpServer = createServer(app);
     initializeRealtime(httpServer);
+    console.log('📡 Socket.IO realtime server initialized on /socket.io');
 
     httpServer.listen(config.port, () => {
       console.log(`🚀 Bar POS Backend API server is running on http://localhost:${config.port}`);

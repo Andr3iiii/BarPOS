@@ -12,7 +12,11 @@ import { fetchWithTimeout } from '../../../../shared/http';
 function resolveApiBase(): string {
   if (typeof window !== 'undefined') {
     const custom = localStorage.getItem('barpos_api_url');
-    if (custom && custom.trim() !== '') return custom.trim().replace(/\/+$/, '');
+    if (custom && /barpos-7rxf\.onrender\.com/i.test(custom)) {
+      localStorage.removeItem('barpos_api_url');
+    } else if (custom && custom.trim() !== '') {
+      return custom.trim().replace(/\/+$/, '');
+    }
   }
 
   const envUrl = import.meta.env.VITE_API_BASE_URL;
@@ -114,7 +118,10 @@ async function requestData<T>(
   const json = await res.json().catch(() => null);
 
   if (!res.ok) {
-    if (authenticated && res.status === 401) handleUnauthorized();
+    // Older Render deployments returned 403 for invalid/expired JWTs. Every
+    // protected POS endpoint accepts both supported staff roles, so a 403
+    // here is an authentication failure rather than a real permission denial.
+    if (authenticated && (res.status === 401 || res.status === 403)) handleUnauthorized();
     throw new Error((isRecord(json) && typeof json.message === 'string' && json.message) || fallbackMessage);
   }
 

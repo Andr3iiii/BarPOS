@@ -103,7 +103,9 @@ async function requestData<T>(
   const json = await res.json().catch(() => null);
 
   if (!res.ok) {
-    if (authenticated && res.status === 401) handleUnauthorized();
+    const message = isRecord(json) && typeof json.message === 'string' ? json.message : '';
+    const legacyAuthFailure = res.status === 403 && /token|session|authentication|unauthorized|expired|invalid/i.test(message);
+    if (authenticated && (res.status === 401 || legacyAuthFailure)) handleUnauthorized();
     throw new Error((isRecord(json) && typeof json.message === 'string' && json.message) || fallbackMessage);
   }
 
@@ -119,7 +121,9 @@ async function requestMessage(url: string, options: RequestInit, fallbackMessage
   const json = await res.json().catch(() => null);
 
   if (!res.ok) {
-    if (res.status === 401) handleUnauthorized();
+    const message = isRecord(json) && typeof json.message === 'string' ? json.message : '';
+    const legacyAuthFailure = res.status === 403 && /token|session|authentication|unauthorized|expired|invalid/i.test(message);
+    if (res.status === 401 || legacyAuthFailure) handleUnauthorized();
     throw new Error((isRecord(json) && typeof json.message === 'string' && json.message) || fallbackMessage);
   }
 

@@ -14,7 +14,7 @@ import {
 } from '@mui/joy';
 import { CheckCircle2, Clock, Sparkles, ArrowLeft, RefreshCw, AlertCircle } from 'lucide-react';
 import { Order, BAR_SETTINGS } from '../types';
-import { API_BASE } from '../services/api';
+import { API_BASE, fetchOrderByRef } from '../services/api';
 import { connectRealtime } from '../../../../shared/realtime';
 
 export const OrderConfirmationPage: React.FC = () => {
@@ -28,9 +28,28 @@ export const OrderConfirmationPage: React.FC = () => {
     (location.state as any)?.tableNumber || ''
   );
   const [pollingStatus, setPollingStatus] = useState<string>(initialOrder?.status || 'PENDING');
-  const [realtimeToken] = useState<string | null>(() =>
+  const [realtimeToken, setRealtimeToken] = useState<string | null>(() =>
     initialOrder?.realtime_token || (reference ? sessionStorage.getItem(`barpos-order:${reference}`) : null)
   );
+
+  useEffect(() => {
+    if (!reference) return;
+    if (!order) {
+      fetchOrderByRef(reference)
+        .then((fetched) => {
+          setOrder(fetched);
+          setPollingStatus(fetched.status);
+          if (fetched.table_number) setTableNumber(fetched.table_number);
+          if (fetched.realtime_token) {
+            setRealtimeToken(fetched.realtime_token);
+            sessionStorage.setItem(`barpos-order:${reference}`, fetched.realtime_token);
+          }
+        })
+        .catch((err) => {
+          console.warn('Could not load order by reference:', err);
+        });
+    }
+  }, [reference, order]);
 
   useEffect(() => {
     if (reference && realtimeToken) {

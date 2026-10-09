@@ -410,9 +410,13 @@ export const getOrderByReference = async (req: Request, res: Response): Promise<
       return;
     }
 
+    const orderData = result.rows[0];
     res.json({
       success: true,
-      data: result.rows[0]
+      data: {
+        ...orderData,
+        realtime_token: createOrderAccessToken(orderData.reference_no)
+      }
     });
   } catch (err: any) {
     res.status(500).json({ success: false, message: err.message || 'Failed to search order.' });

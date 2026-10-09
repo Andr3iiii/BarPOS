@@ -16,6 +16,8 @@
     "electron:dev": "npm run --workspace=apps/pos electron:dev",
     "electron:pack": "npm run --workspace=apps/pos electron:pack",
     "electron:dist": "npm run --workspace=apps/pos electron:dist",
+    "build": "npm run --workspace=backend build",
+    "start": "node backend/dist/server.js",
     "build:all": "npm run --workspace=backend build && npm run --workspace=apps/customer build && npm run --workspace=apps/pos build && npm run --workspace=apps/admin build",
     "db:init": "npm run --workspace=backend db:init",
     "docker:build": "docker compose build",
