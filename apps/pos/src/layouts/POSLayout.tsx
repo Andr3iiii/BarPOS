@@ -29,7 +29,8 @@ import {
   Bell,
   RefreshCw,
   Sparkles,
-  Download
+  Download,
+  Beer
 } from 'lucide-react';
 import { BAR_SETTINGS } from '../types';
 import { getStoredUser, clearSession } from '../services/api';
@@ -107,145 +108,194 @@ export const POSLayout: React.FC<POSLayoutProps> = ({
           bgcolor: 'background.surface',
           borderBottom: '1px solid',
           borderColor: 'divider',
-          px: 3,
-          py: 1.5,
+          px: { xs: 2, md: 3 },
+          py: 1.25,
           position: 'sticky',
           top: 0,
-          zIndex: 100
+          zIndex: 100,
+          backdropFilter: 'blur(12px)'
         }}
       >
-        <Stack direction="row" justifyContent="space-between" alignItems="center">
-          {/* Brand & Mode */}
-          <Stack direction="row" spacing={2} alignItems="center">
-            <Box>
-              <Typography level="title-md" sx={{ color: 'text.primary', fontWeight: 800, letterSpacing: '0.04em' }}>
+        <Stack direction="row" justifyContent="space-between" alignItems="center" spacing={2}>
+          {/* Brand & Terminal Identifier */}
+          <Stack direction="row" spacing={1.5} alignItems="center">
+            <Box
+              sx={{
+                width: 38,
+                height: 38,
+                borderRadius: '10px',
+                bgcolor: 'primary.softBg',
+                color: 'primary.500',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                flexShrink: 0
+              }}
+            >
+              <Beer size={20} />
+            </Box>
+            <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
+              <Typography level="title-md" sx={{ color: 'text.primary', fontWeight: 800, lineHeight: 1.2 }}>
                 {BAR_SETTINGS.NAME}
               </Typography>
-              <Typography level="body-xs" sx={{ color: '#e05624', fontWeight: 600 }}>
-                POS CASHIER TERMINAL
-              </Typography>
+              <Stack direction="row" spacing={0.8} alignItems="center" sx={{ mt: 0.2 }}>
+                <Chip size="sm" variant="soft" color="primary" sx={{ fontSize: '10px', fontWeight: 700, px: 0.8, py: 0.1 }}>
+                  POS TERMINAL
+                </Chip>
+                <Typography level="body-xs" sx={{ color: 'text.tertiary', fontSize: '11px' }}>
+                  Front Counter
+                </Typography>
+              </Stack>
             </Box>
+          </Stack>
 
-            {/* Nav Tabs */}
-            <Stack direction="row" spacing={1} sx={{ ml: 4 }}>
-              <Button
-                size="sm"
-                variant={
+          {/* Center Navigation Tabs */}
+          <Stack
+            direction="row"
+            spacing={0.5}
+            alignItems="center"
+            sx={{
+              bgcolor: 'background.level1',
+              p: 0.5,
+              borderRadius: '12px',
+              border: '1px solid',
+              borderColor: 'divider'
+            }}
+          >
+            <Button
+              size="sm"
+              variant={
+                location.pathname === '/' ||
+                location.pathname === '/pos' ||
+                location.pathname === '/pos/orders' ||
+                location.pathname === '/orders'
+                  ? 'solid'
+                  : 'plain'
+              }
+              onClick={() => navigate('/pos/orders')}
+              startDecorator={<Receipt size={16} />}
+              sx={{
+                bgcolor:
                   location.pathname === '/' ||
                   location.pathname === '/pos' ||
                   location.pathname === '/pos/orders' ||
                   location.pathname === '/orders'
-                    ? 'solid'
-                    : 'plain'
-                }
-                onClick={() => navigate('/pos/orders')}
-                startDecorator={<Receipt size={17} />}
-                sx={{
+                    ? 'primary.solidBg'
+                    : 'transparent',
+                color:
+                  location.pathname === '/' ||
+                  location.pathname === '/pos' ||
+                  location.pathname === '/pos/orders' ||
+                  location.pathname === '/orders'
+                    ? '#fff'
+                    : 'text.secondary',
+                fontWeight: 600,
+                borderRadius: '9px',
+                px: 1.8,
+                '&:hover': {
                   bgcolor:
                     location.pathname === '/' ||
                     location.pathname === '/pos' ||
                     location.pathname === '/pos/orders' ||
                     location.pathname === '/orders'
-                      ? 'primary.solidBg'
-                      : 'transparent',
-                  color:
-                    location.pathname === '/' ||
-                    location.pathname === '/pos' ||
-                    location.pathname === '/pos/orders' ||
-                    location.pathname === '/orders'
-                      ? '#fff'
-                      : 'text.secondary',
-                  fontWeight: 600,
-                  borderRadius: '10px',
-                  '&:hover': {
-                    bgcolor:
-                      location.pathname === '/' ||
-                      location.pathname === '/pos' ||
-                      location.pathname === '/pos/orders' ||
-                      location.pathname === '/orders'
-                        ? 'primary.solidHoverBg'
-                        : 'background.level1'
-                  }
-                }}
-              >
-                Orders
-              </Button>
+                      ? 'primary.solidHoverBg'
+                      : 'background.level2'
+                }
+              }}
+            >
+              Orders
+            </Button>
 
+            <Button
+              size="sm"
+              variant={
+                location.pathname === '/pos/dashboard' || location.pathname === '/dashboard'
+                  ? 'solid'
+                  : 'plain'
+              }
+              onClick={() => navigate('/pos/dashboard')}
+              startDecorator={<LayoutDashboard size={16} />}
+              sx={{
+                bgcolor:
+                  location.pathname === '/pos/dashboard' || location.pathname === '/dashboard'
+                    ? 'primary.solidBg'
+                    : 'transparent',
+                color:
+                  location.pathname === '/pos/dashboard' || location.pathname === '/dashboard'
+                    ? '#fff'
+                    : 'text.secondary',
+                fontWeight: 600,
+                borderRadius: '9px',
+                px: 1.8,
+                '&:hover': {
+                  bgcolor:
+                    location.pathname === '/pos/dashboard' || location.pathname === '/dashboard'
+                      ? 'primary.solidHoverBg'
+                      : 'background.level2'
+                }
+              }}
+            >
+              Dashboard
+            </Button>
+
+            {user?.role === 'admin' && (
               <Button
                 size="sm"
-                variant={
-                  location.pathname === '/pos/dashboard' || location.pathname === '/dashboard'
-                    ? 'solid'
-                    : 'plain'
-                }
-                onClick={() => navigate('/pos/dashboard')}
-                startDecorator={<LayoutDashboard size={17} />}
+                variant="outlined"
+                color="primary"
+                onClick={() => navigate('/admin')}
+                startDecorator={<Shield size={15} />}
                 sx={{
-                  bgcolor:
-                    location.pathname === '/pos/dashboard' || location.pathname === '/dashboard'
-                      ? 'primary.solidBg'
-                      : 'transparent',
-                  color:
-                    location.pathname === '/pos/dashboard' || location.pathname === '/dashboard'
-                      ? '#fff'
-                      : 'text.secondary',
-                  fontWeight: 600,
-                  borderRadius: '10px',
-                  '&:hover': {
-                    bgcolor:
-                      location.pathname === '/pos/dashboard' || location.pathname === '/dashboard'
-                        ? 'primary.solidHoverBg'
-                        : 'background.level1'
-                  }
+                  borderRadius: '9px',
+                  fontWeight: 700,
+                  px: 1.5,
+                  borderColor: 'primary.300',
+                  color: 'primary.500',
+                  '&:hover': { bgcolor: 'primary.softBg' }
                 }}
               >
-                Dashboard
+                Admin
               </Button>
-
-              {user?.role === 'admin' && (
-                <Button
-                  size="sm"
-                  variant="outlined"
-                  color="primary"
-                  onClick={() => navigate('/admin')}
-                  startDecorator={<Shield size={16} />}
-                  sx={{
-                    borderRadius: '10px',
-                    fontWeight: 700,
-                    borderColor: 'primary.500',
-                    color: 'primary.500',
-                    '&:hover': { bgcolor: 'primary.softBg' }
-                  }}
-                >
-                  Admin Portal
-                </Button>
-              )}
-            </Stack>
+            )}
           </Stack>
 
-          {/* Right Action Items: Live status, Clock, Walk-in, Theme Toggle, Cashier Profile */}
-          <Stack direction="row" spacing={1.5} alignItems="center">
+          {/* Right Action Items: Live status, Clock, Walk-in, Theme Toggle, Profile */}
+          <Stack direction="row" spacing={1.2} alignItems="center">
             {/* Live sync badge */}
             <Chip
               variant="soft"
+              color="success"
               size="sm"
               sx={{
-                bgcolor: 'rgba(16, 185, 129, 0.12)',
-                color: '#10b981',
-                borderColor: 'rgba(16, 185, 129, 0.3)',
-                fontWeight: 600
+                display: { xs: 'none', lg: 'inline-flex' },
+                fontWeight: 600,
+                fontSize: '11px',
+                borderRadius: '8px'
               }}
             >
               ● Live Sync
             </Chip>
 
             {/* Clock */}
-            <Stack direction="row" spacing={0.6} alignItems="center" sx={{ color: 'text.secondary' }}>
-              <Clock size={16} />
-              <Typography level="body-sm" sx={{ color: 'text.primary', fontFamily: 'monospace', fontWeight: 600 }}>
+            <Box
+              sx={{
+                display: { xs: 'none', md: 'flex' },
+                alignItems: 'center',
+                gap: 0.6,
+                px: 1.2,
+                py: 0.5,
+                bgcolor: 'background.level1',
+                borderRadius: '8px',
+                border: '1px solid',
+                borderColor: 'divider',
+                color: 'text.secondary'
+              }}
+            >
+              <Clock size={14} />
+              <Typography level="body-xs" sx={{ color: 'text.primary', fontFamily: 'monospace', fontWeight: 600 }}>
                 {currentTime}
               </Typography>
-            </Stack>
+            </Box>
 
             {/* Walk-in order button */}
             {onOpenWalkIn && (
@@ -257,12 +307,14 @@ export const POSLayout: React.FC<POSLayoutProps> = ({
                 sx={{
                   bgcolor: 'primary.solidBg',
                   color: '#fff',
-                  fontWeight: 600,
+                  fontWeight: 700,
                   borderRadius: '10px',
+                  px: 1.8,
+                  boxShadow: 'sm',
                   '&:hover': { bgcolor: 'primary.solidHoverBg' }
                 }}
               >
-                Counter Order
+                + Counter Order
               </Button>
             )}
 
@@ -272,16 +324,21 @@ export const POSLayout: React.FC<POSLayoutProps> = ({
                 size="sm"
                 variant="outlined"
                 onClick={onRefreshOrders}
-                sx={{ borderColor: 'divider', color: 'text.secondary', '&:hover': { color: 'text.primary', bgcolor: 'background.level1' } }}
+                sx={{
+                  borderRadius: '10px',
+                  borderColor: 'divider',
+                  color: 'text.secondary',
+                  '&:hover': { color: 'text.primary', bgcolor: 'background.level1' }
+                }}
               >
-                <RefreshCw size={16} />
+                <RefreshCw size={15} />
               </IconButton>
             )}
 
             {/* Theme Toggle Button */}
             <ThemeToggle size="sm" variant="outlined" />
 
-            {/* Cashier / Admin profile & logout */}
+            {/* Cashier / Admin profile dropdown */}
             <Dropdown>
               <MenuButton
                 variant="outlined"
@@ -290,36 +347,40 @@ export const POSLayout: React.FC<POSLayoutProps> = ({
                   borderColor: 'divider',
                   color: 'text.primary',
                   borderRadius: '10px',
-                  px: 1.5
+                  px: 1.2,
+                  py: 0.6
                 }}
               >
-                <Stack direction="row" spacing={1} alignItems="center">
+                <Stack direction="row" spacing={0.8} alignItems="center">
                   {user?.role === 'admin' ? (
-                    <Shield size={16} color="#e05624" />
+                    <Shield size={15} color="var(--joy-palette-primary-500, #e05624)" />
                   ) : (
-                    <User size={16} color="#e05624" />
+                    <User size={15} color="var(--joy-palette-primary-500, #e05624)" />
                   )}
-                  <Typography level="body-sm" sx={{ color: 'text.primary', fontWeight: 600 }}>
+                  <Typography level="body-sm" sx={{ color: 'text.primary', fontWeight: 600, display: { xs: 'none', sm: 'inline-block' } }}>
                     {user?.full_name || (user?.role === 'admin' ? 'Admin' : 'Cashier')}
                   </Typography>
-                  {user?.role === 'admin' && (
-                    <Chip size="sm" variant="soft" color="primary" sx={{ fontSize: '10px' }}>
-                      Admin
-                    </Chip>
-                  )}
                 </Stack>
               </MenuButton>
-              <Menu sx={{ bgcolor: 'background.surface', borderColor: 'divider', color: 'text.primary', zIndex: 1200 }}>
+              <Menu sx={{ bgcolor: 'background.surface', borderColor: 'divider', color: 'text.primary', zIndex: 1200, minWidth: 180 }}>
+                <Box sx={{ px: 1.5, py: 1, borderBottom: '1px solid', borderColor: 'divider' }}>
+                  <Typography level="title-sm" sx={{ color: 'text.primary', fontWeight: 700 }}>
+                    {user?.full_name || 'Staff User'}
+                  </Typography>
+                  <Typography level="body-xs" sx={{ color: 'primary.500', fontWeight: 600 }}>
+                    {user?.role?.toUpperCase() || 'CASHIER'}
+                  </Typography>
+                </Box>
                 {user?.role === 'admin' && (
                   <MenuItem onClick={() => navigate('/admin')} sx={{ color: 'primary.500', fontWeight: 600 }}>
-                    <Shield size={16} /> Open Admin Portal
+                    <Shield size={15} /> Open Admin Portal
                   </MenuItem>
                 )}
                 <MenuItem onClick={() => setUpdateModalOpen(true)}>
-                  <Download size={16} /> Check System Updates
+                  <Download size={15} /> Check System Updates
                 </MenuItem>
-                <MenuItem onClick={handleLogout} sx={{ color: '#ef4444' }}>
-                  <LogOut size={16} /> Logout
+                <MenuItem onClick={handleLogout} sx={{ color: 'danger.500' }}>
+                  <LogOut size={15} /> Logout
                 </MenuItem>
               </Menu>
             </Dropdown>
@@ -328,7 +389,7 @@ export const POSLayout: React.FC<POSLayoutProps> = ({
       </Sheet>
 
       {/* Main Content Area */}
-      <Box sx={{ flex: 1, p: 3, maxWidth: 1600, width: '100%', mx: 'auto' }}>{children}</Box>
+      <Box sx={{ flex: 1, p: { xs: 2, md: 3 }, maxWidth: 1600, width: '100%', mx: 'auto' }}>{children}</Box>
 
       {/* Auto-updater Modal Popup */}
       <UpdateModal open={updateModalOpen} onClose={() => setUpdateModalOpen(false)} />

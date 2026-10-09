@@ -1,21 +1,15 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { BrowserRouter, HashRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { CssVarsProvider } from '@mui/joy/styles';
 import CssBaseline from '@mui/joy/CssBaseline';
 
 // Authentication & Shared Services
 import { getStoredToken, getStoredUser } from './services/api';
-import { Order } from './types';
 import { posTheme } from './theme';
 
 // Layouts
 import { POSLayout } from './layouts/POSLayout';
 import { AdminLayout } from './layouts/AdminLayout';
-
-// POS Components & Modals
-import { WalkInOrderModal } from './components/WalkInOrderModal';
-import { PaymentModal } from './components/PaymentModal';
-import { ReceiptModal } from './components/ReceiptModal';
 
 // Pages
 import { LoginPage } from './pages/LoginPage';
@@ -92,12 +86,8 @@ const DashboardRedirect: React.FC = () => {
 };
 
 export const App: React.FC = () => {
-  const [isWalkInOpen, setIsWalkInOpen] = useState<boolean>(false);
-  const [activePaymentOrder, setActivePaymentOrder] = useState<Order | null>(null);
-  const [activeReceipt, setActiveReceipt] = useState<any | null>(null);
-
-  const handleOrderCreated = (order: Order) => {
-    setActivePaymentOrder(order);
+  const handleOpenWalkIn = () => {
+    window.dispatchEvent(new CustomEvent('open-walkin-modal'));
   };
 
   return (
@@ -188,7 +178,7 @@ export const App: React.FC = () => {
             path="/pos"
             element={
               <ProtectedRoute allowedRoles={['cashier', 'admin']}>
-                <POSLayout onOpenWalkIn={() => setIsWalkInOpen(true)}>
+                <POSLayout onOpenWalkIn={handleOpenWalkIn}>
                   <OrdersPage />
                 </POSLayout>
               </ProtectedRoute>
@@ -198,7 +188,7 @@ export const App: React.FC = () => {
             path="/pos/orders"
             element={
               <ProtectedRoute allowedRoles={['cashier', 'admin']}>
-                <POSLayout onOpenWalkIn={() => setIsWalkInOpen(true)}>
+                <POSLayout onOpenWalkIn={handleOpenWalkIn}>
                   <OrdersPage />
                 </POSLayout>
               </ProtectedRoute>
@@ -208,7 +198,7 @@ export const App: React.FC = () => {
             path="/pos/dashboard"
             element={
               <ProtectedRoute allowedRoles={['cashier', 'admin']}>
-                <POSLayout onOpenWalkIn={() => setIsWalkInOpen(true)}>
+                <POSLayout onOpenWalkIn={handleOpenWalkIn}>
                   <DashboardPage />
                 </POSLayout>
               </ProtectedRoute>
@@ -227,31 +217,6 @@ export const App: React.FC = () => {
           {/* Catch-all Not Found Route */}
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
-
-        {/* Global Walk-in counter order modal */}
-        <WalkInOrderModal
-          open={isWalkInOpen}
-          onClose={() => setIsWalkInOpen(false)}
-          onOrderCreated={handleOrderCreated}
-        />
-
-        {/* Payment modal triggered from walk-in creation or order card */}
-        <PaymentModal
-          open={Boolean(activePaymentOrder)}
-          order={activePaymentOrder}
-          onClose={() => setActivePaymentOrder(null)}
-          onPaymentSuccess={(receipt) => {
-            setActivePaymentOrder(null);
-            setActiveReceipt(receipt);
-          }}
-        />
-
-        {/* Thermal Receipt modal */}
-        <ReceiptModal
-          open={Boolean(activeReceipt)}
-          receiptData={activeReceipt}
-          onClose={() => setActiveReceipt(null)}
-        />
       </SmartRouter>
     </CssVarsProvider>
   );

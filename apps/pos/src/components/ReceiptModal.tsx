@@ -9,9 +9,10 @@ import {
   Stack,
   Typography,
   Box,
-  Sheet
+  Sheet,
+  IconButton
 } from '@mui/joy';
-import { Printer, CheckCircle, Copy, Check } from 'lucide-react';
+import { Printer, CheckCircle, Copy, Check, X } from 'lucide-react';
 import { BAR_SETTINGS } from '../types';
 
 interface ReceiptModalProps {
@@ -44,12 +45,12 @@ Table:   ${receiptData.table_label || receiptData.table_number}
 Date:    ${receiptData.date} ${receiptData.time}
 Cashier: ${receiptData.cashier_name || 'Front Counter'}
 --------------------------------
-${receiptData.items?.map((it: any) => `${it.name} x ${it.quantity}  ₱${it.subtotal.toFixed(2)}`).join('\n')}
+${receiptData.items?.map((it: any) => `${it.name} x ${it.quantity}  ₱${Number(it.subtotal).toFixed(2)}`).join('\n')}
 --------------------------------
-TOTAL:          ₱${receiptData.total?.toFixed(2)}
+TOTAL:          ₱${Number(receiptData.total || 0).toFixed(2)}
 Payment:        ${receiptData.payment_method}
-Amount Received: ₱${receiptData.amount_received?.toFixed(2)}
-Change:         ₱${receiptData.change_amount?.toFixed(2)}
+Amount Received: ₱${Number(receiptData.amount_received || 0).toFixed(2)}
+Change:         ₱${Number(receiptData.change_amount || 0).toFixed(2)}
 ================================
 ${receiptData.footer_message || 'Thank you!'}
     `.trim();
@@ -64,23 +65,34 @@ ${receiptData.footer_message || 'Thank you!'}
       <ModalDialog
         variant="outlined"
         sx={{
-          maxWidth: 440,
+          maxWidth: 460,
           width: '95vw',
+          maxHeight: '92vh',
           bgcolor: 'background.surface',
           borderColor: 'divider',
           color: 'text.primary',
-          borderRadius: '20px',
-          p: 3
+          borderRadius: '24px',
+          p: 3,
+          boxShadow: 'xl',
+          overflowY: 'auto'
         }}
       >
-        <DialogTitle sx={{ color: 'text.primary', display: 'flex', alignItems: 'center', gap: 1 }}>
-          <CheckCircle size={22} color="#10b981" />
-          <span>Payment Successful — Receipt</span>
-        </DialogTitle>
-        <Divider sx={{ my: 1.5, borderColor: 'divider' }} />
+        <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 1 }}>
+          <Stack direction="row" spacing={1.2} alignItems="center">
+            <CheckCircle size={22} color="var(--joy-palette-success-500, #10b981)" />
+            <Typography level="title-lg" sx={{ fontWeight: 800, color: 'text.primary' }}>
+              Payment Settled
+            </Typography>
+          </Stack>
+          <IconButton size="sm" variant="plain" onClick={onClose} sx={{ color: 'text.secondary' }}>
+            <X size={18} />
+          </IconButton>
+        </Stack>
 
-        <DialogContent sx={{ maxHeight: '68vh', overflowY: 'auto' }}>
-          {/* Printable Receipt Paper Container */}
+        <Divider sx={{ mb: 2, borderColor: 'divider' }} />
+
+        <DialogContent sx={{ overflowY: 'auto', p: 0.5 }}>
+          {/* Printable Thermal Receipt Paper (Crisp 80mm ESC/POS Styling) */}
           <Sheet
             id="printable-receipt"
             variant="outlined"
@@ -89,27 +101,27 @@ ${receiptData.footer_message || 'Thank you!'}
               bgcolor: '#ffffff',
               color: '#000000',
               borderColor: '#e5e7eb',
-              borderRadius: '8px',
+              borderRadius: '12px',
               fontFamily: '"JetBrains Mono", Courier, monospace',
               fontSize: '13px',
-              lineHeight: 1.4,
-              boxShadow: '0 4px 16px rgba(0,0,0,0.2)'
+              lineHeight: 1.45,
+              boxShadow: '0 4px 16px rgba(0,0,0,0.12)'
             }}
           >
             {/* Header */}
             <Box sx={{ textAlign: 'center', mb: 2 }}>
-              <Typography level="title-md" sx={{ color: '#000', fontWeight: 800, letterSpacing: '0.05em' }}>
+              <Typography level="title-md" sx={{ color: '#000000', fontWeight: 900, letterSpacing: '0.05em' }}>
                 {receiptData.bar_name || BAR_SETTINGS.NAME}
               </Typography>
-              <Typography level="body-xs" sx={{ color: '#4b5563' }}>
+              <Typography level="body-xs" sx={{ color: '#4b5563', mt: 0.2 }}>
                 {receiptData.tagline || BAR_SETTINGS.TAGLINE}
               </Typography>
             </Box>
 
-            <Divider sx={{ my: 1, borderColor: '#000', borderStyle: 'dashed' }} />
+            <Divider sx={{ my: 1, borderColor: '#000000', borderStyle: 'dashed' }} />
 
-            {/* Meta */}
-            <Stack spacing={0.3} sx={{ my: 1, fontSize: '12px' }}>
+            {/* Meta Details */}
+            <Stack spacing={0.4} sx={{ my: 1, fontSize: '12px', color: '#111827' }}>
               <Stack direction="row" justifyContent="space-between">
                 <span>Order Ref:</span>
                 <strong>{receiptData.reference_no}</strong>
@@ -132,10 +144,10 @@ ${receiptData.footer_message || 'Thank you!'}
               </Stack>
             </Stack>
 
-            <Divider sx={{ my: 1, borderColor: '#000', borderStyle: 'dashed' }} />
+            <Divider sx={{ my: 1, borderColor: '#000000', borderStyle: 'dashed' }} />
 
             {/* Items */}
-            <Stack spacing={0.8} sx={{ my: 1.5 }}>
+            <Stack spacing={0.8} sx={{ my: 1.5, color: '#111827' }}>
               {receiptData.items?.map((item: any, idx: number) => (
                 <Stack key={idx} direction="row" justifyContent="space-between">
                   <span style={{ maxWidth: '65%' }}>
@@ -146,29 +158,29 @@ ${receiptData.footer_message || 'Thank you!'}
               ))}
             </Stack>
 
-            <Divider sx={{ my: 1, borderColor: '#000', borderStyle: 'dashed' }} />
+            <Divider sx={{ my: 1, borderColor: '#000000', borderStyle: 'dashed' }} />
 
             {/* Totals */}
-            <Stack spacing={0.4} sx={{ my: 1.5 }}>
+            <Stack spacing={0.5} sx={{ my: 1.5, color: '#111827' }}>
               <Stack direction="row" justifyContent="space-between">
                 <span>Subtotal:</span>
-                <span>₱{Number(receiptData.subtotal).toFixed(2)}</span>
+                <span>₱{Number(receiptData.subtotal || receiptData.total || 0).toFixed(2)}</span>
               </Stack>
-              <Stack direction="row" justifyContent="space-between" sx={{ fontSize: '15px', fontWeight: 'bold' }}>
+              <Stack direction="row" justifyContent="space-between" sx={{ fontSize: '15px', fontWeight: 900 }}>
                 <span>TOTAL:</span>
-                <span>₱{Number(receiptData.total).toFixed(2)}</span>
+                <span>₱{Number(receiptData.total || 0).toFixed(2)}</span>
               </Stack>
               <Stack direction="row" justifyContent="space-between">
-                <span>Payment:</span>
-                <span>{receiptData.payment_method}</span>
+                <span>Payment Method:</span>
+                <span style={{ fontWeight: 600 }}>{receiptData.payment_method}</span>
               </Stack>
               <Stack direction="row" justifyContent="space-between">
-                <span>Received:</span>
-                <span>₱{Number(receiptData.amount_received).toFixed(2)}</span>
+                <span>Amount Received:</span>
+                <span>₱{Number(receiptData.amount_received || 0).toFixed(2)}</span>
               </Stack>
-              <Stack direction="row" justifyContent="space-between" sx={{ fontWeight: 'bold' }}>
+              <Stack direction="row" justifyContent="space-between" sx={{ fontWeight: 800 }}>
                 <span>Change:</span>
-                <span>₱{Number(receiptData.change_amount).toFixed(2)}</span>
+                <span>₱{Number(receiptData.change_amount || 0).toFixed(2)}</span>
               </Stack>
               {receiptData.payment_reference && (
                 <Stack direction="row" justifyContent="space-between" sx={{ fontSize: '11px', color: '#4b5563' }}>
@@ -178,23 +190,23 @@ ${receiptData.footer_message || 'Thank you!'}
               )}
             </Stack>
 
-            <Divider sx={{ my: 1, borderColor: '#000', borderStyle: 'dashed' }} />
+            <Divider sx={{ my: 1, borderColor: '#000000', borderStyle: 'dashed' }} />
 
-            {/* Footer */}
-            <Box sx={{ textAlign: 'center', mt: 2, fontSize: '12px' }}>
-              <p style={{ margin: '4px 0' }}>{receiptData.footer_message || 'Thank you!'}</p>
-              <p style={{ margin: '2px 0', fontSize: '10px', color: '#6b7280' }}>*** CUSTOMER RECEIPT ***</p>
+            {/* Receipt Footer */}
+            <Box sx={{ textAlign: 'center', mt: 2, fontSize: '12px', color: '#374151' }}>
+              <p style={{ margin: '4px 0', fontWeight: 600 }}>{receiptData.footer_message || 'Thank you for your visit!'}</p>
+              <p style={{ margin: '2px 0', fontSize: '10px', color: '#6b7280' }}>*** OFFICIAL POS RECEIPT ***</p>
             </Box>
           </Sheet>
         </DialogContent>
 
-        {/* Action Buttons */}
-        <Stack direction="row" spacing={1.5} sx={{ mt: 2 }}>
+        {/* Modal Action Buttons */}
+        <Stack direction="row" spacing={1.5} sx={{ mt: 2.5 }}>
           <Button
             variant="outlined"
             onClick={handleCopyText}
             startDecorator={copied ? <Check size={16} /> : <Copy size={16} />}
-            sx={{ borderColor: '#3a4163', color: '#d4d4d8' }}
+            sx={{ borderColor: 'divider', color: 'text.secondary', borderRadius: '10px' }}
           >
             {copied ? 'Copied' : 'Copy'}
           </Button>
@@ -202,11 +214,22 @@ ${receiptData.footer_message || 'Thank you!'}
             variant="solid"
             onClick={handlePrint}
             startDecorator={<Printer size={18} />}
-            sx={{ bgcolor: '#e05624', color: '#fff', flex: 1, '&:hover': { bgcolor: '#c8461b' } }}
+            sx={{
+              flex: 1,
+              bgcolor: 'primary.solidBg',
+              color: '#fff',
+              fontWeight: 800,
+              borderRadius: '10px',
+              '&:hover': { bgcolor: 'primary.solidHoverBg' }
+            }}
           >
             Print Receipt
           </Button>
-          <Button variant="soft" onClick={onClose} sx={{ bgcolor: '#24283b', color: '#f4f4f5' }}>
+          <Button
+            variant="soft"
+            onClick={onClose}
+            sx={{ borderRadius: '10px', bgcolor: 'background.level2', color: 'text.primary' }}
+          >
             Done
           </Button>
         </Stack>
@@ -214,3 +237,5 @@ ${receiptData.footer_message || 'Thank you!'}
     </Modal>
   );
 };
+
+export default ReceiptModal;

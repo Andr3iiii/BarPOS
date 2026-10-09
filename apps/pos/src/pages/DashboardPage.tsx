@@ -69,10 +69,10 @@ export const DashboardPage: React.FC = () => {
     <Box>
       <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 3 }}>
         <Box>
-          <Typography level="h2" sx={{ color: '#fff', fontWeight: 800 }}>
+          <Typography level="h2" sx={{ color: 'text.primary', fontWeight: 800 }}>
             Operational Dashboard
           </Typography>
-          <Typography level="body-sm" sx={{ color: '#a1a1aa' }}>
+          <Typography level="body-sm" sx={{ color: 'text.secondary' }}>
             Real-time sales performance for today
           </Typography>
         </Box>
@@ -81,7 +81,7 @@ export const DashboardPage: React.FC = () => {
           variant="outlined"
           onClick={loadMetrics}
           startDecorator={<RefreshCw size={16} />}
-          sx={{ borderColor: '#2e3450', color: '#a1a1aa' }}
+          sx={{ borderColor: 'divider', color: 'text.secondary', borderRadius: '10px' }}
         >
           Refresh Metrics
         </Button>

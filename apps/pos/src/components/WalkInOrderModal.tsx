@@ -3,7 +3,6 @@ import {
   Modal,
   ModalDialog,
   DialogTitle,
-  DialogContent,
   Divider,
   Button,
   Stack,
@@ -15,11 +14,22 @@ import {
   Card,
   IconButton,
   Alert,
-  Chip
+  Chip,
+  Sheet
 } from '@mui/joy';
-import { Plus, Minus, Search, ShoppingBag, X } from 'lucide-react';
-import { Product, Order } from '../types';
-import { fetchProducts, createDirectOrder } from '../services/api';
+import {
+  Plus,
+  Minus,
+  Search,
+  ShoppingBag,
+  X,
+  Trash2,
+  Beer,
+  Sparkles,
+  CheckCircle2
+} from 'lucide-react';
+import { Product, Order, Category, BarTable } from '../types';
+import { fetchProducts, fetchCategories, fetchTables, createDirectOrder } from '../services/api';
 import { createIdempotencyKey } from '../../../../shared/idempotency';
 
 interface WalkInOrderModalProps {
@@ -30,7 +40,11 @@ interface WalkInOrderModalProps {
 
 export const WalkInOrderModal: React.FC<WalkInOrderModalProps> = ({ open, onClose, onOrderCreated }) => {
   const [products, setProducts] = useState<Product[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [tables, setTables] = useState<BarTable[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<number | 'ALL'>('ALL');
   const [tableNumber, setTableNumber] = useState<string>('BAR-1');
+  const [customerNotes, setCustomerNotes] = useState<string>('');
   const [search, setSearch] = useState<string>('');
   const [cart, setCart] = useState<Map<number, number>>(new Map());
   const [submitting, setSubmitting] = useState<boolean>(false);
@@ -39,11 +53,20 @@ export const WalkInOrderModal: React.FC<WalkInOrderModalProps> = ({ open, onClos
 
   useEffect(() => {
     if (open) {
-      fetchProducts()
-        .then((items) => setProducts(items.filter((p) => p.is_available)))
-        .catch(console.error);
+      Promise.all([
+        fetchProducts().catch(() => []),
+        fetchCategories().catch(() => []),
+        fetchTables(true).catch(() => [])
+      ]).then(([prods, cats, tbls]) => {
+        setProducts(prods.filter((p) => p.is_available));
+        setCategories(cats);
+        setTables(tbls);
+      });
+
       setCart(new Map());
       setSearch('');
+      setCustomerNotes('');
+      setSelectedCategory('ALL');
       setErrorMsg(null);
     }
   }, [open]);
@@ -62,22 +85,44 @@ export const WalkInOrderModal: React.FC<WalkInOrderModalProps> = ({ open, onClos
     });
   };
 
-  const filteredProducts = useMemo(() => {
-    return products.filter((p) => p.name.toLowerCase().includes(search.toLowerCase()));
-  }, [products, search]);
+  const removeCartItem = (productId: number) => {
+    setCart((prev) => {
+      const next = new Map(prev);
+      next.delete(productId);
+      return next;
+    });
+  };
 
-  const cartTotal = useMemo(() => {
-    let sum = 0;
+  const filteredProducts = useMemo(() => {
+    return products.filter((p) => {
+      const matchesSearch = p.name.toLowerCase().includes(search.toLowerCase());
+      const matchesCat = selectedCategory === 'ALL' || p.category_id === selectedCategory;
+      return matchesSearch && matchesCat;
+    });
+  }, [products, search, selectedCategory]);
+
+  const cartItemsList = useMemo(() => {
+    const list: Array<{ product: Product; quantity: number; subtotal: number }> = [];
     cart.forEach((qty, pid) => {
       const p = products.find((item) => item.id === pid);
-      if (p) sum += p.price * qty;
+      if (p) {
+        list.push({ product: p, quantity: qty, subtotal: p.price * qty });
+      }
     });
-    return sum;
+    return list;
   }, [cart, products]);
+
+  const cartTotal = useMemo(() => {
+    return cartItemsList.reduce((acc, it) => acc + it.subtotal, 0);
+  }, [cartItemsList]);
+
+  const totalItemCount = useMemo(() => {
+    return cartItemsList.reduce((acc, it) => acc + it.quantity, 0);
+  }, [cartItemsList]);
 
   const handleSubmit = async () => {
     if (cart.size === 0) {
-      setErrorMsg('Please select at least one item.');
+      setErrorMsg('Please select at least one drink/item from the menu.');
       return;
     }
 
@@ -92,7 +137,7 @@ export const WalkInOrderModal: React.FC<WalkInOrderModalProps> = ({ open, onClos
 
       const newOrder = await createDirectOrder({
         table_number: tableNumber,
-        customer_notes: 'Walk-in / Bar Counter Order',
+        customer_notes: customerNotes.trim() || 'Counter / Walk-in Order',
         idempotency_key: orderSubmissionKey.current || (orderSubmissionKey.current = createIdempotencyKey()),
         items
       });
@@ -112,163 +157,416 @@ export const WalkInOrderModal: React.FC<WalkInOrderModalProps> = ({ open, onClos
       <ModalDialog
         variant="outlined"
         sx={{
-          maxWidth: 750,
-          width: '95vw',
+          maxWidth: 1040,
+          width: '96vw',
+          maxHeight: '92vh',
+          height: '90vh',
           bgcolor: 'background.surface',
           borderColor: 'divider',
           color: 'text.primary',
-          borderRadius: '20px',
-          p: 3
+          borderRadius: '24px',
+          p: 0,
+          display: 'flex',
+          flexDirection: 'column',
+          overflow: 'hidden',
+          boxShadow: 'xl'
         }}
       >
-        <DialogTitle sx={{ color: 'text.primary', display: 'flex', justifyContent: 'space-between' }}>
-          <Stack direction="row" spacing={1} alignItems="center">
-            <ShoppingBag size={22} color="#e05624" />
-            <span>New Counter / Walk-in Order</span>
+        {/* Modal Header */}
+        <Box sx={{ p: 2.5, px: 3, borderBottom: '1px solid', borderColor: 'divider' }}>
+          <Stack direction="row" justifyContent="space-between" alignItems="center">
+            <Stack direction="row" spacing={1.5} alignItems="center">
+              <Box
+                sx={{
+                  p: 1,
+                  borderRadius: '10px',
+                  bgcolor: 'primary.softBg',
+                  color: 'primary.500',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}
+              >
+                <ShoppingBag size={20} />
+              </Box>
+              <Box>
+                <Typography level="title-lg" sx={{ fontWeight: 800, color: 'text.primary', lineHeight: 1.2 }}>
+                  Counter / Walk-in Register
+                </Typography>
+                <Typography level="body-xs" sx={{ color: 'text.tertiary' }}>
+                  Tap items to quickly build an order ticket
+                </Typography>
+              </Box>
+            </Stack>
+
+            <IconButton
+              size="sm"
+              variant="plain"
+              onClick={onClose}
+              sx={{ color: 'text.secondary', '&:hover': { bgcolor: 'background.level1' } }}
+            >
+              <X size={20} />
+            </IconButton>
           </Stack>
-          <IconButton size="sm" variant="plain" onClick={onClose} sx={{ color: 'text.secondary' }}>
-            <X size={18} />
-          </IconButton>
-        </DialogTitle>
-        <Divider sx={{ my: 1.5, borderColor: 'divider' }} />
+        </Box>
 
-        <DialogContent sx={{ maxHeight: '72vh', overflowY: 'auto' }}>
-          {errorMsg && (
-            <Alert color="danger" sx={{ mb: 2 }}>
-              {errorMsg}
-            </Alert>
-          )}
+        {errorMsg && (
+          <Alert color="danger" sx={{ mx: 3, mt: 2 }}>
+            {errorMsg}
+          </Alert>
+        )}
 
-          {/* Table select & search bar */}
-          <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} sx={{ mb: 2 }}>
-            <Box sx={{ minWidth: 180 }}>
-              <Typography level="body-xs" sx={{ color: 'text.secondary', mb: 0.5 }}>
-                Location / Table:
+        {/* Modal Body: 2-Panel POS Layout */}
+        <Box sx={{ flex: 1, display: 'flex', flexDirection: { xs: 'column', md: 'row' }, overflow: 'hidden' }}>
+          {/* LEFT PANEL: Menu Catalog (60%) */}
+          <Box
+            sx={{
+              flex: { xs: 1, md: 3 },
+              borderRight: { xs: 'none', md: '1px solid' },
+              borderBottom: { xs: '1px solid', md: 'none' },
+              borderColor: 'divider',
+              display: 'flex',
+              flexDirection: 'column',
+              p: 2.5,
+              overflow: 'hidden'
+            }}
+          >
+            {/* Search & Category Pills */}
+            <Stack spacing={1.5} sx={{ mb: 2 }}>
+              <Input
+                size="md"
+                placeholder="Search menu items..."
+                startDecorator={<Search size={18} color="var(--joy-palette-text-tertiary, #71717a)" />}
+                endDecorator={
+                  search ? (
+                    <IconButton size="sm" variant="plain" onClick={() => setSearch('')} sx={{ color: 'text.secondary' }}>
+                      <X size={14} />
+                    </IconButton>
+                  ) : null
+                }
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                sx={{
+                  bgcolor: 'background.level1',
+                  borderColor: 'divider',
+                  color: 'text.primary',
+                  borderRadius: '10px'
+                }}
+              />
+
+              {/* Category Pills */}
+              <Stack direction="row" spacing={0.8} sx={{ overflowX: 'auto', pb: 0.5 }}>
+                <Chip
+                  variant={selectedCategory === 'ALL' ? 'solid' : 'outlined'}
+                  color="primary"
+                  onClick={() => setSelectedCategory('ALL')}
+                  sx={{
+                    cursor: 'pointer',
+                    fontWeight: 600,
+                    fontSize: '12px',
+                    borderRadius: '8px',
+                    bgcolor: selectedCategory === 'ALL' ? 'primary.solidBg' : 'background.level1',
+                    borderColor: 'divider',
+                    color: selectedCategory === 'ALL' ? '#fff' : 'text.secondary'
+                  }}
+                >
+                  All Items ({products.length})
+                </Chip>
+                {categories.map((c) => (
+                  <Chip
+                    key={c.id}
+                    variant={selectedCategory === c.id ? 'solid' : 'outlined'}
+                    color="primary"
+                    onClick={() => setSelectedCategory(c.id)}
+                    sx={{
+                      cursor: 'pointer',
+                      fontWeight: 600,
+                      fontSize: '12px',
+                      borderRadius: '8px',
+                      bgcolor: selectedCategory === c.id ? 'primary.solidBg' : 'background.level1',
+                      borderColor: 'divider',
+                      color: selectedCategory === c.id ? '#fff' : 'text.secondary',
+                      whiteSpace: 'nowrap'
+                    }}
+                  >
+                    {c.name}
+                  </Chip>
+                ))}
+              </Stack>
+            </Stack>
+
+            {/* Products Grid */}
+            <Box
+              sx={{
+                flex: 1,
+                overflowY: 'auto',
+                display: 'grid',
+                gridTemplateColumns: { xs: '1fr 1fr', lg: 'repeat(3, 1fr)' },
+                gap: 1.5,
+                pr: 0.5,
+                alignContent: 'start'
+              }}
+            >
+              {filteredProducts.map((p) => {
+                const qty = cart.get(p.id) || 0;
+                return (
+                  <Card
+                    key={p.id}
+                    variant="outlined"
+                    onClick={() => updateCart(p.id, 1)}
+                    sx={{
+                      cursor: 'pointer',
+                      p: 1.8,
+                      borderRadius: '14px',
+                      bgcolor: qty > 0 ? 'background.surface' : 'background.level1',
+                      borderColor: qty > 0 ? 'primary.500' : 'divider',
+                      boxShadow: qty > 0 ? '0 2px 10px rgba(224, 86, 36, 0.12)' : 'none',
+                      transition: 'all 0.15s ease',
+                      position: 'relative',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      justifyContent: 'space-between',
+                      minHeight: 100,
+                      '&:hover': {
+                        borderColor: 'primary.400',
+                        transform: 'translateY(-2px)'
+                      }
+                    }}
+                  >
+                    <Box>
+                      <Typography
+                        level="title-sm"
+                        sx={{
+                          color: 'text.primary',
+                          fontWeight: 700,
+                          lineHeight: 1.3,
+                          mb: 0.5
+                        }}
+                      >
+                        {p.name}
+                      </Typography>
+                    </Box>
+
+                    <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mt: 1 }}>
+                      <Typography level="title-md" sx={{ color: 'primary.500', fontWeight: 800 }}>
+                        ₱{Number(p.price).toFixed(2)}
+                      </Typography>
+
+                      {qty > 0 ? (
+                        <Chip
+                          size="sm"
+                          variant="solid"
+                          color="primary"
+                          sx={{ fontWeight: 800, fontSize: '11px', px: 1 }}
+                        >
+                          {qty} in ticket
+                        </Chip>
+                      ) : (
+                        <Box
+                          sx={{
+                            width: 26,
+                            height: 26,
+                            borderRadius: '8px',
+                            bgcolor: 'background.level2',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            color: 'text.secondary'
+                          }}
+                        >
+                          <Plus size={15} />
+                        </Box>
+                      )}
+                    </Stack>
+                  </Card>
+                );
+              })}
+            </Box>
+          </Box>
+
+          {/* RIGHT PANEL: Current Ticket / Order Summary (40%) */}
+          <Box
+            sx={{
+              flex: { xs: 1, md: 2 },
+              bgcolor: 'background.surface',
+              display: 'flex',
+              flexDirection: 'column',
+              p: 2.5,
+              overflow: 'hidden'
+            }}
+          >
+            {/* Ticket Header & Destination Selector */}
+            <Box sx={{ mb: 2 }}>
+              <Typography level="body-xs" sx={{ color: 'text.secondary', fontWeight: 600, textTransform: 'uppercase', mb: 0.8 }}>
+                Order Destination
               </Typography>
               <Select
                 value={tableNumber}
                 onChange={(_, val) => val && setTableNumber(val)}
-                sx={{ bgcolor: 'background.level1', borderColor: 'divider', color: 'text.primary' }}
+                sx={{
+                  bgcolor: 'background.level1',
+                  borderColor: 'divider',
+                  color: 'text.primary',
+                  borderRadius: '10px',
+                  fontWeight: 600
+                }}
               >
-                <Option value="BAR-1">Bar Counter 1</Option>
-                <Option value="BAR-2">Bar Counter 2</Option>
-                <Option value="1">Table 1</Option>
-                <Option value="2">Table 2</Option>
-                <Option value="3">Table 3</Option>
-                <Option value="4">Table 4</Option>
-                <Option value="5">Table 5</Option>
-                <Option value="6">Table 6</Option>
+                <Option value="BAR-1">🍸 Bar Counter 1 (Walk-in)</Option>
+                <Option value="BAR-2">🍸 Bar Counter 2 (Walk-in)</Option>
+                <Option value="TAKE-OUT">🛍️ Take-Out / To-Go</Option>
+                {tables.map((t) => (
+                  <Option key={t.id} value={t.table_number}>
+                    Table {t.table_number} ({t.label})
+                  </Option>
+                ))}
               </Select>
             </Box>
 
-            <Box sx={{ flex: 1 }}>
-              <Typography level="body-xs" sx={{ color: 'text.secondary', mb: 0.5 }}>
-                Search Menu:
-              </Typography>
+            <Divider sx={{ mb: 2, borderColor: 'divider' }} />
+
+            {/* Ticket Items List */}
+            <Box sx={{ flex: 1, overflowY: 'auto', pr: 0.5, mb: 2 }}>
+              {cartItemsList.length === 0 ? (
+                <Box sx={{ textAlign: 'center', py: 8, color: 'text.tertiary' }}>
+                  <ShoppingBag size={40} style={{ margin: '0 auto 12px', opacity: 0.5 }} />
+                  <Typography level="body-sm" sx={{ color: 'text.secondary', fontWeight: 600 }}>
+                    Order Ticket is Empty
+                  </Typography>
+                  <Typography level="body-xs" sx={{ color: 'text.tertiary', mt: 0.5 }}>
+                    Select drinks from the menu catalog on the left to add items.
+                  </Typography>
+                </Box>
+              ) : (
+                <Stack spacing={1.2}>
+                  {cartItemsList.map(({ product, quantity, subtotal }) => (
+                    <Box
+                      key={product.id}
+                      sx={{
+                        p: 1.2,
+                        borderRadius: '10px',
+                        bgcolor: 'background.level1',
+                        border: '1px solid',
+                        borderColor: 'divider'
+                      }}
+                    >
+                      <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 0.8 }}>
+                        <Typography level="title-sm" sx={{ color: 'text.primary', fontWeight: 700 }}>
+                          {product.name}
+                        </Typography>
+                        <IconButton
+                          size="sm"
+                          variant="plain"
+                          color="danger"
+                          onClick={() => removeCartItem(product.id)}
+                          sx={{ p: 0.2 }}
+                        >
+                          <Trash2 size={14} />
+                        </IconButton>
+                      </Stack>
+
+                      <Stack direction="row" justifyContent="space-between" alignItems="center">
+                        <Stack direction="row" alignItems="center" spacing={0.6}>
+                          <IconButton
+                            size="sm"
+                            variant="outlined"
+                            onClick={() => updateCart(product.id, -1)}
+                            sx={{ borderRadius: '6px', width: 26, height: 26, minHeight: 26, p: 0 }}
+                          >
+                            <Minus size={13} />
+                          </IconButton>
+                          <Typography level="body-sm" sx={{ minWidth: 24, textAlign: 'center', fontWeight: 700 }}>
+                            {quantity}
+                          </Typography>
+                          <IconButton
+                            size="sm"
+                            variant="outlined"
+                            onClick={() => updateCart(product.id, 1)}
+                            sx={{ borderRadius: '6px', width: 26, height: 26, minHeight: 26, p: 0 }}
+                          >
+                            <Plus size={13} />
+                          </IconButton>
+                        </Stack>
+
+                        <Typography level="title-sm" sx={{ color: 'primary.500', fontWeight: 700 }}>
+                          ₱{subtotal.toFixed(2)}
+                        </Typography>
+                      </Stack>
+                    </Box>
+                  ))}
+                </Stack>
+              )}
+            </Box>
+
+            {/* Bartender / Order Notes */}
+            <Box sx={{ mb: 2 }}>
               <Input
-                placeholder="Search items..."
-                startDecorator={<Search size={16} color="#71717a" />}
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                sx={{ bgcolor: 'background.level1', borderColor: 'divider', color: 'text.primary' }}
+                size="sm"
+                placeholder="Order notes (e.g. Extra lime, less sweet)..."
+                value={customerNotes}
+                onChange={(e) => setCustomerNotes(e.target.value)}
+                sx={{
+                  bgcolor: 'background.level1',
+                  borderColor: 'divider',
+                  color: 'text.primary',
+                  borderRadius: '8px'
+                }}
               />
             </Box>
-          </Stack>
 
-          {/* Product Items Selection Grid */}
-          <Box
-            sx={{
-              display: 'grid',
-              gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' },
-              gap: 1.5,
-              maxHeight: 300,
-              overflowY: 'auto',
-              p: 0.5
-            }}
-          >
-            {filteredProducts.map((p) => {
-              const qty = cart.get(p.id) || 0;
-              return (
-                <Card
-                  key={p.id}
+            {/* Ticket Totals & Submission */}
+            <Box sx={{ pt: 2, borderTop: '1px solid', borderColor: 'divider' }}>
+              <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 0.5 }}>
+                <Typography level="body-xs" sx={{ color: 'text.secondary' }}>
+                  Items Selected:
+                </Typography>
+                <Typography level="body-sm" sx={{ fontWeight: 600, color: 'text.primary' }}>
+                  {totalItemCount} {totalItemCount === 1 ? 'item' : 'items'}
+                </Typography>
+              </Stack>
+
+              <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
+                <Typography level="title-md" sx={{ fontWeight: 800, color: 'text.primary' }}>
+                  Total Bill
+                </Typography>
+                <Typography level="h2" sx={{ fontWeight: 900, color: 'primary.500' }}>
+                  ₱{cartTotal.toFixed(2)}
+                </Typography>
+              </Stack>
+
+              <Stack direction="row" spacing={1.5}>
+                <Button
                   variant="outlined"
+                  onClick={onClose}
+                  sx={{ borderColor: 'divider', color: 'text.secondary', borderRadius: '10px' }}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  variant="solid"
+                  loading={submitting}
+                  disabled={cart.size === 0}
+                  onClick={handleSubmit}
+                  startDecorator={<CheckCircle2 size={18} />}
                   sx={{
-                    p: 1.5,
-                    bgcolor: 'background.level1',
-                    borderColor: qty > 0 ? 'primary.500' : 'divider',
-                    display: 'flex',
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    alignItems: 'center'
+                    flex: 1,
+                    bgcolor: 'primary.solidBg',
+                    color: '#fff',
+                    fontWeight: 800,
+                    borderRadius: '10px',
+                    py: 1.2,
+                    fontSize: '1rem',
+                    '&:hover': { bgcolor: 'primary.solidHoverBg' }
                   }}
                 >
-                  <Box sx={{ pr: 1 }}>
-                    <Typography level="title-sm" sx={{ color: 'text.primary' }}>
-                      {p.name}
-                    </Typography>
-                    <Typography level="body-xs" sx={{ color: 'primary.500', fontWeight: 600 }}>
-                      ₱{Number(p.price).toFixed(2)}
-                    </Typography>
-                  </Box>
-
-                  <Stack direction="row" alignItems="center" spacing={0.8}>
-                    {qty > 0 && (
-                      <IconButton
-                        size="sm"
-                        variant="soft"
-                        onClick={() => updateCart(p.id, -1)}
-                        sx={{ bgcolor: 'background.level2', color: 'primary.500' }}
-                      >
-                        <Minus size={14} />
-                      </IconButton>
-                    )}
-                    {qty > 0 && (
-                      <Typography level="title-sm" sx={{ minWidth: 18, textAlign: 'center', color: 'text.primary' }}>
-                        {qty}
-                      </Typography>
-                    )}
-                    <IconButton
-                      size="sm"
-                      variant="solid"
-                      onClick={() => updateCart(p.id, 1)}
-                      sx={{ bgcolor: 'primary.solidBg', color: '#fff', '&:hover': { bgcolor: 'primary.solidHoverBg' } }}
-                    >
-                      <Plus size={14} />
-                    </IconButton>
-                  </Stack>
-                </Card>
-              );
-            })}
+                  Proceed to Payment (₱{cartTotal.toFixed(2)})
+                </Button>
+              </Stack>
+            </Box>
           </Box>
-
-          {/* Cart Bar */}
-          <Box sx={{ mt: 2.5, p: 2, bgcolor: 'background.level1', borderRadius: '12px', border: '1px solid', borderColor: 'divider' }}>
-            <Stack direction="row" justifyContent="space-between" alignItems="center">
-              <Typography level="title-md" sx={{ color: 'text.primary', fontWeight: 600 }}>
-                Total Selected: {cart.size} item(s)
-              </Typography>
-              <Typography level="h3" sx={{ color: 'primary.500', fontWeight: 800 }}>
-                ₱{cartTotal.toFixed(2)}
-              </Typography>
-            </Stack>
-          </Box>
-        </DialogContent>
-
-        <Stack direction="row" spacing={1.5} sx={{ mt: 2 }}>
-          <Button variant="outlined" onClick={onClose} sx={{ borderColor: 'divider', color: 'text.secondary' }}>
-            Cancel
-          </Button>
-          <Button
-            variant="solid"
-            loading={submitting}
-            disabled={cart.size === 0}
-            onClick={handleSubmit}
-            sx={{ flex: 1, bgcolor: 'primary.solidBg', color: '#fff', '&:hover': { bgcolor: 'primary.solidHoverBg' } }}
-          >
-            Create & Proceed to Payment
-          </Button>
-        </Stack>
+        </Box>
       </ModalDialog>
     </Modal>
   );
 };
+
+export default WalkInOrderModal;
