@@ -37,17 +37,15 @@ export const PRODUCT_IMAGES: Record<string, string> = {
 };
 
 export async function seedProductImages() {
-  console.log('📸 Checking product images...');
-  const entries = Object.entries(PRODUCT_IMAGES);
-  await Promise.all(
-    entries.map(([name, url]) =>
-      query(
-        'UPDATE products SET image_url = $1 WHERE name ILIKE $2 AND (image_url IS NULL OR image_url != $1)',
-        [url, `%${name}%`]
-      )
-    )
-  );
-  console.log('✅ Product images verified and updated.');
+  console.log('📸 Updating product images...');
+  for (const [name, url] of Object.entries(PRODUCT_IMAGES)) {
+    const res = await query(
+      'UPDATE products SET image_url = $1 WHERE name ILIKE $2',
+      [url, `%${name}%`]
+    );
+    console.log(`Updated ${name} -> ${res.rowCount} row(s)`);
+  }
+  console.log('✅ All product images populated successfully!');
 }
 
 if (require.main === module) {

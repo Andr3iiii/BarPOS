@@ -13,31 +13,21 @@ import {
   Stack,
   Chip
 } from '@mui/joy';
-import { Lock, User, Beer, Shield } from 'lucide-react';
+import { Lock, User, Sparkles, Beer } from 'lucide-react';
 import { BAR_SETTINGS } from '../types';
-import { clearSessionMessage, getSessionMessage, loginUser, getStoredUser, getStoredToken } from '../services/api';
+import { clearSessionMessage, getSessionMessage, loginCashier } from '../services/api';
 import { ThemeToggle } from '../components/ThemeToggle';
 
 export const LoginPage: React.FC = () => {
   const navigate = useNavigate();
-  const [username, setUsername] = useState<string>('admin');
-  const [password, setPassword] = useState<string>('admin123');
+  const [username, setUsername] = useState<string>('cashier');
+  const [password, setPassword] = useState<string>('cashier123');
   const [loading, setLoading] = useState<boolean>(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(() => getSessionMessage());
 
   useEffect(() => {
     clearSessionMessage();
-    // Auto-redirect if already authenticated
-    const token = getStoredToken();
-    const user = getStoredUser();
-    if (token && user) {
-      if (user.role === 'admin') {
-        navigate('/admin', { replace: true });
-      } else {
-        navigate('/pos', { replace: true });
-      }
-    }
-  }, [navigate]);
+  }, []);
 
   const handleLogin = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
@@ -49,12 +39,8 @@ export const LoginPage: React.FC = () => {
     try {
       setLoading(true);
       setErrorMsg(null);
-      const data = await loginUser(username, password);
-      if (data.user.role === 'admin') {
-        navigate('/admin', { replace: true });
-      } else {
-        navigate('/pos', { replace: true });
-      }
+      await loginCashier(username, password);
+      navigate('/orders');
     } catch (err: any) {
       setErrorMsg(err.message || 'Login failed. Please check credentials.');
     } finally {
@@ -86,7 +72,7 @@ export const LoginPage: React.FC = () => {
       <Card
         variant="outlined"
         sx={{
-          maxWidth: 440,
+          maxWidth: 420,
           width: '100%',
           bgcolor: 'background.surface',
           borderColor: 'divider',
@@ -116,7 +102,7 @@ export const LoginPage: React.FC = () => {
               {BAR_SETTINGS.NAME}
             </Typography>
             <Typography level="body-sm" sx={{ color: 'primary.500', fontWeight: 600 }}>
-              Admin Portal & POS Terminal Access
+              POS Terminal Login
             </Typography>
           </Box>
 
@@ -164,7 +150,7 @@ export const LoginPage: React.FC = () => {
                   '&:hover': { bgcolor: 'primary.solidHoverBg' }
                 }}
               >
-                Sign In to System
+                Sign In to Terminal
               </Button>
             </Stack>
           </form>
@@ -172,35 +158,32 @@ export const LoginPage: React.FC = () => {
           {/* Quick-Fill Helper for Cashier / Admin */}
           <Box sx={{ mt: 3.5, pt: 2.5, borderTop: '1px solid', borderColor: 'divider', textAlign: 'center' }}>
             <Typography level="body-xs" sx={{ color: 'text.tertiary', mb: 1 }}>
-              Quick test credentials:
+              Quick test accounts:
             </Typography>
             <Stack direction="row" spacing={1} justifyContent="center">
-              <Chip
-                variant="outlined"
-                onClick={() => fillCredentials('admin', 'admin123')}
-                startDecorator={<Shield size={14} />}
-                sx={{
-                  cursor: 'pointer',
-                  borderColor: 'divider',
-                  color: 'primary.500',
-                  fontWeight: 600,
-                  '&:hover': { bgcolor: 'background.level1' }
-                }}
-              >
-                Admin (admin123)
-              </Chip>
               <Chip
                 variant="outlined"
                 onClick={() => fillCredentials('cashier', 'cashier123')}
                 sx={{
                   cursor: 'pointer',
                   borderColor: 'divider',
-                  color: 'text.secondary',
-                  fontWeight: 600,
+                  color: 'primary.500',
                   '&:hover': { bgcolor: 'background.level1' }
                 }}
               >
                 Cashier (cashier123)
+              </Chip>
+              <Chip
+                variant="outlined"
+                onClick={() => fillCredentials('admin', 'admin123')}
+                sx={{
+                  cursor: 'pointer',
+                  borderColor: 'divider',
+                  color: 'text.secondary',
+                  '&:hover': { bgcolor: 'background.level1' }
+                }}
+              >
+                Admin (admin123)
               </Chip>
             </Stack>
           </Box>
