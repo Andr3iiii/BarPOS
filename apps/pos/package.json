@@ -50,8 +50,8 @@
     },
     "publish": {
       "provider": "github",
-      "owner": "barpos",
-      "repo": "bar-pos"
+      "owner": "Andr3iiii",
+      "repo": "BarPOS"
     }
   },
   "dependencies": {

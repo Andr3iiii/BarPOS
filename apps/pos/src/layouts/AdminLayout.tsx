@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import {
   Box,
@@ -20,16 +20,20 @@ import {
   LogOut,
   Beer,
   ExternalLink,
-  Receipt
+  Receipt,
+  Download
 } from 'lucide-react';
 import { BAR_SETTINGS } from '../types';
 import { getStoredUser, clearSession } from '../services/api';
 import { ThemeToggle } from '../components/ThemeToggle';
+import { UpdateModal } from '../components/UpdateModal';
 
 export const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const user = getStoredUser();
+
+  const [updateModalOpen, setUpdateModalOpen] = useState<boolean>(false);
 
   const handleLogout = () => {
     clearSession();
@@ -134,11 +138,28 @@ export const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children 
           sx={{
             borderRadius: '12px',
             justifyContent: 'flex-start',
-            mb: 2,
+            mb: 1.5,
             fontWeight: 700
           }}
         >
           Open POS Terminal
+        </Button>
+
+        {/* Check Updates Button */}
+        <Button
+          size="sm"
+          variant="plain"
+          onClick={() => setUpdateModalOpen(true)}
+          startDecorator={<Download size={16} />}
+          sx={{
+            borderRadius: '12px',
+            justifyContent: 'flex-start',
+            mb: 2,
+            color: 'text.secondary',
+            '&:hover': { bgcolor: 'background.level1', color: 'text.primary' }
+          }}
+        >
+          Check Updates
         </Button>
 
         {/* User Info & Logout */}
@@ -167,6 +188,9 @@ export const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children 
 
       {/* Main Content Area */}
       <Box sx={{ flex: 1, p: 4, maxWidth: 1400, overflowY: 'auto' }}>{children}</Box>
+
+      {/* Auto-updater Modal Popup */}
+      <UpdateModal open={updateModalOpen} onClose={() => setUpdateModalOpen(false)} />
     </Box>
   );
 };

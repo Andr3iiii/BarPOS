@@ -34,6 +34,7 @@ import {
 import { BAR_SETTINGS } from '../types';
 import { getStoredUser, clearSession } from '../services/api';
 import { ThemeToggle } from '../components/ThemeToggle';
+import { UpdateModal } from '../components/UpdateModal';
 
 interface POSLayoutProps {
   children: React.ReactNode;
@@ -330,139 +331,7 @@ export const POSLayout: React.FC<POSLayoutProps> = ({
       <Box sx={{ flex: 1, p: 3, maxWidth: 1600, width: '100%', mx: 'auto' }}>{children}</Box>
 
       {/* Auto-updater Modal Popup */}
-      <Modal open={updateModalOpen} onClose={() => setUpdateModalOpen(false)}>
-        <ModalDialog
-          variant="outlined"
-          sx={{
-            maxWidth: 480,
-            width: '90%',
-            bgcolor: 'background.surface',
-            borderColor: updateReady ? '#e05624' : 'divider',
-            color: 'text.primary',
-            borderRadius: '20px',
-            boxShadow: 'lg',
-            p: 3
-          }}
-        >
-          <Stack direction="row" spacing={1.5} alignItems="center" sx={{ mb: 1 }}>
-            <Box
-              sx={{
-                p: 1.2,
-                borderRadius: '12px',
-                bgcolor: updateReady ? 'rgba(255, 122, 69, 0.15)' : 'rgba(99, 102, 241, 0.15)',
-                color: updateReady ? '#ff7a45' : '#818cf8',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center'
-              }}
-            >
-              {updateReady ? <Sparkles size={24} /> : <Download size={24} />}
-            </Box>
-            <Box>
-              <Typography level="title-lg" sx={{ color: '#fff', fontWeight: 700 }}>
-                {updateReady ? 'Software Update Ready' : 'Application Updates'}
-              </Typography>
-              <Typography level="body-xs" sx={{ color: '#8f95b2' }}>
-                Current Version: v{currentVersion}
-              </Typography>
-            </Box>
-          </Stack>
-
-          <DialogContent>
-            {updateReady ? (
-              <Box sx={{ my: 1.5 }}>
-                <Chip variant="soft" color="warning" size="md" sx={{ mb: 1.5, fontWeight: 700 }}>
-                  NEW VERSION: v{newVersion || 'LATEST'}
-                </Chip>
-                <Typography level="body-sm" sx={{ color: '#d4d4d8', lineHeight: 1.6 }}>
-                  A new version of <strong>BarPOS Terminal</strong> has been downloaded and is ready to install.
-                  Would you like to restart the application now to apply the update, or continue working and update later?
-                </Typography>
-                <Alert
-                  variant="soft"
-                  color="warning"
-                  sx={{ mt: 2, bgcolor: 'rgba(255, 122, 69, 0.1)', borderColor: 'rgba(255, 122, 69, 0.25)' }}
-                >
-                  <Typography level="body-xs" sx={{ color: '#f4f4f5' }}>
-                    💡 Restarting takes just a few seconds. All database transactions and open tables remain safely preserved.
-                  </Typography>
-                </Alert>
-              </Box>
-            ) : (
-              <Box sx={{ my: 1.5 }}>
-                <Typography level="body-sm" sx={{ color: '#a1a1aa' }}>
-                  {checkStatusMessage || `Your BarPOS Terminal is running version v${currentVersion}.`}
-                </Typography>
-                <Alert variant="soft" color="neutral" sx={{ mt: 2, bgcolor: '#191c2b', borderColor: '#2c314a' }}>
-                  <Typography level="body-xs" sx={{ color: '#a1a1aa' }}>
-                    Updates are automatically verified against official releases and safely installed.
-                  </Typography>
-                </Alert>
-              </Box>
-            )}
-          </DialogContent>
-
-          <Stack direction="row" spacing={1.5} justifyContent="flex-end" sx={{ mt: 3 }}>
-            <Button
-              variant="outlined"
-              onClick={() => setUpdateModalOpen(false)}
-              sx={{ borderColor: '#3a4163', color: '#a1a1aa', borderRadius: '12px', '&:hover': { bgcolor: '#1c2032', color: '#fff' } }}
-            >
-              {updateReady ? 'Update Later' : 'Close'}
-            </Button>
-
-            {updateReady ? (
-              <Button
-                variant="solid"
-                onClick={() => {
-                  if (typeof window !== 'undefined' && window.electronAPI?.restartAppForUpdate) {
-                    window.electronAPI.restartAppForUpdate();
-                  } else {
-                    alert('Restarting application to apply update...');
-                  }
-                }}
-                startDecorator={<Sparkles size={16} />}
-                sx={{
-                  bgcolor: '#e05624',
-                  color: '#fff',
-                  fontWeight: 700,
-                  borderRadius: '12px',
-                  '&:hover': { bgcolor: '#c8461b' }
-                }}
-              >
-                Update Now
-              </Button>
-            ) : (
-              <Button
-                variant="solid"
-                loading={isChecking}
-                onClick={async () => {
-                  setIsChecking(true);
-                  if (typeof window !== 'undefined' && window.electronAPI?.checkForUpdates) {
-                    try {
-                      const res = await window.electronAPI.checkForUpdates();
-                      if (res.available) {
-                        setCheckStatusMessage(`Found update v${res.version || ''}! Downloading in background...`);
-                      } else {
-                        setCheckStatusMessage(res.message || `BarPOS is up-to-date (v${currentVersion}).`);
-                      }
-                    } catch (e: any) {
-                      setCheckStatusMessage(e.message || 'Unable to check for updates.');
-                    }
-                  } else {
-                    setCheckStatusMessage('Running in browser development mode. Updates apply to packaged desktop app.');
-                  }
-                  setIsChecking(false);
-                }}
-                startDecorator={<RefreshCw size={16} />}
-                sx={{ bgcolor: '#e05624', color: '#fff', fontWeight: 600, borderRadius: '12px', '&:hover': { bgcolor: '#c8461b' } }}
-              >
-                Check for Updates
-              </Button>
-            )}
-          </Stack>
-        </ModalDialog>
-      </Modal>
+      <UpdateModal open={updateModalOpen} onClose={() => setUpdateModalOpen(false)} />
     </Box>
   );
 };
