@@ -23,6 +23,7 @@ import {
   LayoutDashboard,
   LogOut,
   User,
+  Shield,
   Clock,
   PlusCircle,
   Bell,
@@ -128,15 +129,42 @@ export const POSLayout: React.FC<POSLayoutProps> = ({
             <Stack direction="row" spacing={1} sx={{ ml: 4 }}>
               <Button
                 size="sm"
-                variant={location.pathname === '/' || location.pathname === '/orders' ? 'solid' : 'plain'}
-                onClick={() => navigate('/orders')}
+                variant={
+                  location.pathname === '/' ||
+                  location.pathname === '/pos' ||
+                  location.pathname === '/pos/orders' ||
+                  location.pathname === '/orders'
+                    ? 'solid'
+                    : 'plain'
+                }
+                onClick={() => navigate('/pos/orders')}
                 startDecorator={<Receipt size={17} />}
                 sx={{
-                  bgcolor: location.pathname === '/' || location.pathname === '/orders' ? 'primary.solidBg' : 'transparent',
-                  color: location.pathname === '/' || location.pathname === '/orders' ? '#fff' : 'text.secondary',
+                  bgcolor:
+                    location.pathname === '/' ||
+                    location.pathname === '/pos' ||
+                    location.pathname === '/pos/orders' ||
+                    location.pathname === '/orders'
+                      ? 'primary.solidBg'
+                      : 'transparent',
+                  color:
+                    location.pathname === '/' ||
+                    location.pathname === '/pos' ||
+                    location.pathname === '/pos/orders' ||
+                    location.pathname === '/orders'
+                      ? '#fff'
+                      : 'text.secondary',
                   fontWeight: 600,
                   borderRadius: '10px',
-                  '&:hover': { bgcolor: location.pathname === '/' || location.pathname === '/orders' ? 'primary.solidHoverBg' : 'background.level1' }
+                  '&:hover': {
+                    bgcolor:
+                      location.pathname === '/' ||
+                      location.pathname === '/pos' ||
+                      location.pathname === '/pos/orders' ||
+                      location.pathname === '/orders'
+                        ? 'primary.solidHoverBg'
+                        : 'background.level1'
+                  }
                 }}
               >
                 Orders
@@ -144,19 +172,53 @@ export const POSLayout: React.FC<POSLayoutProps> = ({
 
               <Button
                 size="sm"
-                variant={location.pathname === '/dashboard' ? 'solid' : 'plain'}
-                onClick={() => navigate('/dashboard')}
+                variant={
+                  location.pathname === '/pos/dashboard' || location.pathname === '/dashboard'
+                    ? 'solid'
+                    : 'plain'
+                }
+                onClick={() => navigate('/pos/dashboard')}
                 startDecorator={<LayoutDashboard size={17} />}
                 sx={{
-                  bgcolor: location.pathname === '/dashboard' ? 'primary.solidBg' : 'transparent',
-                  color: location.pathname === '/dashboard' ? '#fff' : 'text.secondary',
+                  bgcolor:
+                    location.pathname === '/pos/dashboard' || location.pathname === '/dashboard'
+                      ? 'primary.solidBg'
+                      : 'transparent',
+                  color:
+                    location.pathname === '/pos/dashboard' || location.pathname === '/dashboard'
+                      ? '#fff'
+                      : 'text.secondary',
                   fontWeight: 600,
                   borderRadius: '10px',
-                  '&:hover': { bgcolor: location.pathname === '/dashboard' ? 'primary.solidHoverBg' : 'background.level1' }
+                  '&:hover': {
+                    bgcolor:
+                      location.pathname === '/pos/dashboard' || location.pathname === '/dashboard'
+                        ? 'primary.solidHoverBg'
+                        : 'background.level1'
+                  }
                 }}
               >
                 Dashboard
               </Button>
+
+              {user?.role === 'admin' && (
+                <Button
+                  size="sm"
+                  variant="outlined"
+                  color="primary"
+                  onClick={() => navigate('/admin')}
+                  startDecorator={<Shield size={16} />}
+                  sx={{
+                    borderRadius: '10px',
+                    fontWeight: 700,
+                    borderColor: 'primary.500',
+                    color: 'primary.500',
+                    '&:hover': { bgcolor: 'primary.softBg' }
+                  }}
+                >
+                  Admin Portal
+                </Button>
+              )}
             </Stack>
           </Stack>
 
@@ -218,7 +280,7 @@ export const POSLayout: React.FC<POSLayoutProps> = ({
             {/* Theme Toggle Button */}
             <ThemeToggle size="sm" variant="outlined" />
 
-            {/* Cashier profile & logout */}
+            {/* Cashier / Admin profile & logout */}
             <Dropdown>
               <MenuButton
                 variant="outlined"
@@ -231,13 +293,27 @@ export const POSLayout: React.FC<POSLayoutProps> = ({
                 }}
               >
                 <Stack direction="row" spacing={1} alignItems="center">
-                  <User size={16} color="#e05624" />
+                  {user?.role === 'admin' ? (
+                    <Shield size={16} color="#e05624" />
+                  ) : (
+                    <User size={16} color="#e05624" />
+                  )}
                   <Typography level="body-sm" sx={{ color: 'text.primary', fontWeight: 600 }}>
-                    {user?.full_name || 'Cashier'}
+                    {user?.full_name || (user?.role === 'admin' ? 'Admin' : 'Cashier')}
                   </Typography>
+                  {user?.role === 'admin' && (
+                    <Chip size="sm" variant="soft" color="primary" sx={{ fontSize: '10px' }}>
+                      Admin
+                    </Chip>
+                  )}
                 </Stack>
               </MenuButton>
               <Menu sx={{ bgcolor: 'background.surface', borderColor: 'divider', color: 'text.primary', zIndex: 1200 }}>
+                {user?.role === 'admin' && (
+                  <MenuItem onClick={() => navigate('/admin')} sx={{ color: 'primary.500', fontWeight: 600 }}>
+                    <Shield size={16} /> Open Admin Portal
+                  </MenuItem>
+                )}
                 <MenuItem onClick={() => setUpdateModalOpen(true)}>
                   <Download size={16} /> Check System Updates
                 </MenuItem>

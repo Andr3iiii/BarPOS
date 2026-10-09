@@ -136,9 +136,9 @@ export function initializeRealtime(httpServer: HttpServer): Server {
       if (!socket.data.orderReference) return;
       try {
         const result = await query(
-          `SELECT id, reference_no, status, payment_status, table_number
+          `SELECT o.id, o.reference_no, o.status, o.payment_status, t.table_number
            FROM orders o JOIN tables t ON t.id = o.table_id
-           WHERE LOWER(reference_no) = $1
+           WHERE LOWER(o.reference_no) = $1
            LIMIT 1`,
           [socket.data.orderReference]
         );

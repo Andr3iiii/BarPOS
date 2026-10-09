@@ -11,38 +11,62 @@ import {
   FormLabel,
   Alert,
   Stack,
-  Chip
+  Chip,
+  IconButton
 } from '@mui/joy';
-import { Lock, User, Sparkles, Beer } from 'lucide-react';
+import { Lock, User, Beer, Eye, EyeOff, Shield } from 'lucide-react';
 import { BAR_SETTINGS } from '../types';
-import { clearSessionMessage, getSessionMessage, loginCashier } from '../services/api';
+import {
+  clearSessionMessage,
+  getSessionMessage,
+  loginUser,
+  getStoredUser,
+  getStoredToken
+} from '../services/api';
 import { ThemeToggle } from '../components/ThemeToggle';
 
 export const LoginPage: React.FC = () => {
   const navigate = useNavigate();
-  const [username, setUsername] = useState<string>('cashier');
-  const [password, setPassword] = useState<string>('cashier123');
+  const [username, setUsername] = useState<string>('admin');
+  const [password, setPassword] = useState<string>('admin123');
+  const [showPassword, setShowPassword] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(() => getSessionMessage());
 
   useEffect(() => {
     clearSessionMessage();
-  }, []);
+
+    // Auto-redirect if already authenticated
+    const token = getStoredToken();
+    const user = getStoredUser();
+    if (token && user) {
+      if (user.role === 'admin') {
+        navigate('/admin', { replace: true });
+      } else {
+        navigate('/pos', { replace: true });
+      }
+    }
+  }, [navigate]);
 
   const handleLogin = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
-    if (!username || !password) {
-      setErrorMsg('Please enter both username and password.');
+    const trimmedUser = username.trim();
+    if (!trimmedUser || !password) {
+      setErrorMsg('Please enter both username/email and password.');
       return;
     }
 
     try {
       setLoading(true);
       setErrorMsg(null);
-      await loginCashier(username, password);
-      navigate('/orders');
+      const data = await loginUser(trimmedUser, password);
+      if (data.user.role === 'admin') {
+        navigate('/admin', { replace: true });
+      } else {
+        navigate('/pos', { replace: true });
+      }
     } catch (err: any) {
-      setErrorMsg(err.message || 'Login failed. Please check credentials.');
+      setErrorMsg(err.message || 'Login failed. Please verify credentials.');
     } finally {
       setLoading(false);
     }
@@ -51,6 +75,7 @@ export const LoginPage: React.FC = () => {
   const fillCredentials = (u: string, p: string) => {
     setUsername(u);
     setPassword(p);
+    setErrorMsg(null);
   };
 
   return (
@@ -72,7 +97,7 @@ export const LoginPage: React.FC = () => {
       <Card
         variant="outlined"
         sx={{
-          maxWidth: 420,
+          maxWidth: 440,
           width: '100%',
           bgcolor: 'background.surface',
           borderColor: 'divider',
@@ -102,7 +127,7 @@ export const LoginPage: React.FC = () => {
               {BAR_SETTINGS.NAME}
             </Typography>
             <Typography level="body-sm" sx={{ color: 'primary.500', fontWeight: 600 }}>
-              POS Terminal Login
+              Admin Portal & POS Terminal Access
             </Typography>
           </Box>
 
@@ -115,9 +140,11 @@ export const LoginPage: React.FC = () => {
           <form onSubmit={handleLogin}>
             <Stack spacing={2}>
               <FormControl>
-                <FormLabel sx={{ color: 'text.secondary' }}>Username</FormLabel>
+                <FormLabel sx={{ color: 'text.secondary' }}>Username or Email</FormLabel>
                 <Input
                   size="lg"
+                  autoComplete="username"
+                  placeholder="admin or cashier"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   startDecorator={<User size={18} color="#71717a" />}
@@ -129,10 +156,23 @@ export const LoginPage: React.FC = () => {
                 <FormLabel sx={{ color: 'text.secondary' }}>Password</FormLabel>
                 <Input
                   size="lg"
-                  type="password"
+                  type={showPassword ? 'text' : 'password'}
+                  autoComplete="current-password"
+                  placeholder="Enter password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   startDecorator={<Lock size={18} color="#71717a" />}
+                  endDecorator={
+                    <IconButton
+                      variant="plain"
+                      color="neutral"
+                      size="sm"
+                      onClick={() => setShowPassword((prev) => !prev)}
+                      sx={{ color: 'text.secondary' }}
+                    >
+                      {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                    </IconButton>
+                  }
                   sx={{ bgcolor: 'background.level1', borderColor: 'divider', color: 'text.primary' }}
                 />
               </FormControl>
@@ -150,40 +190,44 @@ export const LoginPage: React.FC = () => {
                   '&:hover': { bgcolor: 'primary.solidHoverBg' }
                 }}
               >
-                Sign In to Terminal
+                Sign In to System
               </Button>
             </Stack>
           </form>
 
-          {/* Quick-Fill Helper for Cashier / Admin */}
+          {/* Quick-Fill Helper for Cashier / Admin Testing */}
           <Box sx={{ mt: 3.5, pt: 2.5, borderTop: '1px solid', borderColor: 'divider', textAlign: 'center' }}>
             <Typography level="body-xs" sx={{ color: 'text.tertiary', mb: 1 }}>
-              Quick test accounts:
+              Quick test credentials:
             </Typography>
             <Stack direction="row" spacing={1} justifyContent="center">
               <Chip
                 variant="outlined"
-                onClick={() => fillCredentials('cashier', 'cashier123')}
+                onClick={() => fillCredentials('admin', 'admin123')}
+                startDecorator={<Shield size={14} />}
                 sx={{
                   cursor: 'pointer',
                   borderColor: 'divider',
                   color: 'primary.500',
-                  '&:hover': { bgcolor: 'background.level1' }
-                }}
-              >
-                Cashier (cashier123)
-              </Chip>
-              <Chip
-                variant="outlined"
-                onClick={() => fillCredentials('admin', 'admin123')}
-                sx={{
-                  cursor: 'pointer',
-                  borderColor: 'divider',
-                  color: 'text.secondary',
+                  fontWeight: 600,
                   '&:hover': { bgcolor: 'background.level1' }
                 }}
               >
                 Admin (admin123)
+              </Chip>
+              <Chip
+                variant="outlined"
+                onClick={() => fillCredentials('cashier', 'cashier123')}
+                startDecorator={<User size={14} />}
+                sx={{
+                  cursor: 'pointer',
+                  borderColor: 'divider',
+                  color: 'text.secondary',
+                  fontWeight: 600,
+                  '&:hover': { bgcolor: 'background.level1' }
+                }}
+              >
+                Cashier (cashier123)
               </Chip>
             </Stack>
           </Box>
@@ -192,3 +236,5 @@ export const LoginPage: React.FC = () => {
     </Box>
   );
 };
+
+export default LoginPage;

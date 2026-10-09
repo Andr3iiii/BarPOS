@@ -14,7 +14,7 @@ function createWindow(): void {
     height: 900,
     minWidth: 1024,
     minHeight: 700,
-    title: 'The Velvet Tap — Bar POS Terminal',
+    title: 'The Velvet Tap — Bar POS & Admin Terminal',
     backgroundColor: '#0c0e17',
     autoHideMenuBar: false,
     webPreferences: {

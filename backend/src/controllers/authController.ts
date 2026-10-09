@@ -14,7 +14,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     }
 
     const result = await query(
-      'SELECT id, username, password_hash, full_name, role, is_active FROM users WHERE username = $1',
+      'SELECT id, username, password_hash, full_name, role, is_active FROM users WHERE LOWER(username) = LOWER($1)',
       [username.trim()]
     );
 

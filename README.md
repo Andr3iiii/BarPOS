@@ -1,40 +1,38 @@
-# The Velvet Tap — Bar Point-of-Sale (POS) System
+# The Velvet Tap — Bar Point-of-Sale (POS) & Admin System
 
-A modern, fast, and reliable Bar Point-of-Sale (POS) System built with **React**, **TypeScript**, **Vite**, **Joy UI**, **Electron**, and **PostgreSQL**.
+A modern, fast, and unified Bar Point-of-Sale (POS) and Management System built with **React 18**, **TypeScript**, **Vite**, **Joy UI**, **Electron**, and **PostgreSQL**.
+
+The application unifies the **Admin Portal** and **POS Cashier Terminal** into **one single frontend deployment, one shared login page, and role-based access control**, while maintaining compatibility across modern web browsers and native **Electron desktop executables**.
 
 ---
 
-## 1. Core Order Workflow
+## 1. Unified Architecture Overview
 
 ```text
-Table 1
-   ↓
-Customer scans Table 1 QR (/order/table/1)
-   ↓
-Mobile ordering page
-   ↓
-Customer browses menu & adds drinks/food to cart
-   ↓
-Customer submits order
-   ↓
-System generates atomic Order Reference (e.g. T1-1001)
-   ↓
-Order immediately appears on Cashier Desktop POS (live sync)
-   ↓
-Customer proceeds to counter and provides reference number
-   ↓
-Cashier searches/opens order on POS
-   ↓
-Cashier confirms items & chooses payment method (Cash, GCash, Card)
-   ↓
-For Cash: Change is automatically computed (insufficient cash is blocked)
-   ↓
-Cashier confirms payment → Order & Payment marked PAID
-   ↓
-80mm thermal receipt generated and printed
+                        ONE BARPOS APPLICATION
+                                   |
+                             Unified Login (/login)
+                                   |
+                            Shared Authentication
+                                   |
+                             Role Verification
+                                   |
+                    +--------------+--------------+
+                    |                             |
+                  ADMIN                         CASHIER
+                    |                             |
+             Admin Portal                     POS Terminal
+             (/admin/dashboard)               (/pos/orders)
+                    |                             |
+                    +--------------+--------------+
+                                   |
+                            Shared Backend API (Port 4000)
+                                   |
+                             PostgreSQL Database (Port 5433 / 5434)
+                                   |
+                       Shared Products, Inventory,
+                         Orders, Payments, Sales
 ```
-
-> **Important Scope Rule:** This system is **NOT** a table management system. Tables are only identifiers for where an order originated via the table's QR code. Multiple separate orders can originate from the same table without occupancy monitoring.
 
 ---
 
@@ -43,11 +41,34 @@ Cashier confirms payment → Order & Payment marked PAID
 ```text
 BarPOS/
 ├── apps/
-│   ├── customer/       # Mobile-first customer QR ordering web app (Port 3001)
-│   ├── pos/            # Cashier Desktop POS (Electron + Joy UI) (Port 3002)
-│   └── admin/          # Admin portal for products, categories, tables, sales (Port 3003)
-├── backend/            # Express REST API, PostgreSQL pool, JWT auth (Port 4000)
+│   ├── customer/       # Mobile customer QR table ordering app (Port 3001)
+│   ├── pos/            # Unified BarPOS Frontend & Desktop Electron App (Port 3002)
+│   │   ├── electron/   # Native Electron main process & preload scripts
+│   │   ├── src/
+│   │   │   ├── components/  # Modals (Payment, Receipt, Walk-in, ThemeToggle)
+│   │   │   ├── layouts/     # POSLayout & AdminLayout
+│   │   │   ├── pages/
+│   │   │   │   ├── LoginPage.tsx          # Single Unified Role-Based Login
+│   │   │   │   ├── OrdersPage.tsx         # Cashier Orders & Transactions
+│   │   │   │   ├── DashboardPage.tsx      # Cashier Shift Dashboard
+│   │   │   │   ├── NotFoundPage.tsx       # 404 handler with role redirection
+│   │   │   │   └── admin/                 # Administrator modules
+│   │   │   │       ├── AdminDashboardPage.tsx
+│   │   │   │       ├── ProductsPage.tsx
+│   │   │   │       ├── CategoriesPage.tsx
+│   │   │   │       ├── TablesPage.tsx
+│   │   │   │       ├── SalesPage.tsx
+│   │   │   │       └── UsersPage.tsx
+│   │   │   ├── services/api.ts            # Unified API Client & Session Manager
+│   │   │   ├── theme.ts                   # Joy UI Theme tokens
+│   │   │   └── types.ts                   # TypeScript models & constants
+│   │   ├── package.json
+│   │   ├── vercel.json                    # SPA routing rewrites
+│   │   └── vite.config.ts
+│   └── admin/          # Legacy standalone admin workspace (now merged into apps/pos)
+├── backend/            # Express REST API, PostgreSQL connection pool, JWT & Role Auth (Port 4000)
 ├── database/           # PostgreSQL schema (schema.sql) and seed scripts
+├── docker-compose.yml  # Docker multi-container stack
 ├── package.json        # NPM workspaces configuration
 └── README.md
 ```
@@ -57,35 +78,58 @@ BarPOS/
 ## 3. Technology Stack
 
 * **Frontend UI**: [Joy UI](https://mui.com/joy-ui/getting-started/) (`@mui/joy`, `@emotion/react`, `@emotion/styled`)
-* **Languages & Bundlers**: TypeScript, React 18, Vite
-* **Desktop App**: Electron with `electron-updater` and `electron-builder`
-* **Routing & Forms**: `react-router-dom`, `react-hook-form`
+* **Languages & Bundlers**: TypeScript 5, React 18, Vite 6
+* **Desktop App**: Electron 33 with `electron-updater` and `electron-builder`
+* **Routing**: `react-router-dom` v7 (SmartRouter: `BrowserRouter` for Web, `HashRouter` for packaged Electron)
 * **Icons & QR**: `lucide-react`, `qrcode.react`
+* **Realtime**: `socket.io-client` & Socket.IO server
 * **Backend**: Node.js, Express, `pg` (PostgreSQL connection pool), `bcryptjs`, `jsonwebtoken`
 * **Database**: PostgreSQL 14+
-* **Strict Adherence**: No Zod, No TanStack Query, No Zustand (simple native fetch and React state).
+* **Strict Adherence**: Zero third-party state managers (no Zod, TanStack Query, or Zustand).
 
 ---
 
-## 4. Default Credentials & Ports
+## 4. Default Testing Accounts & Roles
 
-| Application | URL / Port | Role / Path | Default Credentials |
-| :--- | :--- | :--- | :--- |
-| **Backend API** | `http://localhost:4000` | `/api/v1` | N/A |
-| **Customer App** | `http://localhost:3001` | `/order/table/1` | Public (No login needed) |
-| **Cashier POS** | `http://localhost:3002` | `/orders`, `/dashboard` | `cashier` / `cashier123` |
-| **Admin Portal**| `http://localhost:3003` | `/dashboard`, `/products`| `admin` / `admin123` |
+The database initialization script (`npm run db:init`) securely seeds the following development test accounts with bcrypt-hashed passwords without overwriting existing production accounts:
+
+| Role | Username | Password | Post-Login Redirection | Permissions |
+| :--- | :--- | :--- | :--- | :--- |
+| **Admin** | `admin` | `admin123` | `/admin/dashboard` | Full administrative control (Products, Categories, Tables, Sales reports, User management) + access to POS Terminal (`/pos`) |
+| **Cashier** | `cashier` | `cashier123` | `/pos/orders` | POS Terminal operations (view orders, counter walk-ins, process payments, print thermal receipts, shift dashboard) |
 
 ---
 
-## 5. Setup & Running Locally
+## 5. Role-Based Routing & Access Control
+
+| Route | Role Access | Description |
+| :--- | :--- | :--- |
+| `/login` | Public | Single unified login form with password show/hide toggle and quick-fill helper chips |
+| `/` | Authenticated | Automatically redirects to `/admin` for Admins and `/pos` for Cashiers |
+| `/admin` & `/admin/dashboard` | **Admin Only** | Executive metrics, daily revenue, payment method breakdown |
+| `/admin/products` | **Admin Only** | Menu & drink inventory, prices, availability toggling |
+| `/admin/categories` | **Admin Only** | Category catalog ordering and active statuses |
+| `/admin/tables` | **Admin Only** | Table QR code generation, SVG download, stand card printing |
+| `/admin/sales` | **Admin Only** | Historical ledger, time filters, CSV export |
+| `/admin/users` | **Admin Only** | Cashier and Admin staff management, password updates |
+| `/pos` & `/pos/orders` | **Cashier & Admin** | Live incoming table QR orders, status filters, walk-in counter orders |
+| `/pos/dashboard` | **Cashier & Admin** | Cashier shift metrics (today's sales, pending counter count) |
+
+* Unauthenticated users attempting to access protected pages are redirected to `/login`.
+* Cashier accounts attempting to access `/admin/*` are blocked and redirected to `/pos`.
+* Admin accounts are permitted to open and operate the POS Terminal (`/pos`).
+* The backend independently validates JWT role claims on all API endpoints via `requireAdmin` and `requireCashierOrAdmin`.
+
+---
+
+## 6. Setup & Running Locally
 
 ### Prerequisites
 * Node.js v18+ (tested on v24)
 * PostgreSQL 14+ running locally (default: `localhost:5433` or `localhost:5432`)
 
-### 1. Configure Database Connection
-Edit `backend/.env` with your PostgreSQL credentials:
+### 1. Configure Environment Variables
+Edit `backend/.env`:
 ```env
 PORT=4000
 DATABASE_URL=postgresql://postgres:root@localhost:5433/bar_pos
@@ -93,8 +137,17 @@ JWT_SECRET=super_secret_bar_pos_jwt_key_2026_dev
 NODE_ENV=development
 ```
 
-### 2. Initialize Database Tables & Initial Seed Data
-Run the migration script to create all tables, seed products, categories, tables, and default accounts:
+Edit `apps/pos/.env`:
+```env
+# For local development:
+VITE_API_BASE_URL=/api/v1
+
+# For production / separate backend host:
+# VITE_API_BASE_URL=https://your-backend-api.onrender.com/api/v1
+```
+
+### 2. Initialize Database & Seed Accounts
+Run the initialization script to prepare PostgreSQL tables and seed default admin/cashier accounts:
 ```bash
 npm run db:init
 ```
@@ -104,119 +157,91 @@ npm run db:init
 npm run build:all
 ```
 
-### 4. Run All Services Concurrently
+### 4. Run Development Servers
+To run backend, customer app, and the unified POS/Admin application concurrently:
 ```bash
 npm run dev
 # or: npm run dev:all
 ```
+
 Or start each service individually:
 ```bash
-# Terminal 1 - Backend API (Port 4000)
+# Terminal 1 - Backend REST API (Port 4000)
 npm run dev:backend
 
-# Terminal 2 - Customer Mobile App (Port 3001)
-npm run dev:customer
-
-# Terminal 3 - Cashier POS Web Terminal (Port 3002)
+# Terminal 2 - Unified BarPOS Frontend (Port 3002)
 npm run dev:pos
 
-# Terminal 4 - Admin Web App (Port 3003)
-npm run dev:admin
+# Terminal 3 - Customer QR Ordering App (Port 3001)
+npm run dev:customer
 ```
 
-### 5. Run & Build Cashier Desktop Application (Electron)
-To launch the native Windows Electron window in development mode:
+---
+
+## 7. Electron Desktop Application
+
+The native Electron Windows application runs the **same unified frontend** with both Admin and Cashier accounts supported.
+
+### Development Mode
 ```bash
 npm run electron:dev
+# or: npm run --workspace=apps/pos electron:dev
 ```
 
-To build downloadable standalone Windows executables (`.exe`):
+### Building the Windows `.exe`
 ```bash
 npm run electron:dist
 # or: npm run --workspace=apps/pos electron:dist
 ```
-Generated release outputs are saved to `apps/pos/release/`:
-* **`BarPOS Terminal Setup 1.0.0.exe`**: Complete Windows NSIS Setup Wizard (creates desktop & Start Menu shortcuts, clean uninstaller).
-* **`BarPOS Terminal 1.0.0.exe`**: Standalone Portable Executable (runs immediately without installation).
-* **`win-unpacked/BarPOS Terminal.exe`**: Directly extracted executable directory for rapid testing.
+
+Outputs generated in `apps/pos/release/`:
+* **`BarPOS Terminal Setup 1.0.0.exe`**: Full NSIS installer with desktop & Start Menu shortcuts.
+* **`BarPOS Terminal 1.0.0.exe`**: Standalone portable `.exe` requiring no installation.
+* **`win-unpacked/BarPOS Terminal.exe`**: Pre-extracted binary folder for instant testing.
 
 ---
 
-## 6. Docker Deployment (All-in-One)
+## 8. Vercel Frontend Deployment
 
-You can run the entire Bar POS system (PostgreSQL database, Backend API, Customer Web App, Cashier POS Web App, and Admin Portal) in isolated containers with a single command:
+Deploy the single unified frontend to Vercel:
 
-### Prerequisites
-* [Docker Desktop](https://www.docker.com/products/docker-desktop/) installed and running.
-
-### 1. Build and Start All Containers
-```bash
-docker compose up -d --build
-```
-
-### 2. Services & Port Mappings
-| Service | Container Name | Port | Description |
-| :--- | :--- | :--- | :--- |
-| **Customer App** | `barpos-customer` | [`http://localhost:3001`](http://localhost:3001) | Mobile QR ordering page (`/order/table/1`) |
-| **Cashier POS** | `barpos-pos` | [`http://localhost:3002`](http://localhost:3002) | Cashier Web POS terminal (`/orders`) |
-| **Admin Portal** | `barpos-admin` | [`http://localhost:3003`](http://localhost:3003) | Admin management portal (`/dashboard`) |
-| **Backend API** | `barpos-backend` | [`http://localhost:4000`](http://localhost:4000) | Express REST API & Health check (`/api/health`) |
-| **PostgreSQL** | `barpos-postgres` | `localhost:5434` | PostgreSQL 16 database with persistent volume |
-
-### 3. Management Commands
-```bash
-# View live logs
-docker compose logs -f
-
-# Check container health status
-docker compose ps
-
-# Stop all containers
-docker compose down
-
-# Stop all containers and reset database volume
-docker compose down -v
-```
+1. **Connect Repository**: Import the `BarPOS` GitHub repository into Vercel.
+2. **Project Settings**:
+   * **Root Directory**: `apps/pos`
+   * **Framework Preset**: `Vite`
+   * **Build Command**: `npm run build`
+   * **Output Directory**: `dist`
+   * **Install Command**: `npm install`
+3. **Environment Variables**:
+   * `VITE_API_BASE_URL`: Set to your deployed Render backend API URL (e.g., `https://barpos-backend.onrender.com/api/v1`).
+4. **SPA Rewrites**:
+   Handled automatically by `apps/pos/vercel.json`:
+   ```json
+   {
+     "rewrites": [
+       { "source": "/(.*)", "destination": "/index.html" }
+     ]
+   }
+   ```
+   Ensures deep links (`/login`, `/admin/dashboard`, `/pos/orders`) load properly without 404 errors on refresh.
 
 ---
 
-## 7. Applications Overview
+## 9. Testing & Acceptance Verification
 
-### 📱 Customer Mobile App (`apps/customer`)
-* Accessed directly via table QR: `http://localhost:3001/order/table/1` (Table 1 .. 10).
-* Categorized menu with search (Draft Beers, Craft Cocktails, Spirits, Bites, Main Plates, Non-Alcoholic).
-* Cart drawer with quantity steppers (+/-) and optional customer special notes.
-* Order submission generates atomic unique reference number (e.g. `T1-1001`).
-* **Order Confirmed screen**: Displays reference number prominently with instructions: *"Please proceed to the counter and provide your order number to the cashier for payment."*
-* Automatically polls backend to display a celebratory **"Payment Confirmed"** badge once the cashier marks the order paid!
+All acceptance criteria have been verified:
 
-### 💻 Cashier Desktop POS (`apps/pos`)
-* Built with Electron + Joy UI for desktop screens (1366x768, 1440x900, 1920x1080).
-* **Live Orders Screen**:
-  * Real-time polling every 3 seconds with visual sync indicator.
-  * Instant search bar by Order Reference (e.g. `T1-1001`, `1001`) or Table number.
-  * Status filter chips (All, Pending, Paid, Cancelled).
-  * Direct "Counter Order" button for walk-in patrons ordering directly at the bar without a table QR.
-* **Payment Processing**:
-  * Payment method selection: **Cash**, **GCash**, **Card**.
-  * For Cash: Auto-calculates change with quick-cash presets (Exact, ₱100, ₱200, ₱500, ₱1,000, ₱2,000). Blocks confirmation if cash received is insufficient.
-  * For GCash/Card: Records reference number.
-* **Receipt Engine**:
-  * Formatted thermal receipt preview (80mm standard).
-  * `window.print()` integration with CSS `@media print` thermal formatting.
-  * Copy text receipt option.
-
-### 🛡️ Admin Web App (`apps/admin`)
-* **Executive Dashboard**: Today's sales, average ticket, pending counter orders, cash vs GCash vs Card breakdown.
-* **Product Catalog**: Add drinks/food, set prices, assign categories, toggle availability, deactivate unused items.
-* **Category Manager**: Add, reorder display sequence, and deactivate categories.
-* **Tables & QR Codes**: Add table identifiers, view QR codes, download SVGs, and print styled table stand cards.
-* **Sales & Ledger**: Filter transactions by Today, Yesterday, This Week, This Month, or Custom Range. Export records to CSV.
-* **User Management**: Add cashiers and administrators, toggle active status, and reset passwords with bcrypt hashing.
-
----
-
-## 7. Security & Architecture
-* **Database Isolation**: Desktop POS connects only to Backend REST API. PostgreSQL credentials are never exposed to clients.
-* **Persistence Guarantee**: Reinstalling or updating the Electron POS does not affect PostgreSQL database data.
-* **Data Auditing**: Product deletion is blocked if items are attached to historical sales; deactivation is enforced instead.
+* **Authentication**:
+  * Admin credentials (`admin` / `admin123`) authenticate and redirect to `/admin`.
+  * Cashier credentials (`cashier` / `cashier123`) authenticate and redirect to `/pos`.
+  * Invalid credentials return `401 Unauthorized`.
+  * Show/hide password eye toggle verified.
+  * Role enforcement prevents Cashiers from accessing Admin features (returns `403 Forbidden`).
+  * Admins can seamlessly switch between Admin Portal and POS Terminal.
+  * Session expiration automatically redirects to `/login`.
+* **POS Terminal**:
+  * Product loading, cart creation, walk-in counter orders, payment processing (Cash, GCash, Card), thermal receipts (80mm standard), and sales persistence in PostgreSQL verified.
+* **Customer QR Ordering**:
+  * Customers place orders from Table QR codes (`/order/table/:number`) without authentication.
+  * Orders appear in real time on the POS Terminal with unique reference codes (`T1-XXXX`).
+  * Idempotency protects against duplicate order submissions.
