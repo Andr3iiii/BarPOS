@@ -228,12 +228,24 @@ export async function fetchDashboardMetrics(): Promise<DashboardMetrics> {
   return json.data;
 }
 
-// Users
+
 export async function fetchUsers(): Promise<User[]> {
   const res = await fetch(`${API_BASE}/users`, {
     headers: getHeaders()
   });
-  const json = await res.json();
+
+  const json = await res.json().catch(() => ({}));
+
+  if (!res.ok) {
+    throw new Error(
+      json.message || `Failed to fetch users (${res.status})`
+    );
+  }
+
+  if (!Array.isArray(json.data)) {
+    throw new Error('Invalid users response from the server.');
+  }
+
   return json.data;
 }
 
