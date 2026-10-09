@@ -16,6 +16,14 @@ function resolveSocketUrl(apiBase: string): string {
     if (window.location.protocol === 'file:' || window.location.origin === 'null') {
       return 'http://localhost:4000';
     }
+    // In local development on Vite dev ports (3001, 3002, 3003), connect directly
+    // to the backend on port 4000 to eliminate WebSocket proxy disconnect errors.
+    if (
+      (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') &&
+      ['3001', '3002', '3003'].includes(window.location.port)
+    ) {
+      return `${window.location.protocol}//${window.location.hostname}:4000`;
+    }
     return window.location.origin;
   }
 

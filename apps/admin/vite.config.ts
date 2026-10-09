@@ -14,7 +14,15 @@ export default defineConfig({
       '/socket.io': {
         target: 'http://localhost:4000',
         changeOrigin: true,
-        ws: true
+        ws: true,
+        configure: (proxy) => {
+          proxy.on('error', (err) => {
+            const code = (err as any)?.code;
+            if (code === 'ECONNRESET' || code === 'ECONNABORTED' || code === 'EPIPE') {
+              return;
+            }
+          });
+        }
       }
     }
   }
