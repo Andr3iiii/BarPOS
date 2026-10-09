@@ -5,7 +5,7 @@ import { autoUpdater } from 'electron-updater';
 let mainWindow: BrowserWindow | null = null;
 
 // Configure autoUpdater defaults
-autoUpdater.autoDownload = true;
+autoUpdater.autoDownload = false; // Do not download automatically in the background
 autoUpdater.autoInstallOnAppQuit = true;
 
 function createWindow(): void {
@@ -94,6 +94,13 @@ autoUpdater.on('update-available', (info) => {
   }
 });
 
+autoUpdater.on('download-progress', (progressObj) => {
+  console.log('[AutoUpdater] Download progress:', Math.round(progressObj.percent) + '%');
+  if (mainWindow) {
+    mainWindow.webContents.send('download-progress', progressObj);
+  }
+});
+
 autoUpdater.on('update-downloaded', async (info) => {
   console.log('[AutoUpdater] Update downloaded:', info.version);
   if (mainWindow) {
@@ -107,19 +114,29 @@ autoUpdater.on('update-downloaded', async (info) => {
       title: 'Update Ready — BarPOS Terminal',
       message: `A new version (v${info.version}) of BarPOS Terminal has been downloaded!`,
       detail: 'Would you like to restart the application now to install the update, or continue working and update later?',
-      buttons: ['Update Now', 'Later'],
+      buttons: ['Restart & Install Now', 'Later'],
       defaultId: 0,
       cancelId: 1,
       noLink: true
     });
 
     if (response === 0) {
-      // User clicked "Update Now"
+      // User clicked "Restart & Install Now"
       autoUpdater.quitAndInstall(false, true);
     }
-    // If response === 1 ("Later"), dialog closes and app continues running normally
   } catch (err) {
     console.warn('[AutoUpdater] Dialog error:', err);
+  }
+});
+
+ipcMain.handle('start-download-update', async () => {
+  try {
+    console.log('[AutoUpdater] Manual download initiated by user');
+    await autoUpdater.downloadUpdate();
+    return { success: true };
+  } catch (err: any) {
+    console.error('[AutoUpdater] Download error:', err);
+    return { success: false, error: err.message };
   }
 });
 
@@ -133,10 +150,16 @@ ipcMain.handle('check-for-updates', async () => {
   }
   try {
     const result = await autoUpdater.checkForUpdates();
+    const remoteVersion = result?.updateInfo?.version;
+    const currentVersion = app.getVersion();
+    const isNewer = Boolean(remoteVersion && remoteVersion !== currentVersion);
     return {
-      available: Boolean(result?.updateInfo),
-      version: result?.updateInfo?.version || app.getVersion(),
-      info: result?.updateInfo
+      available: isNewer,
+      version: remoteVersion || currentVersion,
+      info: result?.updateInfo,
+      message: isNewer
+        ? `Found update v${remoteVersion}! Ready to download.`
+        : `BarPOS is up-to-date (v${currentVersion}).`
     };
   } catch (err: any) {
     return { available: false, error: err.message };
