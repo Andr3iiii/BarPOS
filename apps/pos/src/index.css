@@ -28,7 +28,7 @@ body {
   background: rgba(255, 255, 255, 0.25);
 }
 
-/* Thermal Receipt Print Styles (80mm width standard) */
+/* Thermal Receipt Print Styles (80mm width standard) & Printable Table QR Code */
 @media print {
   body * {
     visibility: hidden;
@@ -49,4 +49,23 @@ body {
     font-family: 'Courier New', Courier, monospace !important;
     font-size: 12px !important;
   }
+
+  #printable-table-qr,
+  #printable-table-qr * {
+    visibility: visible;
+  }
+  #printable-table-qr {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 110mm;
+    border: 2px solid #000;
+    padding: 24px;
+    background: #ffffff !important;
+    color: #000000 !important;
+    text-align: center;
+    border-radius: 12px;
+  }
 }
+
