@@ -16,18 +16,22 @@ import { fetchWithTimeout } from '../../../../shared/http';
 function resolveApiBase(): string {
   if (typeof window !== 'undefined') {
     const custom = localStorage.getItem('barpos_api_url');
-    if (custom && /barpos-7rxf\.onrender\.com/i.test(custom)) {
-      localStorage.removeItem('barpos_api_url');
-    } else if (custom && custom.trim() !== '') {
+    if (custom && custom.trim() !== '') {
       return custom.trim().replace(/\/+$/, '');
     }
   }
 
   const envUrl = import.meta.env.VITE_API_BASE_URL;
-  if (envUrl && envUrl.trim() !== '') return envUrl.trim().replace(/\/+$/, '');
+  if (envUrl && /^https?:\/\//i.test(envUrl.trim())) {
+    return envUrl.trim().replace(/\/+$/, '');
+  }
 
-  if (typeof window !== 'undefined' && window.location.protocol === 'file:') {
+  if (typeof window !== 'undefined' && (window.location.protocol === 'file:' || Boolean((window as any).electronAPI))) {
     return 'http://localhost:4000/api/v1';
+  }
+
+  if (envUrl && envUrl.trim() !== '') {
+    return envUrl.trim().replace(/\/+$/, '');
   }
 
   return '/api/v1';
