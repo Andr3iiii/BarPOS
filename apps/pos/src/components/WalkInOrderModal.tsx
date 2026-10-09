@@ -114,23 +114,23 @@ export const WalkInOrderModal: React.FC<WalkInOrderModalProps> = ({ open, onClos
         sx={{
           maxWidth: 750,
           width: '95vw',
-          bgcolor: '#131522',
-          borderColor: '#2e3450',
-          color: '#f4f4f5',
+          bgcolor: 'background.surface',
+          borderColor: 'divider',
+          color: 'text.primary',
           borderRadius: '20px',
           p: 3
         }}
       >
-        <DialogTitle sx={{ color: '#f4f4f5', display: 'flex', justifyContent: 'space-between' }}>
+        <DialogTitle sx={{ color: 'text.primary', display: 'flex', justifyContent: 'space-between' }}>
           <Stack direction="row" spacing={1} alignItems="center">
-            <ShoppingBag size={22} color="#ff7a45" />
+            <ShoppingBag size={22} color="#e05624" />
             <span>New Counter / Walk-in Order</span>
           </Stack>
-          <IconButton size="sm" variant="plain" onClick={onClose} sx={{ color: '#a1a1aa' }}>
+          <IconButton size="sm" variant="plain" onClick={onClose} sx={{ color: 'text.secondary' }}>
             <X size={18} />
           </IconButton>
         </DialogTitle>
-        <Divider sx={{ my: 1.5, borderColor: '#262a40' }} />
+        <Divider sx={{ my: 1.5, borderColor: 'divider' }} />
 
         <DialogContent sx={{ maxHeight: '72vh', overflowY: 'auto' }}>
           {errorMsg && (
@@ -142,13 +142,13 @@ export const WalkInOrderModal: React.FC<WalkInOrderModalProps> = ({ open, onClos
           {/* Table select & search bar */}
           <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} sx={{ mb: 2 }}>
             <Box sx={{ minWidth: 180 }}>
-              <Typography level="body-xs" sx={{ color: '#a1a1aa', mb: 0.5 }}>
+              <Typography level="body-xs" sx={{ color: 'text.secondary', mb: 0.5 }}>
                 Location / Table:
               </Typography>
               <Select
                 value={tableNumber}
                 onChange={(_, val) => val && setTableNumber(val)}
-                sx={{ bgcolor: '#181b2a', borderColor: '#2e3450', color: '#fff' }}
+                sx={{ bgcolor: 'background.level1', borderColor: 'divider', color: 'text.primary' }}
               >
                 <Option value="BAR-1">Bar Counter 1</Option>
                 <Option value="BAR-2">Bar Counter 2</Option>
@@ -162,7 +162,7 @@ export const WalkInOrderModal: React.FC<WalkInOrderModalProps> = ({ open, onClos
             </Box>
 
             <Box sx={{ flex: 1 }}>
-              <Typography level="body-xs" sx={{ color: '#a1a1aa', mb: 0.5 }}>
+              <Typography level="body-xs" sx={{ color: 'text.secondary', mb: 0.5 }}>
                 Search Menu:
               </Typography>
               <Input
@@ -170,9 +170,8 @@ export const WalkInOrderModal: React.FC<WalkInOrderModalProps> = ({ open, onClos
                 startDecorator={<Search size={16} color="#71717a" />}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                sx={{ bgcolor: '#181b2a', borderColor: '#2e3450', color: '#fff' }}
-              >
-              </Input>
+                sx={{ bgcolor: 'background.level1', borderColor: 'divider', color: 'text.primary' }}
+              />
             </Box>
           </Stack>
 
@@ -195,8 +194,8 @@ export const WalkInOrderModal: React.FC<WalkInOrderModalProps> = ({ open, onClos
                   variant="outlined"
                   sx={{
                     p: 1.5,
-                    bgcolor: '#181b2a',
-                    borderColor: qty > 0 ? '#ff7a45' : '#272c43',
+                    bgcolor: 'background.level1',
+                    borderColor: qty > 0 ? 'primary.500' : 'divider',
                     display: 'flex',
                     flexDirection: 'row',
                     justifyContent: 'space-between',
@@ -204,10 +203,10 @@ export const WalkInOrderModal: React.FC<WalkInOrderModalProps> = ({ open, onClos
                   }}
                 >
                   <Box sx={{ pr: 1 }}>
-                    <Typography level="title-sm" sx={{ color: '#fff' }}>
+                    <Typography level="title-sm" sx={{ color: 'text.primary' }}>
                       {p.name}
                     </Typography>
-                    <Typography level="body-xs" sx={{ color: '#ff7a45', fontWeight: 600 }}>
+                    <Typography level="body-xs" sx={{ color: 'primary.500', fontWeight: 600 }}>
                       ₱{Number(p.price).toFixed(2)}
                     </Typography>
                   </Box>
@@ -218,13 +217,13 @@ export const WalkInOrderModal: React.FC<WalkInOrderModalProps> = ({ open, onClos
                         size="sm"
                         variant="soft"
                         onClick={() => updateCart(p.id, -1)}
-                        sx={{ bgcolor: '#24283b', color: '#ff7a45' }}
+                        sx={{ bgcolor: 'background.level2', color: 'primary.500' }}
                       >
                         <Minus size={14} />
                       </IconButton>
                     )}
                     {qty > 0 && (
-                      <Typography level="title-sm" sx={{ minWidth: 18, textAlign: 'center', color: '#fff' }}>
+                      <Typography level="title-sm" sx={{ minWidth: 18, textAlign: 'center', color: 'text.primary' }}>
                         {qty}
                       </Typography>
                     )}
@@ -232,7 +231,7 @@ export const WalkInOrderModal: React.FC<WalkInOrderModalProps> = ({ open, onClos
                       size="sm"
                       variant="solid"
                       onClick={() => updateCart(p.id, 1)}
-                      sx={{ bgcolor: '#e05624', color: '#fff', '&:hover': { bgcolor: '#c8461b' } }}
+                      sx={{ bgcolor: 'primary.solidBg', color: '#fff', '&:hover': { bgcolor: 'primary.solidHoverBg' } }}
                     >
                       <Plus size={14} />
                     </IconButton>
@@ -243,12 +242,12 @@ export const WalkInOrderModal: React.FC<WalkInOrderModalProps> = ({ open, onClos
           </Box>
 
           {/* Cart Bar */}
-          <Box sx={{ mt: 2.5, p: 2, bgcolor: '#1c2033', borderRadius: '12px', border: '1px solid #2e3552' }}>
+          <Box sx={{ mt: 2.5, p: 2, bgcolor: 'background.level1', borderRadius: '12px', border: '1px solid', borderColor: 'divider' }}>
             <Stack direction="row" justifyContent="space-between" alignItems="center">
-              <Typography level="title-md" sx={{ color: '#f4f4f5', fontWeight: 600 }}>
+              <Typography level="title-md" sx={{ color: 'text.primary', fontWeight: 600 }}>
                 Total Selected: {cart.size} item(s)
               </Typography>
-              <Typography level="h3" sx={{ color: '#ff7a45', fontWeight: 800 }}>
+              <Typography level="h3" sx={{ color: 'primary.500', fontWeight: 800 }}>
                 ₱{cartTotal.toFixed(2)}
               </Typography>
             </Stack>
@@ -256,7 +255,7 @@ export const WalkInOrderModal: React.FC<WalkInOrderModalProps> = ({ open, onClos
         </DialogContent>
 
         <Stack direction="row" spacing={1.5} sx={{ mt: 2 }}>
-          <Button variant="outlined" onClick={onClose} sx={{ borderColor: '#3a4163', color: '#a1a1aa' }}>
+          <Button variant="outlined" onClick={onClose} sx={{ borderColor: 'divider', color: 'text.secondary' }}>
             Cancel
           </Button>
           <Button
@@ -264,7 +263,7 @@ export const WalkInOrderModal: React.FC<WalkInOrderModalProps> = ({ open, onClos
             loading={submitting}
             disabled={cart.size === 0}
             onClick={handleSubmit}
-            sx={{ flex: 1, bgcolor: '#e05624', color: '#fff', '&:hover': { bgcolor: '#c8461b' } }}
+            sx={{ flex: 1, bgcolor: 'primary.solidBg', color: '#fff', '&:hover': { bgcolor: 'primary.solidHoverBg' } }}
           >
             Create & Proceed to Payment
           </Button>

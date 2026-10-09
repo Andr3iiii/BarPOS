@@ -89,54 +89,54 @@ export const DashboardPage: React.FC = () => {
           mb: 4
         }}
       >
-        <Card variant="outlined" sx={{ bgcolor: '#12141f', borderColor: '#202438', borderRadius: '16px', p: 2.5 }}>
+        <Card variant="outlined" sx={{ bgcolor: 'background.surface', borderColor: 'divider', borderRadius: '16px', p: 2.5 }}>
           <Stack direction="row" justifyContent="space-between">
-            <Typography level="body-xs" sx={{ color: '#8f95b2', fontWeight: 700, textTransform: 'uppercase' }}>
+            <Typography level="body-xs" sx={{ color: 'text.secondary', fontWeight: 700, textTransform: 'uppercase' }}>
               Today's Gross Sales
             </Typography>
-            <DollarSign size={18} color="#ff7a45" />
+            <DollarSign size={18} color="#e05624" />
           </Stack>
-          <Typography level="h2" sx={{ color: '#ff7a45', fontWeight: 800, mt: 1 }}>
+          <Typography level="h2" sx={{ color: 'primary.500', fontWeight: 800, mt: 1 }}>
             ₱{metrics?.today_sales.toFixed(2) || '0.00'}
           </Typography>
-          <Typography level="body-xs" sx={{ color: '#71717a' }}>
+          <Typography level="body-xs" sx={{ color: 'text.tertiary' }}>
             {metrics?.paid_orders || 0} completed transactions
           </Typography>
         </Card>
 
-        <Card variant="outlined" sx={{ bgcolor: '#12141f', borderColor: '#202438', borderRadius: '16px', p: 2.5 }}>
+        <Card variant="outlined" sx={{ bgcolor: 'background.surface', borderColor: 'divider', borderRadius: '16px', p: 2.5 }}>
           <Stack direction="row" justifyContent="space-between">
-            <Typography level="body-xs" sx={{ color: '#8f95b2', fontWeight: 700, textTransform: 'uppercase' }}>
+            <Typography level="body-xs" sx={{ color: 'text.secondary', fontWeight: 700, textTransform: 'uppercase' }}>
               Average Ticket
             </Typography>
-            <TrendingUp size={18} color="#34d399" />
+            <TrendingUp size={18} color="#10b981" />
           </Stack>
-          <Typography level="h2" sx={{ color: '#34d399', fontWeight: 800, mt: 1 }}>
+          <Typography level="h2" sx={{ color: '#10b981', fontWeight: 800, mt: 1 }}>
             ₱{salesSummary?.average_ticket.toFixed(2) || '0.00'}
           </Typography>
-          <Typography level="body-xs" sx={{ color: '#71717a' }}>
+          <Typography level="body-xs" sx={{ color: 'text.tertiary' }}>
             Per completed customer order
           </Typography>
         </Card>
 
-        <Card variant="outlined" sx={{ bgcolor: '#12141f', borderColor: '#202438', borderRadius: '16px', p: 2.5 }}>
+        <Card variant="outlined" sx={{ bgcolor: 'background.surface', borderColor: 'divider', borderRadius: '16px', p: 2.5 }}>
           <Stack direction="row" justifyContent="space-between">
-            <Typography level="body-xs" sx={{ color: '#8f95b2', fontWeight: 700, textTransform: 'uppercase' }}>
+            <Typography level="body-xs" sx={{ color: 'text.secondary', fontWeight: 700, textTransform: 'uppercase' }}>
               Pending at Counter
             </Typography>
-            <Clock size={18} color="#facc15" />
+            <Clock size={18} color="#eab308" />
           </Stack>
-          <Typography level="h2" sx={{ color: '#facc15', fontWeight: 800, mt: 1 }}>
+          <Typography level="h2" sx={{ color: '#eab308', fontWeight: 800, mt: 1 }}>
             {metrics?.pending_orders || 0}
           </Typography>
-          <Typography level="body-xs" sx={{ color: '#71717a' }}>
+          <Typography level="body-xs" sx={{ color: 'text.tertiary' }}>
             Awaiting cashier payment
           </Typography>
         </Card>
 
-        <Card variant="outlined" sx={{ bgcolor: '#12141f', borderColor: '#202438', borderRadius: '16px', p: 2.5 }}>
+        <Card variant="outlined" sx={{ bgcolor: 'background.surface', borderColor: 'divider', borderRadius: '16px', p: 2.5 }}>
           <Stack direction="row" justifyContent="space-between">
-            <Typography level="body-xs" sx={{ color: '#8f95b2', fontWeight: 700, textTransform: 'uppercase' }}>
+            <Typography level="body-xs" sx={{ color: 'text.secondary', fontWeight: 700, textTransform: 'uppercase' }}>
               Total Orders Today
             </Typography>
             <CheckCircle2 size={18} color="#818cf8" />
@@ -144,15 +144,15 @@ export const DashboardPage: React.FC = () => {
           <Typography level="h2" sx={{ color: '#818cf8', fontWeight: 800, mt: 1 }}>
             {metrics?.total_orders || 0}
           </Typography>
-          <Typography level="body-xs" sx={{ color: '#71717a' }}>
+          <Typography level="body-xs" sx={{ color: 'text.tertiary' }}>
             Submitted across all tables
           </Typography>
         </Card>
       </Box>
 
       {/* Payment Method Breakdown */}
-      <Card variant="outlined" sx={{ bgcolor: '#12141f', borderColor: '#202438', borderRadius: '16px', p: 3, mb: 4 }}>
-        <Typography level="title-md" sx={{ color: '#fff', fontWeight: 700, mb: 2 }}>
+      <Card variant="outlined" sx={{ bgcolor: 'background.surface', borderColor: 'divider', borderRadius: '16px', p: 3, mb: 4 }}>
+        <Typography level="title-md" sx={{ color: 'text.primary', fontWeight: 700, mb: 2 }}>
           Payment Method Breakdown (Today)
         </Typography>
         <Box
@@ -162,38 +162,38 @@ export const DashboardPage: React.FC = () => {
             gap: 2
           }}
         >
-          <Box sx={{ p: 2, bgcolor: '#181b2a', borderRadius: '12px', border: '1px solid #282d44' }}>
+          <Box sx={{ p: 2, bgcolor: 'background.level1', borderRadius: '12px', border: '1px solid', borderColor: 'divider' }}>
             <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 1 }}>
-              <Banknote size={18} color="#ff7a45" />
-              <Typography level="title-sm" sx={{ color: '#e4e4e7' }}>
+              <Banknote size={18} color="#e05624" />
+              <Typography level="title-sm" sx={{ color: 'text.primary' }}>
                 Cash
               </Typography>
             </Stack>
-            <Typography level="h3" sx={{ color: '#fff', fontWeight: 800 }}>
+            <Typography level="h3" sx={{ color: 'text.primary', fontWeight: 800 }}>
               ₱{salesSummary?.by_payment_method.CASH.toFixed(2) || '0.00'}
             </Typography>
           </Box>
 
-          <Box sx={{ p: 2, bgcolor: '#181b2a', borderRadius: '12px', border: '1px solid #282d44' }}>
+          <Box sx={{ p: 2, bgcolor: 'background.level1', borderRadius: '12px', border: '1px solid', borderColor: 'divider' }}>
             <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 1 }}>
               <QrCode size={18} color="#007dfe" />
-              <Typography level="title-sm" sx={{ color: '#e4e4e7' }}>
+              <Typography level="title-sm" sx={{ color: 'text.primary' }}>
                 GCash
               </Typography>
             </Stack>
-            <Typography level="h3" sx={{ color: '#fff', fontWeight: 800 }}>
+            <Typography level="h3" sx={{ color: 'text.primary', fontWeight: 800 }}>
               ₱{Number(salesSummary?.by_payment_method.GCASH || 0).toFixed(2)}
             </Typography>
           </Box>
 
-          <Box sx={{ p: 2, bgcolor: '#181b2a', borderRadius: '12px', border: '1px solid #282d44' }}>
+          <Box sx={{ p: 2, bgcolor: 'background.level1', borderRadius: '12px', border: '1px solid', borderColor: 'divider' }}>
             <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 1 }}>
               <CreditCard size={18} color="#a855f7" />
-              <Typography level="title-sm" sx={{ color: '#e4e4e7' }}>
+              <Typography level="title-sm" sx={{ color: 'text.primary' }}>
                 Card / POS Terminal
               </Typography>
             </Stack>
-            <Typography level="h3" sx={{ color: '#fff', fontWeight: 800 }}>
+            <Typography level="h3" sx={{ color: 'text.primary', fontWeight: 800 }}>
               ₱{salesSummary?.by_payment_method.CARD.toFixed(2) || '0.00'}
             </Typography>
           </Box>

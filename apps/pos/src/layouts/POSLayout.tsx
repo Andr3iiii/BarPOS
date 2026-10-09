@@ -32,6 +32,7 @@ import {
 } from 'lucide-react';
 import { BAR_SETTINGS } from '../types';
 import { getStoredUser, clearSession } from '../services/api';
+import { ThemeToggle } from '../components/ThemeToggle';
 
 interface POSLayoutProps {
   children: React.ReactNode;
@@ -96,13 +97,14 @@ export const POSLayout: React.FC<POSLayoutProps> = ({
   };
 
   return (
-    <Box sx={{ minHeight: '100vh', bgcolor: '#0a0b12', color: '#f4f4f5', display: 'flex', flexDirection: 'column' }}>
+    <Box sx={{ minHeight: '100vh', bgcolor: 'background.body', color: 'text.primary', display: 'flex', flexDirection: 'column' }}>
       {/* Top Header */}
       <Sheet
-        variant="solid"
+        variant="plain"
         sx={{
-          bgcolor: '#11131f',
-          borderBottom: '1px solid #202438',
+          bgcolor: 'background.surface',
+          borderBottom: '1px solid',
+          borderColor: 'divider',
           px: 3,
           py: 1.5,
           position: 'sticky',
@@ -114,10 +116,10 @@ export const POSLayout: React.FC<POSLayoutProps> = ({
           {/* Brand & Mode */}
           <Stack direction="row" spacing={2} alignItems="center">
             <Box>
-              <Typography level="title-md" sx={{ color: '#fff', fontWeight: 800, letterSpacing: '0.04em' }}>
+              <Typography level="title-md" sx={{ color: 'text.primary', fontWeight: 800, letterSpacing: '0.04em' }}>
                 {BAR_SETTINGS.NAME}
               </Typography>
-              <Typography level="body-xs" sx={{ color: '#ff7a45', fontWeight: 600 }}>
+              <Typography level="body-xs" sx={{ color: '#e05624', fontWeight: 600 }}>
                 POS CASHIER TERMINAL
               </Typography>
             </Box>
@@ -130,11 +132,11 @@ export const POSLayout: React.FC<POSLayoutProps> = ({
                 onClick={() => navigate('/orders')}
                 startDecorator={<Receipt size={17} />}
                 sx={{
-                  bgcolor: location.pathname === '/' || location.pathname === '/orders' ? '#e05624' : 'transparent',
-                  color: location.pathname === '/' || location.pathname === '/orders' ? '#fff' : '#a1a1aa',
+                  bgcolor: location.pathname === '/' || location.pathname === '/orders' ? 'primary.solidBg' : 'transparent',
+                  color: location.pathname === '/' || location.pathname === '/orders' ? '#fff' : 'text.secondary',
                   fontWeight: 600,
                   borderRadius: '10px',
-                  '&:hover': { bgcolor: location.pathname === '/' || location.pathname === '/orders' ? '#c8461b' : '#1c2032' }
+                  '&:hover': { bgcolor: location.pathname === '/' || location.pathname === '/orders' ? 'primary.solidHoverBg' : 'background.level1' }
                 }}
               >
                 Orders
@@ -146,11 +148,11 @@ export const POSLayout: React.FC<POSLayoutProps> = ({
                 onClick={() => navigate('/dashboard')}
                 startDecorator={<LayoutDashboard size={17} />}
                 sx={{
-                  bgcolor: location.pathname === '/dashboard' ? '#e05624' : 'transparent',
-                  color: location.pathname === '/dashboard' ? '#fff' : '#a1a1aa',
+                  bgcolor: location.pathname === '/dashboard' ? 'primary.solidBg' : 'transparent',
+                  color: location.pathname === '/dashboard' ? '#fff' : 'text.secondary',
                   fontWeight: 600,
                   borderRadius: '10px',
-                  '&:hover': { bgcolor: location.pathname === '/dashboard' ? '#c8461b' : '#1c2032' }
+                  '&:hover': { bgcolor: location.pathname === '/dashboard' ? 'primary.solidHoverBg' : 'background.level1' }
                 }}
               >
                 Dashboard
@@ -158,15 +160,15 @@ export const POSLayout: React.FC<POSLayoutProps> = ({
             </Stack>
           </Stack>
 
-          {/* Right Action Items: Live status, Clock, Walk-in, Cashier Profile */}
-          <Stack direction="row" spacing={2} alignItems="center">
+          {/* Right Action Items: Live status, Clock, Walk-in, Theme Toggle, Cashier Profile */}
+          <Stack direction="row" spacing={1.5} alignItems="center">
             {/* Live sync badge */}
             <Chip
               variant="soft"
               size="sm"
               sx={{
                 bgcolor: 'rgba(16, 185, 129, 0.12)',
-                color: '#34d399',
+                color: '#10b981',
                 borderColor: 'rgba(16, 185, 129, 0.3)',
                 fontWeight: 600
               }}
@@ -175,9 +177,9 @@ export const POSLayout: React.FC<POSLayoutProps> = ({
             </Chip>
 
             {/* Clock */}
-            <Stack direction="row" spacing={0.6} alignItems="center" sx={{ color: '#a1a1aa' }}>
+            <Stack direction="row" spacing={0.6} alignItems="center" sx={{ color: 'text.secondary' }}>
               <Clock size={16} />
-              <Typography level="body-sm" sx={{ color: '#e4e4e7', fontFamily: 'monospace', fontWeight: 600 }}>
+              <Typography level="body-sm" sx={{ color: 'text.primary', fontFamily: 'monospace', fontWeight: 600 }}>
                 {currentTime}
               </Typography>
             </Stack>
@@ -190,11 +192,11 @@ export const POSLayout: React.FC<POSLayoutProps> = ({
                 onClick={onOpenWalkIn}
                 startDecorator={<PlusCircle size={16} />}
                 sx={{
-                  bgcolor: '#ff7a45',
+                  bgcolor: 'primary.solidBg',
                   color: '#fff',
                   fontWeight: 600,
                   borderRadius: '10px',
-                  '&:hover': { bgcolor: '#e05624' }
+                  '&:hover': { bgcolor: 'primary.solidHoverBg' }
                 }}
               >
                 Counter Order
@@ -207,11 +209,14 @@ export const POSLayout: React.FC<POSLayoutProps> = ({
                 size="sm"
                 variant="outlined"
                 onClick={onRefreshOrders}
-                sx={{ borderColor: '#2e3450', color: '#a1a1aa', '&:hover': { color: '#fff', borderColor: '#4e5680' } }}
+                sx={{ borderColor: 'divider', color: 'text.secondary', '&:hover': { color: 'text.primary', bgcolor: 'background.level1' } }}
               >
                 <RefreshCw size={16} />
               </IconButton>
             )}
+
+            {/* Theme Toggle Button */}
+            <ThemeToggle size="sm" variant="outlined" />
 
             {/* Cashier profile & logout */}
             <Dropdown>
@@ -219,20 +224,20 @@ export const POSLayout: React.FC<POSLayoutProps> = ({
                 variant="outlined"
                 size="sm"
                 sx={{
-                  borderColor: '#2e3450',
-                  color: '#f4f4f5',
+                  borderColor: 'divider',
+                  color: 'text.primary',
                   borderRadius: '10px',
                   px: 1.5
                 }}
               >
                 <Stack direction="row" spacing={1} alignItems="center">
-                  <User size={16} color="#ff7a45" />
-                  <Typography level="body-sm" sx={{ color: '#fff', fontWeight: 600 }}>
+                  <User size={16} color="#e05624" />
+                  <Typography level="body-sm" sx={{ color: 'text.primary', fontWeight: 600 }}>
                     {user?.full_name || 'Cashier'}
                   </Typography>
                 </Stack>
               </MenuButton>
-              <Menu sx={{ bgcolor: '#181b2b', borderColor: '#2e3450', color: '#f4f4f5' }}>
+              <Menu sx={{ bgcolor: 'background.surface', borderColor: 'divider', color: 'text.primary', zIndex: 1200 }}>
                 <MenuItem onClick={() => setUpdateModalOpen(true)}>
                   <Download size={16} /> Check System Updates
                 </MenuItem>
@@ -255,11 +260,11 @@ export const POSLayout: React.FC<POSLayoutProps> = ({
           sx={{
             maxWidth: 480,
             width: '90%',
-            bgcolor: '#131522',
-            borderColor: updateReady ? '#ff7a45' : '#2e3450',
-            color: '#fff',
+            bgcolor: 'background.surface',
+            borderColor: updateReady ? '#e05624' : 'divider',
+            color: 'text.primary',
             borderRadius: '20px',
-            boxShadow: '0 20px 40px rgba(0, 0, 0, 0.6)',
+            boxShadow: 'lg',
             p: 3
           }}
         >

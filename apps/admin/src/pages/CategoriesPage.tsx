@@ -146,8 +146,8 @@ export const CategoriesPage: React.FC = () => {
         </Button>
       </Stack>
 
-      <Card variant="outlined" sx={{ bgcolor: '#12141f', borderColor: '#202438', p: 0, overflow: 'hidden' }}>
-        <Table hoverRow sx={{ '& th': { bgcolor: '#181b2a', color: '#8f95b2' }, '& td': { color: '#e4e4e7' } }}>
+      <Card variant="outlined" sx={{ bgcolor: 'background.surface', borderColor: 'divider', p: 0, overflow: 'hidden' }}>
+        <Table hoverRow sx={{ '& th': { bgcolor: 'background.level1', color: 'text.secondary' }, '& td': { color: 'text.primary' } }}>
           <thead>
             <tr>
               <th>Category Name</th>
@@ -160,7 +160,7 @@ export const CategoriesPage: React.FC = () => {
             {categories.map((c) => (
               <tr key={c.id}>
                 <td>
-                  <Typography level="title-sm" sx={{ color: '#fff' }}>
+                  <Typography level="title-sm" sx={{ color: 'text.primary' }}>
                     {c.name}
                   </Typography>
                 </td>
@@ -177,7 +177,7 @@ export const CategoriesPage: React.FC = () => {
                   </Chip>
                 </td>
                 <td>
-                  <IconButton size="sm" variant="plain" onClick={() => openEdit(c)} sx={{ color: '#ff7a45' }}>
+                  <IconButton size="sm" variant="plain" onClick={() => openEdit(c)} sx={{ color: 'primary.500' }}>
                     <Edit2 size={16} />
                   </IconButton>
                 </td>
@@ -190,10 +190,10 @@ export const CategoriesPage: React.FC = () => {
       <Modal open={isModalOpen} onClose={() => setIsModalOpen(false)}>
         <ModalDialog
           variant="outlined"
-          sx={{ maxWidth: 440, width: '92vw', bgcolor: '#131522', borderColor: '#2e3450', color: '#fff' }}
+          sx={{ maxWidth: 440, width: '92vw', bgcolor: 'background.surface', borderColor: 'divider', color: 'text.primary' }}
         >
-          <DialogTitle>{editingCategory ? 'Edit Category' : 'Add Category'}</DialogTitle>
-          <Divider sx={{ my: 1.5, borderColor: '#262a40' }} />
+          <DialogTitle sx={{ color: 'text.primary' }}>{editingCategory ? 'Edit Category' : 'Add Category'}</DialogTitle>
+          <Divider sx={{ my: 1.5, borderColor: 'divider' }} />
           <DialogContent>
             {errorMsg && (
               <Alert color="danger" sx={{ mb: 2 }}>
@@ -203,31 +203,31 @@ export const CategoriesPage: React.FC = () => {
             <form onSubmit={handleSave}>
               <Stack spacing={2}>
                 <FormControl>
-                  <FormLabel sx={{ color: '#a1a1aa' }}>Category Name</FormLabel>
+                  <FormLabel sx={{ color: 'text.secondary' }}>Category Name</FormLabel>
                   <Input
                     required
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    sx={{ bgcolor: '#181b2a', borderColor: '#2e3450', color: '#fff' }}
+                    sx={{ bgcolor: 'background.level1', borderColor: 'divider', color: 'text.primary' }}
                   />
                 </FormControl>
                 <FormControl>
-                  <FormLabel sx={{ color: '#a1a1aa' }}>Display Order</FormLabel>
+                  <FormLabel sx={{ color: 'text.secondary' }}>Display Order</FormLabel>
                   <Input
                     type="number"
                     value={order}
                     onChange={(e) => setOrder(e.target.value)}
-                    sx={{ bgcolor: '#181b2a', borderColor: '#2e3450', color: '#fff' }}
+                    sx={{ bgcolor: 'background.level1', borderColor: 'divider', color: 'text.primary' }}
                   />
                 </FormControl>
                 <Stack direction="row" spacing={1.5} sx={{ mt: 2 }}>
-                  <Button variant="outlined" onClick={() => setIsModalOpen(false)} sx={{ borderColor: '#333' }}>
+                  <Button variant="outlined" onClick={() => setIsModalOpen(false)} sx={{ borderColor: 'divider', color: 'text.secondary' }}>
                     Cancel
                   </Button>
                   <Button
                     variant="solid"
                     type="submit"
-                    sx={{ flex: 1, bgcolor: '#e05624', '&:hover': { bgcolor: '#c8461b' } }}
+                    sx={{ flex: 1, bgcolor: 'primary.solidBg', color: '#fff', '&:hover': { bgcolor: 'primary.solidHoverBg' } }}
                   >
                     Save Category
                   </Button>

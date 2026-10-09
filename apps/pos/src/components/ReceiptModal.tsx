@@ -66,18 +66,18 @@ ${receiptData.footer_message || 'Thank you!'}
         sx={{
           maxWidth: 440,
           width: '95vw',
-          bgcolor: '#131522',
-          borderColor: '#2e3450',
-          color: '#f4f4f5',
+          bgcolor: 'background.surface',
+          borderColor: 'divider',
+          color: 'text.primary',
           borderRadius: '20px',
           p: 3
         }}
       >
-        <DialogTitle sx={{ color: '#f4f4f5', display: 'flex', alignItems: 'center', gap: 1 }}>
+        <DialogTitle sx={{ color: 'text.primary', display: 'flex', alignItems: 'center', gap: 1 }}>
           <CheckCircle size={22} color="#10b981" />
           <span>Payment Successful — Receipt</span>
         </DialogTitle>
-        <Divider sx={{ my: 1.5, borderColor: '#262a40' }} />
+        <Divider sx={{ my: 1.5, borderColor: 'divider' }} />
 
         <DialogContent sx={{ maxHeight: '68vh', overflowY: 'auto' }}>
           {/* Printable Receipt Paper Container */}

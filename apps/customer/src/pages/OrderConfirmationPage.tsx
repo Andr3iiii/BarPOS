@@ -16,6 +16,7 @@ import { CheckCircle2, Clock, Sparkles, ArrowLeft, RefreshCw, AlertCircle } from
 import { Order, BAR_SETTINGS } from '../types';
 import { API_BASE, fetchOrderByRef } from '../services/api';
 import { connectRealtime } from '../../../../shared/realtime';
+import { ThemeToggle } from '../components/ThemeToggle';
 
 export const OrderConfirmationPage: React.FC = () => {
   const { reference } = useParams<{ reference: string }>();
@@ -92,26 +93,31 @@ export const OrderConfirmationPage: React.FC = () => {
     <Box
       sx={{
         minHeight: '100vh',
-        bgcolor: '#090a10',
+        bgcolor: 'background.body',
         p: 2.5,
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        justifyContent: 'center'
+        justifyContent: 'center',
+        position: 'relative'
       }}
     >
+      <Box sx={{ position: 'absolute', top: 20, right: 20 }}>
+        <ThemeToggle size="md" variant="outlined" />
+      </Box>
+
       <Card
         variant="outlined"
         sx={{
           maxWidth: 420,
           width: '100%',
-          bgcolor: '#12141f',
-          borderColor: isPaid ? '#10b981' : '#2d334d',
+          bgcolor: 'background.surface',
+          borderColor: isPaid ? 'success.500' : 'divider',
           borderRadius: '24px',
           p: 3,
           boxShadow: isPaid
             ? '0 12px 32px rgba(16, 185, 129, 0.2)'
-            : '0 12px 32px rgba(0, 0, 0, 0.5)',
+            : 'md',
           textAlign: 'center',
           transition: 'all 0.3s ease'
         }}
@@ -130,7 +136,7 @@ export const OrderConfirmationPage: React.FC = () => {
           ) : (
             <Box sx={{ mb: 2 }}>
               <Clock size={60} color="#ff7a45" style={{ margin: '0 auto' }} />
-              <Typography level="h2" sx={{ color: '#f4f4f5', mt: 1.5, fontWeight: 700 }}>
+              <Typography level="h2" sx={{ color: 'text.primary', mt: 1.5, fontWeight: 700 }}>
                 ORDER CONFIRMED
               </Typography>
               <Chip variant="soft" color="warning" size="md" sx={{ mt: 1, fontWeight: 600 }}>
@@ -139,7 +145,7 @@ export const OrderConfirmationPage: React.FC = () => {
             </Box>
           )}
 
-          <Typography level="title-md" sx={{ color: '#a1a1aa', mt: 1 }}>
+          <Typography level="title-md" sx={{ color: 'text.secondary', mt: 1 }}>
             {BAR_SETTINGS.NAME}
           </Typography>
 
@@ -149,8 +155,8 @@ export const OrderConfirmationPage: React.FC = () => {
             size="lg"
             sx={{
               mt: 1.5,
-              borderColor: '#383e5c',
-              color: '#f4f4f5',
+              borderColor: 'divider',
+              color: 'text.primary',
               fontWeight: 700,
               px: 2
             }}
@@ -160,23 +166,24 @@ export const OrderConfirmationPage: React.FC = () => {
 
           {/* Order Reference Box */}
           <Sheet
-            variant="solid"
+            variant="plain"
             sx={{
               my: 3,
               p: 2.5,
               borderRadius: '16px',
-              bgcolor: '#191c2b',
-              border: '2px dashed #3a4163',
+              bgcolor: 'background.level1',
+              border: '2px dashed',
+              borderColor: 'divider',
               width: '100%'
             }}
           >
-            <Typography level="body-xs" sx={{ color: '#8f95b2', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+            <Typography level="body-xs" sx={{ color: 'text.secondary', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
               Your Order Reference
             </Typography>
             <Typography
               level="h1"
               sx={{
-                color: '#ff7a45',
+                color: 'primary.500',
                 letterSpacing: '0.08em',
                 fontWeight: 800,
                 fontSize: '2.4rem',
@@ -185,7 +192,7 @@ export const OrderConfirmationPage: React.FC = () => {
             >
               {reference || order?.reference_no}
             </Typography>
-            <Typography level="title-lg" sx={{ color: '#f4f4f5', fontWeight: 700 }}>
+            <Typography level="title-lg" sx={{ color: 'text.primary', fontWeight: 700 }}>
               Total: ₱{Number(order?.total || 0).toFixed(2)}
             </Typography>
           </Sheet>
@@ -197,12 +204,12 @@ export const OrderConfirmationPage: React.FC = () => {
               color="primary"
               sx={{
                 mb: 3,
-                bgcolor: 'rgba(224, 86, 36, 0.12)',
-                borderColor: 'rgba(224, 86, 36, 0.3)',
+                bgcolor: 'primary.softBg',
+                borderColor: 'primary.outlinedBorder',
                 textAlign: 'left'
               }}
             >
-              <Typography level="body-sm" sx={{ color: '#f4f4f5', lineHeight: 1.5 }}>
+              <Typography level="body-sm" sx={{ color: 'text.primary', lineHeight: 1.5 }}>
                 👉 <strong>Next Step:</strong> Please proceed to the counter and provide your order reference number (
                 <strong>{reference}</strong>) to the cashier for payment.
               </Typography>
@@ -218,7 +225,7 @@ export const OrderConfirmationPage: React.FC = () => {
                 textAlign: 'left'
               }}
             >
-              <Typography level="body-sm" sx={{ color: '#f4f4f5', lineHeight: 1.5 }}>
+              <Typography level="body-sm" sx={{ color: 'text.primary', lineHeight: 1.5 }}>
                 🎉 <strong>Thank you!</strong> Your payment has been received by the cashier. Your drinks and food are
                 being prepared and will be delivered to your table.
               </Typography>
@@ -228,16 +235,16 @@ export const OrderConfirmationPage: React.FC = () => {
           {/* Items Summary if available */}
           {order?.items && order.items.length > 0 && (
             <Box sx={{ width: '100%', mb: 3, textAlign: 'left' }}>
-              <Typography level="body-xs" sx={{ color: '#71717a', textTransform: 'uppercase', mb: 1 }}>
+              <Typography level="body-xs" sx={{ color: 'text.secondary', textTransform: 'uppercase', mb: 1 }}>
                 Order Items ({order.items.length})
               </Typography>
               <Stack spacing={0.8}>
                 {order.items.map((item, idx) => (
                   <Stack key={idx} direction="row" justifyContent="space-between">
-                    <Typography level="body-sm" sx={{ color: '#d4d4d8' }}>
+                    <Typography level="body-sm" sx={{ color: 'text.primary' }}>
                       {item.product_name} × {item.quantity}
                     </Typography>
-                    <Typography level="body-sm" sx={{ color: '#ff7a45' }}>
+                    <Typography level="body-sm" sx={{ color: 'primary.500', fontWeight: 600 }}>
                       ₱{Number(item.subtotal).toFixed(2)}
                     </Typography>
                   </Stack>
@@ -246,7 +253,7 @@ export const OrderConfirmationPage: React.FC = () => {
             </Box>
           )}
 
-          <Divider sx={{ my: 1.5, borderColor: '#23273c', width: '100%' }} />
+          <Divider sx={{ my: 1.5, borderColor: 'divider', width: '100%' }} />
 
           {/* Order more button */}
           <Button
@@ -258,11 +265,11 @@ export const OrderConfirmationPage: React.FC = () => {
             }}
             startDecorator={<ArrowLeft size={16} />}
             sx={{
-              borderColor: '#383e5c',
-              color: '#d4d4d8',
+              borderColor: 'divider',
+              color: 'text.secondary',
               borderRadius: '12px',
               py: 1.2,
-              '&:hover': { bgcolor: '#1c2032', borderColor: '#ff7a45', color: '#fff' }
+              '&:hover': { bgcolor: 'background.level1', color: 'text.primary' }
             }}
           >
             Order More for Table {tableNumber || order?.table_number || '1'}

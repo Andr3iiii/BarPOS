@@ -44,9 +44,9 @@ export const ProductGridCard: React.FC<ProductGridCardProps> = ({
       onClick={() => onOpenDetails(product)}
       sx={{
         cursor: 'pointer',
-        bgcolor: '#12141f',
-        borderColor: quantityInCart > 0 ? 'rgba(224, 86, 36, 0.6)' : '#222638',
-        boxShadow: quantityInCart > 0 ? '0 0 16px rgba(224, 86, 36, 0.2)' : '0 4px 14px rgba(0,0,0,0.25)',
+        bgcolor: 'background.surface',
+        borderColor: quantityInCart > 0 ? 'primary.500' : 'divider',
+        boxShadow: quantityInCart > 0 ? '0 0 16px rgba(224, 86, 36, 0.2)' : 'sm',
         p: 0,
         borderRadius: '16px',
         overflow: 'hidden',
@@ -55,8 +55,8 @@ export const ProductGridCard: React.FC<ProductGridCardProps> = ({
         transition: 'transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease',
         '&:hover': {
           transform: 'translateY(-3px)',
-          borderColor: quantityInCart > 0 ? '#e05624' : '#394060',
-          boxShadow: '0 8px 24px rgba(0,0,0,0.45)'
+          borderColor: 'primary.500',
+          boxShadow: 'md'
         }
       }}
     >
@@ -66,7 +66,7 @@ export const ProductGridCard: React.FC<ProductGridCardProps> = ({
           position: 'relative',
           width: '100%',
           aspectRatio: '4 / 3',
-          bgcolor: '#191d2d',
+          bgcolor: 'background.level1',
           overflow: 'hidden'
         }}
       >
@@ -94,7 +94,7 @@ export const ProductGridCard: React.FC<ProductGridCardProps> = ({
           sx={{
             position: 'absolute',
             inset: 0,
-            background: 'linear-gradient(to top, rgba(18, 20, 31, 0.75) 0%, transparent 60%)',
+            background: 'linear-gradient(to top, rgba(0, 0, 0, 0.4) 0%, transparent 60%)',
             pointerEvents: 'none'
           }}
         />
@@ -110,11 +110,11 @@ export const ProductGridCard: React.FC<ProductGridCardProps> = ({
               position: 'absolute',
               top: 8,
               right: 8,
-              bgcolor: '#e05624',
+              bgcolor: 'primary.solidBg',
               color: '#fff',
               fontWeight: 700,
               fontSize: '0.7rem',
-              boxShadow: '0 2px 8px rgba(0,0,0,0.5)',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
               px: 1
             }}
           >
@@ -137,7 +137,7 @@ export const ProductGridCard: React.FC<ProductGridCardProps> = ({
           <Typography
             level="title-sm"
             sx={{
-              color: '#f4f4f5',
+              color: 'text.primary',
               fontWeight: 600,
               fontSize: { xs: '0.85rem', sm: '0.95rem' },
               lineHeight: 1.25,
@@ -155,7 +155,7 @@ export const ProductGridCard: React.FC<ProductGridCardProps> = ({
             <Typography
               level="body-xs"
               sx={{
-                color: '#8b92ad',
+                color: 'text.secondary',
                 mt: 0.5,
                 lineHeight: 1.3,
                 fontSize: { xs: '0.7rem', sm: '0.78rem' },
@@ -182,7 +182,7 @@ export const ProductGridCard: React.FC<ProductGridCardProps> = ({
           <Typography
             level="title-md"
             sx={{
-              color: '#ff8a4c',
+              color: 'primary.500',
               fontWeight: 800,
               fontSize: { xs: '0.92rem', sm: '1.05rem' },
               letterSpacing: '0.01em'
@@ -198,10 +198,11 @@ export const ProductGridCard: React.FC<ProductGridCardProps> = ({
               alignItems="center"
               spacing={0.5}
               sx={{
-                bgcolor: '#1d2133',
+                bgcolor: 'background.level1',
                 borderRadius: '10px',
                 p: 0.25,
-                border: '1px solid #323854'
+                border: '1px solid',
+                borderColor: 'divider'
               }}
             >
               <IconButton
@@ -209,7 +210,7 @@ export const ProductGridCard: React.FC<ProductGridCardProps> = ({
                 variant="plain"
                 onClick={() => onUpdateQuantity(product.id, -1)}
                 sx={{
-                  color: '#ff7a45',
+                  color: 'primary.500',
                   minWidth: { xs: 24, sm: 28 },
                   minHeight: { xs: 24, sm: 28 },
                   p: 0
@@ -220,7 +221,7 @@ export const ProductGridCard: React.FC<ProductGridCardProps> = ({
               <Typography
                 level="title-sm"
                 sx={{
-                  color: '#fff',
+                  color: 'text.primary',
                   minWidth: 18,
                   textAlign: 'center',
                   fontSize: '0.85rem',
@@ -234,7 +235,7 @@ export const ProductGridCard: React.FC<ProductGridCardProps> = ({
                 variant="plain"
                 onClick={() => onUpdateQuantity(product.id, 1)}
                 sx={{
-                  color: '#ff7a45',
+                  color: 'primary.500',
                   minWidth: { xs: 24, sm: 28 },
                   minHeight: { xs: 24, sm: 28 },
                   p: 0

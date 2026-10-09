@@ -198,19 +198,19 @@ export const ProductsPage: React.FC = () => {
       </Stack>
 
       {/* Filter and Search Bar */}
-      <Card variant="outlined" sx={{ bgcolor: '#12141f', borderColor: '#202438', p: 2, mb: 3 }}>
+      <Card variant="outlined" sx={{ bgcolor: 'background.surface', borderColor: 'divider', p: 2, mb: 3 }}>
         <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} alignItems="center">
           <Input
             placeholder="Search products..."
             startDecorator={<Search size={18} color="#71717a" />}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            sx={{ flex: 1, bgcolor: '#181b2a', borderColor: '#2e3450', color: '#fff' }}
+            sx={{ flex: 1, bgcolor: 'background.level1', borderColor: 'divider', color: 'text.primary' }}
           />
           <Select<string | number>
             value={selectedCategory}
             onChange={(_, val) => val !== null && setSelectedCategory(val as any)}
-            sx={{ minWidth: 220, bgcolor: '#181b2a', borderColor: '#2e3450', color: '#fff' }}
+            sx={{ minWidth: 220, bgcolor: 'background.level1', borderColor: 'divider', color: 'text.primary' }}
           >
             <Option value="ALL">All Categories</Option>
             {categories.map((c) => (
@@ -223,8 +223,8 @@ export const ProductsPage: React.FC = () => {
       </Card>
 
       {/* Products Table */}
-      <Card variant="outlined" sx={{ bgcolor: '#12141f', borderColor: '#202438', p: 0, overflow: 'hidden' }}>
-        <Table hoverRow sx={{ '& th': { bgcolor: '#181b2a', color: '#8f95b2' }, '& td': { color: '#e4e4e7' } }}>
+      <Card variant="outlined" sx={{ bgcolor: 'background.surface', borderColor: 'divider', p: 0, overflow: 'hidden' }}>
+        <Table hoverRow sx={{ '& th': { bgcolor: 'background.level1', color: 'text.secondary' }, '& td': { color: 'text.primary' } }}>
           <thead>
             <tr>
               <th>Product Name</th>
@@ -238,11 +238,11 @@ export const ProductsPage: React.FC = () => {
             {filteredProducts.map((p) => (
               <tr key={p.id}>
                 <td>
-                  <Typography level="title-sm" sx={{ color: '#fff' }}>
+                  <Typography level="title-sm" sx={{ color: 'text.primary' }}>
                     {p.name}
                   </Typography>
                   {p.description && (
-                    <Typography level="body-xs" sx={{ color: '#71717a' }}>
+                    <Typography level="body-xs" sx={{ color: 'text.secondary' }}>
                       {p.description}
                     </Typography>
                   )}
@@ -294,10 +294,10 @@ export const ProductsPage: React.FC = () => {
       <Modal open={isModalOpen} onClose={() => setIsModalOpen(false)}>
         <ModalDialog
           variant="outlined"
-          sx={{ maxWidth: 500, width: '92vw', bgcolor: '#131522', borderColor: '#2e3450', color: '#fff' }}
+          sx={{ maxWidth: 500, width: '92vw', bgcolor: 'background.surface', borderColor: 'divider', color: 'text.primary' }}
         >
-          <DialogTitle>{editingProduct ? 'Edit Product' : 'Add New Product'}</DialogTitle>
-          <Divider sx={{ my: 1.5, borderColor: '#262a40' }} />
+          <DialogTitle sx={{ color: 'text.primary' }}>{editingProduct ? 'Edit Product' : 'Add New Product'}</DialogTitle>
+          <Divider sx={{ my: 1.5, borderColor: 'divider' }} />
           <DialogContent>
             {formError && (
               <Alert color="danger" sx={{ mb: 2 }}>
@@ -307,21 +307,21 @@ export const ProductsPage: React.FC = () => {
             <form onSubmit={handleSaveProduct}>
               <Stack spacing={2}>
                 <FormControl>
-                  <FormLabel sx={{ color: '#a1a1aa' }}>Product Name</FormLabel>
+                  <FormLabel sx={{ color: 'text.secondary' }}>Product Name</FormLabel>
                   <Input
                     required
                     value={formName}
                     onChange={(e) => setFormName(e.target.value)}
-                    sx={{ bgcolor: '#181b2a', borderColor: '#2e3450', color: '#fff' }}
+                    sx={{ bgcolor: 'background.level1', borderColor: 'divider', color: 'text.primary' }}
                   />
                 </FormControl>
 
                 <FormControl>
-                  <FormLabel sx={{ color: '#a1a1aa' }}>Category</FormLabel>
+                  <FormLabel sx={{ color: 'text.secondary' }}>Category</FormLabel>
                   <Select
                     value={formCategory}
                     onChange={(_, val) => val && setFormCategory(Number(val))}
-                    sx={{ bgcolor: '#181b2a', borderColor: '#2e3450', color: '#fff' }}
+                    sx={{ bgcolor: 'background.level1', borderColor: 'divider', color: 'text.primary' }}
                   >
                     {categories.map((c) => (
                       <Option key={c.id} value={c.id}>
@@ -332,34 +332,34 @@ export const ProductsPage: React.FC = () => {
                 </FormControl>
 
                 <FormControl>
-                  <FormLabel sx={{ color: '#a1a1aa' }}>Price (₱)</FormLabel>
+                  <FormLabel sx={{ color: 'text.secondary' }}>Price (₱)</FormLabel>
                   <Input
                     required
                     type="number"
                     slotProps={{ input: { step: '0.01' } }}
                     value={formPrice}
                     onChange={(e) => setFormPrice(e.target.value)}
-                    sx={{ bgcolor: '#181b2a', borderColor: '#2e3450', color: '#fff' }}
+                    sx={{ bgcolor: 'background.level1', borderColor: 'divider', color: 'text.primary' }}
                   />
                 </FormControl>
 
                 <FormControl>
-                  <FormLabel sx={{ color: '#a1a1aa' }}>Description</FormLabel>
+                  <FormLabel sx={{ color: 'text.secondary' }}>Description</FormLabel>
                   <Input
                     value={formDesc}
                     onChange={(e) => setFormDesc(e.target.value)}
                     placeholder="Short ingredients or flavor notes"
-                    sx={{ bgcolor: '#181b2a', borderColor: '#2e3450', color: '#fff' }}
+                    sx={{ bgcolor: 'background.level1', borderColor: 'divider', color: 'text.primary' }}
                   />
                 </FormControl>
 
                 <FormControl orientation="horizontal" sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
-                  <FormLabel sx={{ color: '#a1a1aa' }}>Available on Menu</FormLabel>
+                  <FormLabel sx={{ color: 'text.secondary' }}>Available on Menu</FormLabel>
                   <Switch checked={formAvailable} onChange={(e) => setFormAvailable(e.target.checked)} />
                 </FormControl>
 
                 <Stack direction="row" spacing={1.5} sx={{ mt: 2 }}>
-                  <Button variant="outlined" onClick={() => setIsModalOpen(false)} sx={{ borderColor: '#333' }}>
+                  <Button variant="outlined" onClick={() => setIsModalOpen(false)} sx={{ borderColor: 'divider', color: 'text.secondary' }}>
                     Cancel
                   </Button>
                   <Button

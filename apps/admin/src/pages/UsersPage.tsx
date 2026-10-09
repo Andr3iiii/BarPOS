@@ -146,8 +146,8 @@ export const UsersPage: React.FC = () => {
         </Button>
       </Stack>
 
-      <Card variant="outlined" sx={{ bgcolor: '#12141f', borderColor: '#202438', p: 0, overflow: 'hidden' }}>
-        <Table hoverRow sx={{ '& th': { bgcolor: '#181b2a', color: '#8f95b2' }, '& td': { color: '#e4e4e7' } }}>
+      <Card variant="outlined" sx={{ bgcolor: 'background.surface', borderColor: 'divider', p: 0, overflow: 'hidden' }}>
+        <Table hoverRow sx={{ '& th': { bgcolor: 'background.level1', color: 'text.secondary' }, '& td': { color: 'text.primary' } }}>
           <thead>
             <tr>
               <th>Full Name</th>
@@ -161,7 +161,7 @@ export const UsersPage: React.FC = () => {
             {users.map((u) => (
               <tr key={u.id}>
                 <td>
-                  <Typography level="title-sm" sx={{ color: '#fff' }}>
+                  <Typography level="title-sm" sx={{ color: 'text.primary' }}>
                     {u.full_name}
                   </Typography>
                 </td>
@@ -184,14 +184,14 @@ export const UsersPage: React.FC = () => {
                     onChange={() => toggleUserActive(u)}
                     color={u.is_active ? 'success' : 'neutral'}
                     endDecorator={
-                      <Typography level="body-xs" sx={{ color: u.is_active ? '#34d399' : '#71717a' }}>
+                      <Typography level="body-xs" sx={{ color: u.is_active ? '#10b981' : 'text.tertiary' }}>
                         {u.is_active ? 'Active' : 'Disabled'}
                       </Typography>
                     }
                   />
                 </td>
                 <td>
-                  <IconButton size="sm" variant="plain" onClick={() => openEdit(u)} sx={{ color: '#ff7a45' }}>
+                  <IconButton size="sm" variant="plain" onClick={() => openEdit(u)} sx={{ color: 'primary.500' }}>
                     <Edit2 size={16} />
                   </IconButton>
                 </td>
@@ -205,10 +205,10 @@ export const UsersPage: React.FC = () => {
       <Modal open={isModalOpen} onClose={() => setIsModalOpen(false)}>
         <ModalDialog
           variant="outlined"
-          sx={{ maxWidth: 440, width: '92vw', bgcolor: '#131522', borderColor: '#2e3450', color: '#fff' }}
+          sx={{ maxWidth: 440, width: '92vw', bgcolor: 'background.surface', borderColor: 'divider', color: 'text.primary' }}
         >
-          <DialogTitle>{editingUser ? 'Edit User' : 'Create User Account'}</DialogTitle>
-          <Divider sx={{ my: 1.5, borderColor: '#262a40' }} />
+          <DialogTitle sx={{ color: 'text.primary' }}>{editingUser ? 'Edit User' : 'Create User Account'}</DialogTitle>
+          <Divider sx={{ my: 1.5, borderColor: 'divider' }} />
           <DialogContent>
             {errorMsg && (
               <Alert color="danger" sx={{ mb: 2 }}>
@@ -218,45 +218,45 @@ export const UsersPage: React.FC = () => {
             <form onSubmit={handleSave}>
               <Stack spacing={2}>
                 <FormControl>
-                  <FormLabel sx={{ color: '#a1a1aa' }}>Full Name</FormLabel>
+                  <FormLabel sx={{ color: 'text.secondary' }}>Full Name</FormLabel>
                   <Input
                     required
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
-                    sx={{ bgcolor: '#181b2a', borderColor: '#2e3450', color: '#fff' }}
+                    sx={{ bgcolor: 'background.level1', borderColor: 'divider', color: 'text.primary' }}
                   />
                 </FormControl>
 
                 {!editingUser && (
                   <FormControl>
-                    <FormLabel sx={{ color: '#a1a1aa' }}>Username</FormLabel>
+                    <FormLabel sx={{ color: 'text.secondary' }}>Username</FormLabel>
                     <Input
                       required
                       value={username}
                       onChange={(e) => setUsername(e.target.value)}
-                      sx={{ bgcolor: '#181b2a', borderColor: '#2e3450', color: '#fff' }}
+                      sx={{ bgcolor: 'background.level1', borderColor: 'divider', color: 'text.primary' }}
                     />
                   </FormControl>
                 )}
 
                 <FormControl>
-                  <FormLabel sx={{ color: '#a1a1aa' }}>
+                  <FormLabel sx={{ color: 'text.secondary' }}>
                     {editingUser ? 'Reset Password (leave blank to keep current)' : 'Password'}
                   </FormLabel>
                   <Input
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    sx={{ bgcolor: '#181b2a', borderColor: '#2e3450', color: '#fff' }}
+                    sx={{ bgcolor: 'background.level1', borderColor: 'divider', color: 'text.primary' }}
                   />
                 </FormControl>
 
                 <FormControl>
-                  <FormLabel sx={{ color: '#a1a1aa' }}>Role</FormLabel>
+                  <FormLabel sx={{ color: 'text.secondary' }}>Role</FormLabel>
                   <Select
                     value={role}
                     onChange={(_, val) => val && setRole(val as any)}
-                    sx={{ bgcolor: '#181b2a', borderColor: '#2e3450', color: '#fff' }}
+                    sx={{ bgcolor: 'background.level1', borderColor: 'divider', color: 'text.primary' }}
                   >
                     <Option value="cashier">Cashier (POS & Payments Only)</Option>
                     <Option value="admin">Administrator (Full Access)</Option>
@@ -264,14 +264,14 @@ export const UsersPage: React.FC = () => {
                 </FormControl>
 
                 <Stack direction="row" spacing={1.5} sx={{ mt: 2 }}>
-                  <Button variant="outlined" onClick={() => setIsModalOpen(false)} sx={{ borderColor: '#333' }}>
+                  <Button variant="outlined" onClick={() => setIsModalOpen(false)} sx={{ borderColor: 'divider', color: 'text.secondary' }}>
                     Cancel
                   </Button>
                   <Button
                     variant="solid"
                     type="submit"
                     loading={submitting}
-                    sx={{ flex: 1, bgcolor: '#e05624', '&:hover': { bgcolor: '#c8461b' } }}
+                    sx={{ flex: 1, bgcolor: 'primary.solidBg', color: '#fff', '&:hover': { bgcolor: 'primary.solidHoverBg' } }}
                   >
                     Save User
                   </Button>

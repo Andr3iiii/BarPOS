@@ -99,25 +99,25 @@ export const DashboardPage: React.FC = () => {
         <Card
           variant="outlined"
           sx={{
-            bgcolor: '#131522',
-            borderColor: '#2e3450',
+            bgcolor: 'background.surface',
+            borderColor: 'divider',
             borderRadius: '16px',
             p: 2.5
           }}
         >
           <CardContent>
             <Stack direction="row" justifyContent="space-between" alignItems="center">
-              <Typography level="body-xs" sx={{ color: '#8f95b2', textTransform: 'uppercase', fontWeight: 700 }}>
+              <Typography level="body-xs" sx={{ color: 'text.secondary', textTransform: 'uppercase', fontWeight: 700 }}>
                 Today's Sales
               </Typography>
-              <Box sx={{ p: 1, borderRadius: '10px', bgcolor: 'rgba(224, 86, 36, 0.15)', color: '#ff7a45' }}>
+              <Box sx={{ p: 1, borderRadius: '10px', bgcolor: 'primary.softBg', color: 'primary.500' }}>
                 <DollarSign size={20} />
               </Box>
             </Stack>
-            <Typography level="h2" sx={{ color: '#ff7a45', fontWeight: 800, mt: 1.5 }}>
+            <Typography level="h2" sx={{ color: 'primary.500', fontWeight: 800, mt: 1.5 }}>
               ₱{metrics ? metrics.today_sales.toFixed(2) : '0.00'}
             </Typography>
-            <Typography level="body-xs" sx={{ color: '#71717a', mt: 0.5 }}>
+            <Typography level="body-xs" sx={{ color: 'text.tertiary', mt: 0.5 }}>
               Gross revenue collected today
             </Typography>
           </CardContent>
@@ -127,25 +127,25 @@ export const DashboardPage: React.FC = () => {
         <Card
           variant="outlined"
           sx={{
-            bgcolor: '#131522',
-            borderColor: '#2e3450',
+            bgcolor: 'background.surface',
+            borderColor: 'divider',
             borderRadius: '16px',
             p: 2.5
           }}
         >
           <CardContent>
             <Stack direction="row" justifyContent="space-between" alignItems="center">
-              <Typography level="body-xs" sx={{ color: '#8f95b2', textTransform: 'uppercase', fontWeight: 700 }}>
+              <Typography level="body-xs" sx={{ color: 'text.secondary', textTransform: 'uppercase', fontWeight: 700 }}>
                 Pending Orders
               </Typography>
-              <Box sx={{ p: 1, borderRadius: '10px', bgcolor: 'rgba(234, 179, 8, 0.15)', color: '#facc15' }}>
+              <Box sx={{ p: 1, borderRadius: '10px', bgcolor: 'rgba(234, 179, 8, 0.15)', color: '#eab308' }}>
                 <Clock size={20} />
               </Box>
             </Stack>
-            <Typography level="h2" sx={{ color: '#facc15', fontWeight: 800, mt: 1.5 }}>
+            <Typography level="h2" sx={{ color: '#eab308', fontWeight: 800, mt: 1.5 }}>
               {metrics ? metrics.pending_orders : 0}
             </Typography>
-            <Typography level="body-xs" sx={{ color: '#71717a', mt: 0.5 }}>
+            <Typography level="body-xs" sx={{ color: 'text.tertiary', mt: 0.5 }}>
               Awaiting counter payment
             </Typography>
           </CardContent>
@@ -155,25 +155,25 @@ export const DashboardPage: React.FC = () => {
         <Card
           variant="outlined"
           sx={{
-            bgcolor: '#131522',
-            borderColor: '#2e3450',
+            bgcolor: 'background.surface',
+            borderColor: 'divider',
             borderRadius: '16px',
             p: 2.5
           }}
         >
           <CardContent>
             <Stack direction="row" justifyContent="space-between" alignItems="center">
-              <Typography level="body-xs" sx={{ color: '#8f95b2', textTransform: 'uppercase', fontWeight: 700 }}>
+              <Typography level="body-xs" sx={{ color: 'text.secondary', textTransform: 'uppercase', fontWeight: 700 }}>
                 Paid Orders
               </Typography>
-              <Box sx={{ p: 1, borderRadius: '10px', bgcolor: 'rgba(16, 185, 129, 0.15)', color: '#34d399' }}>
+              <Box sx={{ p: 1, borderRadius: '10px', bgcolor: 'rgba(16, 185, 129, 0.15)', color: '#10b981' }}>
                 <CheckCircle2 size={20} />
               </Box>
             </Stack>
-            <Typography level="h2" sx={{ color: '#34d399', fontWeight: 800, mt: 1.5 }}>
+            <Typography level="h2" sx={{ color: '#10b981', fontWeight: 800, mt: 1.5 }}>
               {metrics ? metrics.paid_orders : 0}
             </Typography>
-            <Typography level="body-xs" sx={{ color: '#71717a', mt: 0.5 }}>
+            <Typography level="body-xs" sx={{ color: 'text.tertiary', mt: 0.5 }}>
               Completed transactions today
             </Typography>
           </CardContent>
@@ -183,15 +183,15 @@ export const DashboardPage: React.FC = () => {
         <Card
           variant="outlined"
           sx={{
-            bgcolor: '#131522',
-            borderColor: '#2e3450',
+            bgcolor: 'background.surface',
+            borderColor: 'divider',
             borderRadius: '16px',
             p: 2.5
           }}
         >
           <CardContent>
             <Stack direction="row" justifyContent="space-between" alignItems="center">
-              <Typography level="body-xs" sx={{ color: '#8f95b2', textTransform: 'uppercase', fontWeight: 700 }}>
+              <Typography level="body-xs" sx={{ color: 'text.secondary', textTransform: 'uppercase', fontWeight: 700 }}>
                 Total Orders
               </Typography>
               <Box sx={{ p: 1, borderRadius: '10px', bgcolor: 'rgba(99, 102, 241, 0.15)', color: '#818cf8' }}>
@@ -201,7 +201,7 @@ export const DashboardPage: React.FC = () => {
             <Typography level="h2" sx={{ color: '#818cf8', fontWeight: 800, mt: 1.5 }}>
               {metrics ? metrics.total_orders : 0}
             </Typography>
-            <Typography level="body-xs" sx={{ color: '#71717a', mt: 0.5 }}>
+            <Typography level="body-xs" sx={{ color: 'text.tertiary', mt: 0.5 }}>
               All tickets created today
             </Typography>
           </CardContent>
@@ -210,19 +210,20 @@ export const DashboardPage: React.FC = () => {
 
       {/* POS Quick Instructions */}
       <Sheet
-        variant="solid"
+        variant="plain"
         sx={{
           mt: 4,
           p: 3,
           borderRadius: '16px',
-          bgcolor: '#131522',
-          border: '1px solid #23273c'
+          bgcolor: 'background.surface',
+          border: '1px solid',
+          borderColor: 'divider'
         }}
       >
-        <Typography level="title-md" sx={{ color: '#fff', mb: 1, fontWeight: 700 }}>
+        <Typography level="title-md" sx={{ color: 'text.primary', mb: 1, fontWeight: 700 }}>
           ⚡ Cashier Quick Workflow Tips
         </Typography>
-        <Stack spacing={1} sx={{ color: '#a1a1aa', fontSize: '0.9rem' }}>
+        <Stack spacing={1} sx={{ color: 'text.secondary', fontSize: '0.9rem' }}>
           <div>
             1. <strong>Customer Scans QR:</strong> Customer scans their table QR code and submits an order from their mobile phone.
           </div>

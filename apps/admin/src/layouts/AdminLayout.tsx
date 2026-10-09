@@ -23,6 +23,7 @@ import {
 } from 'lucide-react';
 import { BAR_SETTINGS } from '../types';
 import { getStoredUser, clearAdminSession } from '../services/api';
+import { ThemeToggle } from '../components/ThemeToggle';
 
 export const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const navigate = useNavigate();
@@ -44,14 +45,15 @@ export const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children 
   ];
 
   return (
-    <Box sx={{ display: 'flex', minHeight: '100vh', bgcolor: '#0b0d14', color: '#f4f4f5' }}>
+    <Box sx={{ display: 'flex', minHeight: '100vh', bgcolor: 'background.body', color: 'text.primary' }}>
       {/* Sidebar Navigation */}
       <Sheet
-        variant="solid"
+        variant="plain"
         sx={{
           width: 260,
-          bgcolor: '#12141f',
-          borderRight: '1px solid #202438',
+          bgcolor: 'background.surface',
+          borderRight: '1px solid',
+          borderColor: 'divider',
           display: 'flex',
           flexDirection: 'column',
           p: 2.5,
@@ -61,29 +63,32 @@ export const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children 
           zIndex: 50
         }}
       >
-        {/* Brand */}
-        <Stack direction="row" spacing={1.5} alignItems="center" sx={{ mb: 3, px: 1 }}>
-          <Box
-            sx={{
-              p: 1,
-              borderRadius: '12px',
-              bgcolor: 'rgba(224, 86, 36, 0.15)',
-              color: '#ff7a45'
-            }}
-          >
-            <Beer size={22} />
-          </Box>
-          <Box>
-            <Typography level="title-sm" sx={{ color: '#fff', fontWeight: 800, lineHeight: 1.2 }}>
-              {BAR_SETTINGS.NAME}
-            </Typography>
-            <Typography level="body-xs" sx={{ color: '#ff7a45', fontWeight: 600 }}>
-              ADMIN PORTAL
-            </Typography>
-          </Box>
+        {/* Brand & Theme Toggle */}
+        <Stack direction="row" spacing={1.5} justifyContent="space-between" alignItems="center" sx={{ mb: 3, px: 0.5 }}>
+          <Stack direction="row" spacing={1.5} alignItems="center">
+            <Box
+              sx={{
+                p: 1,
+                borderRadius: '12px',
+                bgcolor: 'primary.softBg',
+                color: 'primary.500'
+              }}
+            >
+              <Beer size={22} />
+            </Box>
+            <Box>
+              <Typography level="title-sm" sx={{ color: 'text.primary', fontWeight: 800, lineHeight: 1.2 }}>
+                {BAR_SETTINGS.NAME}
+              </Typography>
+              <Typography level="body-xs" sx={{ color: 'primary.500', fontWeight: 600 }}>
+                ADMIN PORTAL
+              </Typography>
+            </Box>
+          </Stack>
+          <ThemeToggle size="sm" variant="outlined" />
         </Stack>
 
-        <Divider sx={{ mb: 2.5, borderColor: '#202438' }} />
+        <Divider sx={{ mb: 2.5, borderColor: 'divider' }} />
 
         {/* Navigation Items */}
         <Stack spacing={0.8} sx={{ flex: 1 }}>
@@ -98,15 +103,15 @@ export const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children 
                 startDecorator={<Icon size={18} />}
                 sx={{
                   justifyContent: 'flex-start',
-                  bgcolor: isActive ? '#e05624' : 'transparent',
-                  color: isActive ? '#fff' : '#a1a1aa',
+                  bgcolor: isActive ? 'primary.solidBg' : 'transparent',
+                  color: isActive ? '#fff' : 'text.secondary',
                   borderRadius: '12px',
                   py: 1.2,
                   px: 1.5,
                   fontWeight: 600,
                   '&:hover': {
-                    bgcolor: isActive ? '#c8461b' : '#191c2b',
-                    color: '#fff'
+                    bgcolor: isActive ? 'primary.solidHoverBg' : 'background.level1',
+                    color: isActive ? '#fff' : 'text.primary'
                   }
                 }}
               >
@@ -116,11 +121,11 @@ export const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children 
           })}
         </Stack>
 
-        <Divider sx={{ my: 2, borderColor: '#202438' }} />
+        <Divider sx={{ my: 2, borderColor: 'divider' }} />
 
         {/* Quick link to Mobile Customer Menu & POS */}
         <Box sx={{ mb: 2, px: 1 }}>
-          <Typography level="body-xs" sx={{ color: '#71717a', mb: 1, textTransform: 'uppercase' }}>
+          <Typography level="body-xs" sx={{ color: 'text.tertiary', mb: 1, textTransform: 'uppercase' }}>
             Quick Links
           </Typography>
           <Stack spacing={0.6}>
@@ -130,7 +135,7 @@ export const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children 
               rel="noreferrer"
               style={{
                 textDecoration: 'none',
-                color: '#ff7a45',
+                color: '#e05624',
                 fontSize: '0.82rem',
                 display: 'flex',
                 alignItems: 'center',
@@ -145,7 +150,7 @@ export const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children 
               rel="noreferrer"
               style={{
                 textDecoration: 'none',
-                color: '#34d399',
+                color: '#10b981',
                 fontSize: '0.82rem',
                 display: 'flex',
                 alignItems: 'center',
@@ -158,10 +163,10 @@ export const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children 
         </Box>
 
         {/* User Info & Logout */}
-        <Box sx={{ p: 1.5, bgcolor: '#181b2a', borderRadius: '12px', border: '1px solid #252a3f' }}>
+        <Box sx={{ p: 1.5, bgcolor: 'background.level1', borderRadius: '12px', border: '1px solid', borderColor: 'divider' }}>
           <Stack direction="row" justifyContent="space-between" alignItems="center">
             <Box>
-              <Typography level="title-sm" sx={{ color: '#fff', fontWeight: 600 }}>
+              <Typography level="title-sm" sx={{ color: 'text.primary', fontWeight: 600 }}>
                 {user?.full_name || 'Admin'}
               </Typography>
               <Chip size="sm" variant="soft" color="primary" sx={{ fontSize: '10px' }}>

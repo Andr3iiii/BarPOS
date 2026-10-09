@@ -11,6 +11,7 @@ import { SalesPage } from './pages/SalesPage';
 import { UsersPage } from './pages/UsersPage';
 import { AdminLayout } from './layouts/AdminLayout';
 import { getStoredToken } from './services/api';
+import { adminTheme } from './theme';
 
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const token = getStoredToken();
@@ -22,7 +23,7 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
 
 export const App: React.FC = () => {
   return (
-    <CssVarsProvider defaultMode="dark">
+    <CssVarsProvider theme={adminTheme} defaultMode="dark" modeStorageKey="barpos_admin_theme">
       <CssBaseline />
       <BrowserRouter>
         <Routes>

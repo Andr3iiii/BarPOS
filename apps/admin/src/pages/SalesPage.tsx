@@ -120,16 +120,16 @@ export const SalesPage: React.FC = () => {
       </Stack>
 
       {/* Filter Bar */}
-      <Card variant="outlined" sx={{ bgcolor: '#12141f', borderColor: '#202438', p: 2, mb: 3 }}>
+      <Card variant="outlined" sx={{ bgcolor: 'background.surface', borderColor: 'divider', p: 2, mb: 3 }}>
         <Stack direction={{ xs: 'column', md: 'row' }} spacing={2} alignItems="center">
           <Box sx={{ minWidth: 180 }}>
-            <Typography level="body-xs" sx={{ color: '#8f95b2', mb: 0.5 }}>
+            <Typography level="body-xs" sx={{ color: 'text.secondary', mb: 0.5 }}>
               Date Range:
             </Typography>
             <Select
               value={period}
               onChange={(_, val) => val && setPeriod(val as any)}
-              sx={{ bgcolor: '#181b2a', borderColor: '#2e3450', color: '#fff' }}
+              sx={{ bgcolor: 'background.level1', borderColor: 'divider', color: 'text.primary' }}
             >
               <Option value="today">Today</Option>
               <Option value="yesterday">Yesterday</Option>
@@ -140,13 +140,13 @@ export const SalesPage: React.FC = () => {
           </Box>
 
           <Box sx={{ minWidth: 180 }}>
-            <Typography level="body-xs" sx={{ color: '#8f95b2', mb: 0.5 }}>
+            <Typography level="body-xs" sx={{ color: 'text.secondary', mb: 0.5 }}>
               Payment Method:
             </Typography>
             <Select
               value={paymentMethod}
               onChange={(_, val) => val && setPaymentMethod(val as any)}
-              sx={{ bgcolor: '#181b2a', borderColor: '#2e3450', color: '#fff' }}
+              sx={{ bgcolor: 'background.level1', borderColor: 'divider', color: 'text.primary' }}
             >
               <Option value="ALL">All Methods</Option>
               <Option value="CASH">Cash</Option>
@@ -158,28 +158,28 @@ export const SalesPage: React.FC = () => {
           {period === 'custom' && (
             <Stack direction="row" spacing={1} alignItems="flex-end">
               <Box>
-                <Typography level="body-xs" sx={{ color: '#8f95b2', mb: 0.5 }}>
+                <Typography level="body-xs" sx={{ color: 'text.secondary', mb: 0.5 }}>
                   From:
                 </Typography>
                 <Input
                   type="date"
                   value={startDate}
                   onChange={(e) => setStartDate(e.target.value)}
-                  sx={{ bgcolor: '#181b2a', borderColor: '#2e3450', color: '#fff' }}
+                  sx={{ bgcolor: 'background.level1', borderColor: 'divider', color: 'text.primary' }}
                 />
               </Box>
               <Box>
-                <Typography level="body-xs" sx={{ color: '#8f95b2', mb: 0.5 }}>
+                <Typography level="body-xs" sx={{ color: 'text.secondary', mb: 0.5 }}>
                   To:
                 </Typography>
                 <Input
                   type="date"
                   value={endDate}
                   onChange={(e) => setEndDate(e.target.value)}
-                  sx={{ bgcolor: '#181b2a', borderColor: '#2e3450', color: '#fff' }}
+                  sx={{ bgcolor: 'background.level1', borderColor: 'divider', color: 'text.primary' }}
                 />
               </Box>
-              <Button onClick={loadSales} sx={{ bgcolor: '#e05624' }}>
+              <Button onClick={loadSales} sx={{ bgcolor: 'primary.solidBg', color: '#fff', '&:hover': { bgcolor: 'primary.solidHoverBg' } }}>
                 Filter
               </Button>
             </Stack>
@@ -196,26 +196,26 @@ export const SalesPage: React.FC = () => {
           mb: 3
         }}
       >
-        <Card variant="outlined" sx={{ bgcolor: '#12141f', borderColor: '#202438', p: 2.5, borderRadius: '16px' }}>
-          <Typography level="body-xs" sx={{ color: '#8f95b2', textTransform: 'uppercase' }}>
+        <Card variant="outlined" sx={{ bgcolor: 'background.surface', borderColor: 'divider', p: 2.5, borderRadius: '16px' }}>
+          <Typography level="body-xs" sx={{ color: 'text.secondary', textTransform: 'uppercase' }}>
             Period Gross Revenue
           </Typography>
-          <Typography level="h2" sx={{ color: '#ff7a45', fontWeight: 800, mt: 1 }}>
+          <Typography level="h2" sx={{ color: 'primary.500', fontWeight: 800, mt: 1 }}>
             ₱{summary?.total_revenue.toFixed(2) || '0.00'}
           </Typography>
         </Card>
 
-        <Card variant="outlined" sx={{ bgcolor: '#12141f', borderColor: '#202438', p: 2.5, borderRadius: '16px' }}>
-          <Typography level="body-xs" sx={{ color: '#8f95b2', textTransform: 'uppercase' }}>
+        <Card variant="outlined" sx={{ bgcolor: 'background.surface', borderColor: 'divider', p: 2.5, borderRadius: '16px' }}>
+          <Typography level="body-xs" sx={{ color: 'text.secondary', textTransform: 'uppercase' }}>
             Paid Orders Count
           </Typography>
-          <Typography level="h2" sx={{ color: '#34d399', fontWeight: 800, mt: 1 }}>
+          <Typography level="h2" sx={{ color: '#10b981', fontWeight: 800, mt: 1 }}>
             {summary?.total_orders || 0}
           </Typography>
         </Card>
 
-        <Card variant="outlined" sx={{ bgcolor: '#12141f', borderColor: '#202438', p: 2.5, borderRadius: '16px' }}>
-          <Typography level="body-xs" sx={{ color: '#8f95b2', textTransform: 'uppercase' }}>
+        <Card variant="outlined" sx={{ bgcolor: 'background.surface', borderColor: 'divider', p: 2.5, borderRadius: '16px' }}>
+          <Typography level="body-xs" sx={{ color: 'text.secondary', textTransform: 'uppercase' }}>
             Average Spend / Order
           </Typography>
           <Typography level="h2" sx={{ color: '#818cf8', fontWeight: 800, mt: 1 }}>
@@ -225,8 +225,8 @@ export const SalesPage: React.FC = () => {
       </Box>
 
       {/* Itemized Transactions Table */}
-      <Card variant="outlined" sx={{ bgcolor: '#12141f', borderColor: '#202438', p: 0, overflow: 'hidden' }}>
-        <Table hoverRow sx={{ '& th': { bgcolor: '#181b2a', color: '#8f95b2' }, '& td': { color: '#e4e4e7' } }}>
+      <Card variant="outlined" sx={{ bgcolor: 'background.surface', borderColor: 'divider', p: 0, overflow: 'hidden' }}>
+        <Table hoverRow sx={{ '& th': { bgcolor: 'background.level1', color: 'text.secondary' }, '& td': { color: 'text.primary' } }}>
           <thead>
             <tr>
               <th>Order Ref</th>
@@ -249,16 +249,16 @@ export const SalesPage: React.FC = () => {
               summary?.records.map((r) => (
                 <tr key={r.order_id}>
                   <td>
-                    <Typography level="title-sm" sx={{ color: '#ff7a45', fontFamily: 'monospace', fontWeight: 700 }}>
+                    <Typography level="title-sm" sx={{ color: 'primary.500', fontFamily: 'monospace', fontWeight: 700 }}>
                       {r.reference_no}
                     </Typography>
                   </td>
                   <td>{r.table_label || `Table ${r.table_number}`}</td>
                   <td>
-                    {r.date} <span style={{ color: '#71717a' }}>{r.time}</span>
+                    {r.date} <span style={{ opacity: 0.7 }}>{r.time}</span>
                   </td>
                   <td>
-                    <Typography level="title-sm" sx={{ color: '#fff', fontWeight: 700 }}>
+                    <Typography level="title-sm" sx={{ color: 'text.primary', fontWeight: 700 }}>
                       ₱{r.total.toFixed(2)}
                     </Typography>
                   </td>

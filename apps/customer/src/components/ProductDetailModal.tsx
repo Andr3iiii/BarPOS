@@ -67,16 +67,16 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
           maxHeight: '90vh',
           p: 0,
           borderRadius: '24px',
-          bgcolor: '#12141f',
-          borderColor: '#292e47',
-          color: '#f4f4f5',
+          bgcolor: 'background.surface',
+          borderColor: 'divider',
+          color: 'text.primary',
           overflow: 'hidden',
           display: 'flex',
           flexDirection: 'column'
         }}
       >
         {/* Header / Hero Image */}
-        <Box sx={{ position: 'relative', width: '100%', height: { xs: 200, sm: 240 }, bgcolor: '#1a1d2e' }}>
+        <Box sx={{ position: 'relative', width: '100%', height: { xs: 200, sm: 240 }, bgcolor: 'background.level1' }}>
           <Box
             component="img"
             src={imageSrc}
@@ -93,7 +93,7 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
             sx={{
               position: 'absolute',
               inset: 0,
-              background: 'linear-gradient(to bottom, rgba(0,0,0,0.4) 0%, transparent 40%, rgba(18,20,31,0.95) 100%)'
+              background: 'linear-gradient(to bottom, rgba(0,0,0,0.4) 0%, transparent 40%, rgba(0,0,0,0.7) 100%)'
             }}
           />
 
@@ -124,11 +124,11 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
               position: 'absolute',
               bottom: 14,
               right: 16,
-              bgcolor: '#e05624',
+              bgcolor: 'primary.solidBg',
               color: '#fff',
               fontWeight: 800,
               fontSize: '1rem',
-              boxShadow: '0 4px 12px rgba(0,0,0,0.5)'
+              boxShadow: '0 4px 12px rgba(0,0,0,0.3)'
             }}
           >
             ₱{Number(product.price).toFixed(2)}
@@ -137,21 +137,21 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
 
         {/* Scrollable Body Content */}
         <Box sx={{ p: 2.5, overflowY: 'auto', flex: 1 }}>
-          <Typography level="h3" sx={{ color: '#fff', fontWeight: 700, fontSize: '1.25rem' }}>
+          <Typography level="h3" sx={{ color: 'text.primary', fontWeight: 700, fontSize: '1.25rem' }}>
             {product.name}
           </Typography>
 
           {product.description && (
-            <Typography level="body-sm" sx={{ color: '#9da3be', mt: 1, lineHeight: 1.5 }}>
+            <Typography level="body-sm" sx={{ color: 'text.secondary', mt: 1, lineHeight: 1.5 }}>
               {product.description}
             </Typography>
           )}
 
-          <Divider sx={{ my: 2, borderColor: '#23273c' }} />
+          <Divider sx={{ my: 2, borderColor: 'divider' }} />
 
           {/* Special Instructions Note */}
           <Box sx={{ mb: 2 }}>
-            <Typography level="title-sm" sx={{ color: '#f4f4f5', mb: 0.75, fontWeight: 600 }}>
+            <Typography level="title-sm" sx={{ color: 'text.primary', mb: 0.75, fontWeight: 600 }}>
               Special Instructions
             </Typography>
             <Textarea
@@ -161,12 +161,12 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               sx={{
-                bgcolor: '#191c2b',
-                borderColor: '#2d334e',
-                color: '#f4f4f5',
+                bgcolor: 'background.level1',
+                borderColor: 'divider',
+                color: 'text.primary',
                 fontSize: '0.85rem',
                 borderRadius: '12px',
-                '&:focus-within': { borderColor: '#e05624' }
+                '&:focus-within': { borderColor: 'primary.500' }
               }}
             />
           </Box>
@@ -176,8 +176,9 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
         <Box
           sx={{
             p: 2,
-            borderTop: '1px solid #23273c',
-            bgcolor: '#0e101a',
+            borderTop: '1px solid',
+            borderColor: 'divider',
+            bgcolor: 'background.surface',
             display: 'flex',
             alignItems: 'center',
             gap: 2
@@ -189,28 +190,29 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
             alignItems="center"
             spacing={1}
             sx={{
-              bgcolor: '#191d2d',
+              bgcolor: 'background.level1',
               borderRadius: '14px',
               p: 0.5,
-              border: '1px solid #2e344e'
+              border: '1px solid',
+              borderColor: 'divider'
             }}
           >
             <IconButton
               size="md"
               variant="plain"
               onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-              sx={{ color: '#ff7a45', minWidth: 32, minHeight: 32 }}
+              sx={{ color: 'primary.500', minWidth: 32, minHeight: 32 }}
             >
               <Minus size={18} />
             </IconButton>
-            <Typography level="title-md" sx={{ color: '#fff', minWidth: 24, textAlign: 'center', fontWeight: 700 }}>
+            <Typography level="title-md" sx={{ color: 'text.primary', minWidth: 24, textAlign: 'center', fontWeight: 700 }}>
               {quantity}
             </Typography>
             <IconButton
               size="md"
               variant="plain"
               onClick={() => setQuantity((q) => q + 1)}
-              sx={{ color: '#ff7a45', minWidth: 32, minHeight: 32 }}
+              sx={{ color: 'primary.500', minWidth: 32, minHeight: 32 }}
             >
               <Plus size={18} />
             </IconButton>
@@ -224,12 +226,12 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
             startDecorator={<ShoppingBag size={18} />}
             sx={{
               flex: 1,
-              bgcolor: '#e05624',
+              bgcolor: 'primary.solidBg',
               color: '#fff',
               borderRadius: '14px',
               fontWeight: 700,
               py: 1.2,
-              '&:hover': { bgcolor: '#c8461b' }
+              '&:hover': { bgcolor: 'primary.solidHoverBg' }
             }}
           >
             {currentQuantity > 0 ? 'Update' : 'Add to Order'} • ₱{totalPrice.toFixed(2)}

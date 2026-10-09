@@ -104,25 +104,25 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
         sx={{
           maxWidth: 620,
           width: '95vw',
-          bgcolor: '#131522',
-          borderColor: '#2e3450',
-          color: '#f4f4f5',
+          bgcolor: 'background.surface',
+          borderColor: 'divider',
+          color: 'text.primary',
           borderRadius: '20px',
           p: 3
         }}
       >
-        <DialogTitle sx={{ color: '#f4f4f5', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <DialogTitle sx={{ color: 'text.primary', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <Stack direction="row" spacing={1} alignItems="center">
-            <Banknote size={24} color="#ff7a45" />
-            <Typography level="title-lg" sx={{ color: '#fff', fontWeight: 700 }}>
+            <Banknote size={24} color="#e05624" />
+            <Typography level="title-lg" sx={{ color: 'text.primary', fontWeight: 700 }}>
               Process Payment — {order.reference_no}
             </Typography>
           </Stack>
-          <Chip variant="soft" size="md" sx={{ bgcolor: 'rgba(224, 86, 36, 0.2)', color: '#ff7a45', fontWeight: 700 }}>
+          <Chip variant="soft" size="md" sx={{ bgcolor: 'primary.softBg', color: 'primary.500', fontWeight: 700 }}>
             {order.table_label || `Table ${order.table_number}`}
           </Chip>
         </DialogTitle>
-        <Divider sx={{ my: 1.5, borderColor: '#262a40' }} />
+        <Divider sx={{ my: 1.5, borderColor: 'divider' }} />
 
         <DialogContent sx={{ maxHeight: '72vh', overflowY: 'auto' }}>
           {errorMsg && (
@@ -133,25 +133,26 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
 
           {/* Items Preview */}
           <Sheet
-            variant="solid"
+            variant="plain"
             sx={{
               p: 2,
               borderRadius: '12px',
-              bgcolor: '#181b2a',
-              border: '1px solid #262b42',
+              bgcolor: 'background.level1',
+              border: '1px solid',
+              borderColor: 'divider',
               mb: 2.5
             }}
           >
-            <Typography level="body-xs" sx={{ color: '#8f95b2', textTransform: 'uppercase', mb: 1 }}>
+            <Typography level="body-xs" sx={{ color: 'text.secondary', textTransform: 'uppercase', mb: 1 }}>
               Order Items ({order.items?.length || 0})
             </Typography>
             <Stack spacing={0.8} sx={{ maxHeight: 150, overflowY: 'auto' }}>
               {order.items?.map((item, idx) => (
                 <Stack key={idx} direction="row" justifyContent="space-between" alignItems="center">
-                  <Typography level="body-sm" sx={{ color: '#e4e4e7' }}>
-                    {item.product_name} <span style={{ color: '#a1a1aa' }}>× {item.quantity}</span>
+                  <Typography level="body-sm" sx={{ color: 'text.primary' }}>
+                    {item.product_name} <span style={{ color: 'text.secondary' }}>× {item.quantity}</span>
                   </Typography>
-                  <Typography level="body-sm" sx={{ color: '#ff7a45', fontWeight: 600 }}>
+                  <Typography level="body-sm" sx={{ color: 'primary.500', fontWeight: 600 }}>
                     ₱{Number(item.subtotal).toFixed(2)}
                   </Typography>
                 </Stack>
@@ -191,10 +192,10 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                 sx={{
                   flex: 1,
                   py: 1.4,
-                  bgcolor: paymentMethod === 'CASH' ? '#e05624' : '#181b2a',
-                  borderColor: paymentMethod === 'CASH' ? '#e05624' : '#2e3450',
-                  color: paymentMethod === 'CASH' ? '#fff' : '#a1a1aa',
-                  '&:hover': { bgcolor: paymentMethod === 'CASH' ? '#c8461b' : '#22263a' }
+                  bgcolor: paymentMethod === 'CASH' ? 'primary.solidBg' : 'background.level1',
+                  borderColor: paymentMethod === 'CASH' ? 'primary.solidBg' : 'divider',
+                  color: paymentMethod === 'CASH' ? '#fff' : 'text.secondary',
+                  '&:hover': { bgcolor: paymentMethod === 'CASH' ? 'primary.solidHoverBg' : 'background.level2' }
                 }}
               >
                 Cash
@@ -206,10 +207,10 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                 sx={{
                   flex: 1,
                   py: 1.4,
-                  bgcolor: paymentMethod === 'GCASH' ? '#007dfe' : '#181b2a',
-                  borderColor: paymentMethod === 'GCASH' ? '#007dfe' : '#2e3450',
-                  color: paymentMethod === 'GCASH' ? '#fff' : '#a1a1aa',
-                  '&:hover': { bgcolor: paymentMethod === 'GCASH' ? '#006cdb' : '#22263a' }
+                  bgcolor: paymentMethod === 'GCASH' ? '#007dfe' : 'background.level1',
+                  borderColor: paymentMethod === 'GCASH' ? '#007dfe' : 'divider',
+                  color: paymentMethod === 'GCASH' ? '#fff' : 'text.secondary',
+                  '&:hover': { bgcolor: paymentMethod === 'GCASH' ? '#006cdb' : 'background.level2' }
                 }}
               >
                 GCash
@@ -221,10 +222,10 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                 sx={{
                   flex: 1,
                   py: 1.4,
-                  bgcolor: paymentMethod === 'CARD' ? '#7c3aed' : '#181b2a',
-                  borderColor: paymentMethod === 'CARD' ? '#7c3aed' : '#2e3450',
-                  color: paymentMethod === 'CARD' ? '#fff' : '#a1a1aa',
-                  '&:hover': { bgcolor: paymentMethod === 'CARD' ? '#6d28d9' : '#22263a' }
+                  bgcolor: paymentMethod === 'CARD' ? '#7c3aed' : 'background.level1',
+                  borderColor: paymentMethod === 'CARD' ? '#7c3aed' : 'divider',
+                  color: paymentMethod === 'CARD' ? '#fff' : 'text.secondary',
+                  '&:hover': { bgcolor: paymentMethod === 'CARD' ? '#6d28d9' : 'background.level2' }
                 }}
               >
                 Card / POS
@@ -235,7 +236,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
           {/* Cash Inputs & Change Calculation */}
           {paymentMethod === 'CASH' ? (
             <Box sx={{ mb: 2 }}>
-              <Typography level="body-sm" sx={{ color: '#a1a1aa', mb: 1, fontWeight: 600 }}>
+              <Typography level="body-sm" sx={{ color: 'text.secondary', mb: 1, fontWeight: 600 }}>
                 Amount Received (₱)
               </Typography>
               <Input
@@ -248,11 +249,11 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                 sx={{
                   fontSize: '1.4rem',
                   fontWeight: 700,
-                  bgcolor: '#181b2a',
-                  borderColor: isInsufficient ? '#ef4444' : '#2e3450',
-                  color: '#fff',
+                  bgcolor: 'background.level1',
+                  borderColor: isInsufficient ? 'danger.500' : 'divider',
+                  color: 'text.primary',
                   mb: 1.5,
-                  '&:focus-within': { borderColor: '#e05624' }
+                  '&:focus-within': { borderColor: 'primary.500' }
                 }}
               />
 
@@ -312,7 +313,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
           ) : (
             /* GCash / Card Reference Input */
             <Box sx={{ mb: 2 }}>
-              <Typography level="body-sm" sx={{ color: '#a1a1aa', mb: 1, fontWeight: 600 }}>
+              <Typography level="body-sm" sx={{ color: 'text.secondary', mb: 1, fontWeight: 600 }}>
                 {paymentMethod === 'GCASH' ? 'GCash Reference No.' : 'Card Approval / Auth Code'} (Optional)
               </Typography>
               <Input
@@ -321,11 +322,11 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                 value={paymentRef}
                 onChange={(e) => setPaymentRef(e.target.value)}
                 sx={{
-                  bgcolor: '#181b2a',
-                  borderColor: '#2e3450',
-                  color: '#fff',
+                  bgcolor: 'background.level1',
+                  borderColor: 'divider',
+                  color: 'text.primary',
                   mb: 1.5,
-                  '&:focus-within': { borderColor: '#e05624' }
+                  '&:focus-within': { borderColor: 'primary.500' }
                 }}
               />
               <Sheet
@@ -337,7 +338,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                   border: '1px solid rgba(16, 185, 129, 0.3)'
                 }}
               >
-                <Typography level="body-sm" sx={{ color: '#34d399' }}>
+                <Typography level="body-sm" sx={{ color: '#10b981' }}>
                   Exact payment required: <strong>₱{orderTotal.toFixed(2)}</strong>. Change is ₱0.00.
                 </Typography>
               </Sheet>
@@ -347,7 +348,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
 
         {/* Action Buttons */}
         <Stack direction="row" spacing={1.5} sx={{ mt: 2 }}>
-          <Button variant="outlined" onClick={onClose} sx={{ borderColor: '#3a4163', color: '#a1a1aa' }}>
+          <Button variant="outlined" onClick={onClose} sx={{ borderColor: 'divider', color: 'text.secondary' }}>
             Cancel
           </Button>
           <Button
@@ -358,11 +359,11 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
             startDecorator={<CheckCircle2 size={18} />}
             sx={{
               flex: 1,
-              bgcolor: '#e05624',
+              bgcolor: 'primary.solidBg',
               color: '#fff',
               fontSize: '1rem',
               fontWeight: 700,
-              '&:hover': { bgcolor: '#c8461b' }
+              '&:hover': { bgcolor: 'primary.solidHoverBg' }
             }}
           >
             Confirm Payment

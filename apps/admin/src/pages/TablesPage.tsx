@@ -167,15 +167,15 @@ export const TablesPage: React.FC = () => {
               key={t.id}
               variant="outlined"
               sx={{
-                bgcolor: "#12141f",
-                borderColor: "#22263a",
+                bgcolor: "background.surface",
+                borderColor: "divider",
                 borderRadius: "16px",
                 p: 2.5,
                 display: "flex",
                 flexDirection: "column",
                 justifyContent: "space-between",
                 transition: "all 0.2s",
-                "&:hover": { borderColor: "#ff7a45" },
+                "&:hover": { borderColor: "primary.500" },
               }}
             >
               <Box>
@@ -187,7 +187,7 @@ export const TablesPage: React.FC = () => {
                 >
                   <Typography
                     level="title-md"
-                    sx={{ color: "#fff", fontWeight: 700 }}
+                    sx={{ color: "text.primary", fontWeight: 700 }}
                   >
                     {t.label}
                   </Typography>
@@ -200,7 +200,7 @@ export const TablesPage: React.FC = () => {
                   </Chip>
                 </Stack>
 
-                <Typography level="body-xs" sx={{ color: "#71717a", mb: 2 }}>
+                <Typography level="body-xs" sx={{ color: "text.secondary", mb: 2 }}>
                   Identifier: <code>{t.table_number}</code>
                 </Typography>
 
@@ -213,7 +213,7 @@ export const TablesPage: React.FC = () => {
                     width: "fit-content",
                     mx: "auto",
                     mb: 2,
-                    boxShadow: "0 4px 12px rgba(0,0,0,0.3)",
+                    boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
                   }}
                 >
                   <QRCodeSVG value={qrUrl} size={110} level="M" />
@@ -228,9 +228,9 @@ export const TablesPage: React.FC = () => {
                   onClick={() => setQrModalTable(t)}
                   startDecorator={<QrCode size={16} />}
                   sx={{
-                    bgcolor: "#e05624",
+                    bgcolor: "primary.solidBg",
                     color: "#fff",
-                    "&:hover": { bgcolor: "#c8461b" },
+                    "&:hover": { bgcolor: "primary.solidHoverBg" },
                   }}
                 >
                   Print / View Stand
@@ -241,7 +241,7 @@ export const TablesPage: React.FC = () => {
                   component="a"
                   href={qrUrl}
                   target="_blank"
-                  sx={{ borderColor: "#2e3450", color: "#a1a1aa" }}
+                  sx={{ borderColor: "divider", color: "text.secondary" }}
                 >
                   <ExternalLink size={16} />
                 </IconButton>
@@ -258,13 +258,13 @@ export const TablesPage: React.FC = () => {
           sx={{
             maxWidth: 420,
             width: "92vw",
-            bgcolor: "#131522",
-            borderColor: "#2e3450",
-            color: "#fff",
+            bgcolor: "background.surface",
+            borderColor: "divider",
+            color: "text.primary",
           }}
         >
-          <DialogTitle>Add Table / QR Identifier</DialogTitle>
-          <Divider sx={{ my: 1.5, borderColor: "#262a40" }} />
+          <DialogTitle sx={{ color: "text.primary" }}>Add Table / QR Identifier</DialogTitle>
+          <Divider sx={{ my: 1.5, borderColor: "divider" }} />
           <DialogContent>
             {addError && (
               <Alert color="danger" sx={{ mb: 2 }}>
@@ -274,7 +274,7 @@ export const TablesPage: React.FC = () => {
             <form onSubmit={handleAddTable}>
               <Stack spacing={2}>
                 <FormControl>
-                  <FormLabel sx={{ color: "#a1a1aa" }}>
+                  <FormLabel sx={{ color: "text.secondary" }}>
                     Table Number / Identifier Code
                   </FormLabel>
                   <Input
@@ -283,22 +283,22 @@ export const TablesPage: React.FC = () => {
                     value={newNumber}
                     onChange={(e) => setNewNumber(e.target.value)}
                     sx={{
-                      bgcolor: "#181b2a",
-                      borderColor: "#2e3450",
-                      color: "#fff",
+                      bgcolor: "background.level1",
+                      borderColor: "divider",
+                      color: "text.primary",
                     }}
                   />
                 </FormControl>
                 <FormControl>
-                  <FormLabel sx={{ color: "#a1a1aa" }}>Display Label</FormLabel>
+                  <FormLabel sx={{ color: "text.secondary" }}>Display Label</FormLabel>
                   <Input
                     placeholder="e.g. Table 11, VIP Lounge 1"
                     value={newLabel}
                     onChange={(e) => setNewLabel(e.target.value)}
                     sx={{
-                      bgcolor: "#181b2a",
-                      borderColor: "#2e3450",
-                      color: "#fff",
+                      bgcolor: "background.level1",
+                      borderColor: "divider",
+                      color: "text.primary",
                     }}
                   />
                 </FormControl>
@@ -306,7 +306,7 @@ export const TablesPage: React.FC = () => {
                   <Button
                     variant="outlined"
                     onClick={() => setIsAddOpen(false)}
-                    sx={{ borderColor: "#333" }}
+                    sx={{ borderColor: "divider", color: "text.secondary" }}
                   >
                     Cancel
                   </Button>
@@ -315,8 +315,9 @@ export const TablesPage: React.FC = () => {
                     type="submit"
                     sx={{
                       flex: 1,
-                      bgcolor: "#e05624",
-                      "&:hover": { bgcolor: "#c8461b" },
+                      bgcolor: "primary.solidBg",
+                      color: "#fff",
+                      "&:hover": { bgcolor: "primary.solidHoverBg" },
                     }}
                   >
                     Create Table
@@ -335,13 +336,13 @@ export const TablesPage: React.FC = () => {
           sx={{
             maxWidth: 500,
             width: "92vw",
-            bgcolor: "#131522",
-            borderColor: "#2e3450",
-            color: "#fff",
+            bgcolor: "background.surface",
+            borderColor: "divider",
+            color: "text.primary",
           }}
         >
-          <DialogTitle sx={{ color: "#fff" }}>Table QR Stand Card</DialogTitle>
-          <Divider sx={{ my: 1.5, borderColor: "#262a40" }} />
+          <DialogTitle sx={{ color: "text.primary" }}>Table QR Stand Card</DialogTitle>
+          <Divider sx={{ my: 1.5, borderColor: "divider" }} />
           <DialogContent>
             {qrModalTable && (
               <Sheet

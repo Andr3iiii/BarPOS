@@ -11,6 +11,7 @@ import { PaymentModal } from './components/PaymentModal';
 import { ReceiptModal } from './components/ReceiptModal';
 import { getStoredToken } from './services/api';
 import { Order } from './types';
+import { posTheme } from './theme';
 
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const token = getStoredToken();
@@ -30,7 +31,7 @@ export const App: React.FC = () => {
   };
 
   return (
-    <CssVarsProvider defaultMode="dark">
+    <CssVarsProvider theme={posTheme} defaultMode="dark" modeStorageKey="barpos_pos_theme">
       <CssBaseline />
       <HashRouter>
         <Routes>

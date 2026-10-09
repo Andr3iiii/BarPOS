@@ -155,12 +155,13 @@ export const OrdersPage: React.FC<OrdersPageProps> = () => {
     <Box>
       {/* Top Controls: Search Bar & Status Filters */}
       <Sheet
-        variant="solid"
+        variant="plain"
         sx={{
           p: 2.5,
           borderRadius: '16px',
-          bgcolor: '#131522',
-          border: '1px solid #252a3f',
+          bgcolor: 'background.surface',
+          border: '1px solid',
+          borderColor: 'divider',
           mb: 3
         }}
       >
@@ -170,10 +171,10 @@ export const OrdersPage: React.FC<OrdersPageProps> = () => {
             <Input
               size="lg"
               placeholder="Search by Order Ref (e.g. T1-1001) or Table #..."
-              startDecorator={<Search size={20} color="#ff7a45" />}
+              startDecorator={<Search size={20} color="#e05624" />}
               endDecorator={
                 searchQuery ? (
-                  <IconButton size="sm" variant="plain" onClick={() => setSearchQuery('')} sx={{ color: '#a1a1aa' }}>
+                  <IconButton size="sm" variant="plain" onClick={() => setSearchQuery('')} sx={{ color: 'text.secondary' }}>
                     <X size={16} />
                   </IconButton>
                 ) : null
@@ -181,11 +182,11 @@ export const OrdersPage: React.FC<OrdersPageProps> = () => {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               sx={{
-                bgcolor: '#181b2a',
-                borderColor: '#2f3552',
-                color: '#fff',
+                bgcolor: 'background.level1',
+                borderColor: 'divider',
+                color: 'text.primary',
                 fontSize: '1rem',
-                '&:focus-within': { borderColor: '#e05624' }
+                '&:focus-within': { borderColor: 'primary.500' }
               }}
             />
           </Box>
@@ -198,9 +199,9 @@ export const OrdersPage: React.FC<OrdersPageProps> = () => {
               onClick={() => setSelectedStatus('ALL')}
               sx={{
                 borderRadius: '10px',
-                bgcolor: selectedStatus === 'ALL' ? '#e05624' : '#181b2a',
-                borderColor: selectedStatus === 'ALL' ? '#e05624' : '#2e3450',
-                color: selectedStatus === 'ALL' ? '#fff' : '#a1a1aa'
+                bgcolor: selectedStatus === 'ALL' ? 'primary.solidBg' : 'background.level1',
+                borderColor: selectedStatus === 'ALL' ? 'primary.solidBg' : 'divider',
+                color: selectedStatus === 'ALL' ? '#fff' : 'text.secondary'
               }}
             >
               All Orders ({orders.length})
@@ -211,9 +212,9 @@ export const OrdersPage: React.FC<OrdersPageProps> = () => {
               onClick={() => setSelectedStatus('PENDING')}
               sx={{
                 borderRadius: '10px',
-                bgcolor: selectedStatus === 'PENDING' ? '#ff7a45' : '#181b2a',
-                borderColor: selectedStatus === 'PENDING' ? '#ff7a45' : '#2e3450',
-                color: selectedStatus === 'PENDING' ? '#fff' : '#a1a1aa'
+                bgcolor: selectedStatus === 'PENDING' ? '#ff7a45' : 'background.level1',
+                borderColor: selectedStatus === 'PENDING' ? '#ff7a45' : 'divider',
+                color: selectedStatus === 'PENDING' ? '#fff' : 'text.secondary'
               }}
             >
               Pending ({pendingCount})
@@ -224,9 +225,9 @@ export const OrdersPage: React.FC<OrdersPageProps> = () => {
               onClick={() => setSelectedStatus('PAID')}
               sx={{
                 borderRadius: '10px',
-                bgcolor: selectedStatus === 'PAID' ? '#10b981' : '#181b2a',
-                borderColor: selectedStatus === 'PAID' ? '#10b981' : '#2e3450',
-                color: selectedStatus === 'PAID' ? '#fff' : '#a1a1aa'
+                bgcolor: selectedStatus === 'PAID' ? '#10b981' : 'background.level1',
+                borderColor: selectedStatus === 'PAID' ? '#10b981' : 'divider',
+                color: selectedStatus === 'PAID' ? '#fff' : 'text.secondary'
               }}
             >
               Paid ({paidCount})
@@ -237,9 +238,9 @@ export const OrdersPage: React.FC<OrdersPageProps> = () => {
               onClick={() => setSelectedStatus('CANCELLED')}
               sx={{
                 borderRadius: '10px',
-                bgcolor: selectedStatus === 'CANCELLED' ? '#ef4444' : '#181b2a',
-                borderColor: selectedStatus === 'CANCELLED' ? '#ef4444' : '#2e3450',
-                color: selectedStatus === 'CANCELLED' ? '#fff' : '#a1a1aa'
+                bgcolor: selectedStatus === 'CANCELLED' ? '#ef4444' : 'background.level1',
+                borderColor: selectedStatus === 'CANCELLED' ? '#ef4444' : 'divider',
+                color: selectedStatus === 'CANCELLED' ? '#fff' : 'text.secondary'
               }}
             >
               Cancelled
@@ -269,17 +270,18 @@ export const OrdersPage: React.FC<OrdersPageProps> = () => {
           sx={{
             textAlign: 'center',
             py: 10,
-            bgcolor: '#131522',
+            bgcolor: 'background.surface',
             borderRadius: '16px',
-            border: '1px dashed #282d45',
+            border: '1px dashed',
+            borderColor: 'divider',
             p: 4
           }}
         >
           <Receipt size={48} color="#71717a" style={{ margin: '0 auto 16px' }} />
-          <Typography level="title-lg" sx={{ color: '#fff', mb: 0.5 }}>
+          <Typography level="title-lg" sx={{ color: 'text.primary', mb: 0.5 }}>
             No Orders Found
           </Typography>
-          <Typography level="body-sm" sx={{ color: '#a1a1aa' }}>
+          <Typography level="body-sm" sx={{ color: 'text.secondary' }}>
             {searchQuery
               ? `No matching orders for "${searchQuery}". Check the reference number or table identifier.`
               : 'Waiting for customers to scan table QR and submit orders.'}
@@ -304,9 +306,9 @@ export const OrdersPage: React.FC<OrdersPageProps> = () => {
                 key={order.id}
                 variant="outlined"
                 sx={{
-                  bgcolor: '#131522',
-                  borderColor: isPending ? 'rgba(255, 122, 69, 0.45)' : '#262a40',
-                  boxShadow: isPending ? '0 4px 20px rgba(224, 86, 36, 0.12)' : 'none',
+                  bgcolor: 'background.surface',
+                  borderColor: isPending ? 'primary.400' : 'divider',
+                  boxShadow: isPending ? '0 4px 20px rgba(224, 86, 36, 0.12)' : 'sm',
                   borderRadius: '16px',
                   p: 2.5,
                   display: 'flex',
@@ -314,7 +316,7 @@ export const OrdersPage: React.FC<OrdersPageProps> = () => {
                   justifyContent: 'space-between',
                   transition: 'all 0.2s ease',
                   '&:hover': {
-                    borderColor: isPending ? '#ff7a45' : '#3d4466'
+                    borderColor: isPending ? 'primary.solidBg' : 'primary.300'
                   }
                 }}
               >
@@ -326,10 +328,10 @@ export const OrdersPage: React.FC<OrdersPageProps> = () => {
                         variant="outlined"
                         size="md"
                         sx={{
-                          borderColor: '#3a4163',
-                          color: '#fff',
+                          borderColor: 'divider',
+                          color: 'text.primary',
                           fontWeight: 700,
-                          bgcolor: '#181b2a',
+                          bgcolor: 'background.level1',
                           mb: 0.5
                         }}
                       >
@@ -338,7 +340,7 @@ export const OrdersPage: React.FC<OrdersPageProps> = () => {
                       <Typography
                         level="h3"
                         sx={{
-                          color: '#ff7a45',
+                          color: 'primary.500',
                           fontWeight: 800,
                           letterSpacing: '0.04em',
                           fontFamily: 'monospace'
@@ -359,7 +361,7 @@ export const OrdersPage: React.FC<OrdersPageProps> = () => {
                     </Chip>
                   </Stack>
 
-                  <Typography level="body-xs" sx={{ color: '#71717a', mt: 0.5 }}>
+                  <Typography level="body-xs" sx={{ color: 'text.tertiary', mt: 0.5 }}>
                     {new Date(order.created_at).toLocaleTimeString('en-PH', {
                       hour: '2-digit',
                       minute: '2-digit',
@@ -367,30 +369,30 @@ export const OrdersPage: React.FC<OrdersPageProps> = () => {
                     })}
                   </Typography>
 
-                  <Divider sx={{ my: 1.5, borderColor: '#23273c' }} />
+                  <Divider sx={{ my: 1.5, borderColor: 'divider' }} />
 
                   {/* Items Preview */}
                   <Stack spacing={0.6} sx={{ mb: 1.5 }}>
                     {order.items?.slice(0, 3).map((item, idx) => (
                       <Stack key={idx} direction="row" justifyContent="space-between">
-                        <Typography level="body-sm" sx={{ color: '#e4e4e7', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap', maxWidth: '70%' }}>
-                          {item.product_name} <span style={{ color: '#8f95b2' }}>× {item.quantity}</span>
+                        <Typography level="body-sm" sx={{ color: 'text.primary', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap', maxWidth: '70%' }}>
+                          {item.product_name} <span style={{ opacity: 0.7 }}>× {item.quantity}</span>
                         </Typography>
-                        <Typography level="body-sm" sx={{ color: '#d4d4d8' }}>
+                        <Typography level="body-sm" sx={{ color: 'text.primary', fontWeight: 600 }}>
                           ₱{Number(item.subtotal).toFixed(2)}
                         </Typography>
                       </Stack>
                     ))}
                     {order.items && order.items.length > 3 && (
-                      <Typography level="body-xs" sx={{ color: '#8f95b2', fontStyle: 'italic' }}>
+                      <Typography level="body-xs" sx={{ color: 'text.tertiary', fontStyle: 'italic' }}>
                         + {order.items.length - 3} more item(s)...
                       </Typography>
                     )}
                   </Stack>
 
                   {order.customer_notes && (
-                    <Box sx={{ p: 1, bgcolor: '#1a1d2d', borderRadius: '8px', mb: 1.5 }}>
-                      <Typography level="body-xs" sx={{ color: '#fbbf24' }}>
+                    <Box sx={{ p: 1, bgcolor: 'background.level1', borderRadius: '8px', mb: 1.5 }}>
+                      <Typography level="body-xs" sx={{ color: 'warning.500' }}>
                         "{order.customer_notes}"
                       </Typography>
                     </Box>
@@ -398,12 +400,12 @@ export const OrdersPage: React.FC<OrdersPageProps> = () => {
                 </Box>
 
                 {/* Bottom Total & Actions */}
-                <Box sx={{ pt: 1, borderTop: '1px solid #23273c' }}>
+                <Box sx={{ pt: 1, borderTop: '1px solid', borderColor: 'divider' }}>
                   <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
-                    <Typography level="body-xs" sx={{ color: '#a1a1aa', textTransform: 'uppercase' }}>
+                    <Typography level="body-xs" sx={{ color: 'text.secondary', textTransform: 'uppercase' }}>
                       Order Total
                     </Typography>
-                    <Typography level="h3" sx={{ color: '#fff', fontWeight: 800 }}>
+                    <Typography level="h3" sx={{ color: 'text.primary', fontWeight: 800 }}>
                       ₱{Number(order.total).toFixed(2)}
                     </Typography>
                   </Stack>
@@ -417,12 +419,12 @@ export const OrdersPage: React.FC<OrdersPageProps> = () => {
                         onClick={() => setActivePaymentOrder(order)}
                         startDecorator={<Banknote size={18} />}
                         sx={{
-                          bgcolor: '#e05624',
+                          bgcolor: 'primary.solidBg',
                           color: '#fff',
                           fontWeight: 700,
                           py: 1.2,
                           borderRadius: '12px',
-                          '&:hover': { bgcolor: '#c8461b' }
+                          '&:hover': { bgcolor: 'primary.solidHoverBg' }
                         }}
                       >
                         Open & Pay
@@ -430,7 +432,7 @@ export const OrdersPage: React.FC<OrdersPageProps> = () => {
                       <IconButton
                         variant="outlined"
                         onClick={() => handleCancel(order.id)}
-                        sx={{ borderColor: '#3a4163', color: '#ef4444', borderRadius: '12px' }}
+                        sx={{ borderColor: 'divider', color: 'danger.500', borderRadius: '12px' }}
                       >
                         <XCircle size={18} />
                       </IconButton>
@@ -444,11 +446,11 @@ export const OrdersPage: React.FC<OrdersPageProps> = () => {
                       onClick={() => handleViewReceipt(order.id)}
                       startDecorator={<Printer size={16} />}
                       sx={{
-                        borderColor: '#2e3552',
-                        color: '#34d399',
+                        borderColor: 'divider',
+                        color: 'success.500',
                         borderRadius: '12px',
                         py: 1,
-                        '&:hover': { bgcolor: '#182424', borderColor: '#34d399' }
+                        '&:hover': { bgcolor: 'background.level1' }
                       }}
                     >
                       View Receipt

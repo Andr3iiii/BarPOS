@@ -16,6 +16,7 @@ import {
 import { Lock, User, Shield, Beer } from 'lucide-react';
 import { BAR_SETTINGS } from '../types';
 import { clearSessionMessage, getSessionMessage, loginAdmin } from '../services/api';
+import { ThemeToggle } from '../components/ThemeToggle';
 
 export const LoginPage: React.FC = () => {
   const navigate = useNavigate();
@@ -51,23 +52,28 @@ export const LoginPage: React.FC = () => {
     <Box
       sx={{
         minHeight: '100vh',
-        bgcolor: '#0a0b12',
+        bgcolor: 'background.body',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        p: 3
+        p: 3,
+        position: 'relative'
       }}
     >
+      <Box sx={{ position: 'absolute', top: 20, right: 20 }}>
+        <ThemeToggle size="md" variant="outlined" />
+      </Box>
+
       <Card
         variant="outlined"
         sx={{
           maxWidth: 420,
           width: '100%',
-          bgcolor: '#131522',
-          borderColor: '#2e3450',
+          bgcolor: 'background.surface',
+          borderColor: 'divider',
           borderRadius: '24px',
           p: 4,
-          boxShadow: '0 16px 40px rgba(0,0,0,0.6)'
+          boxShadow: 'md'
         }}
       >
         <CardContent>
@@ -77,8 +83,8 @@ export const LoginPage: React.FC = () => {
                 width: 56,
                 height: 56,
                 borderRadius: '16px',
-                bgcolor: 'rgba(224, 86, 36, 0.15)',
-                color: '#ff7a45',
+                bgcolor: 'primary.softBg',
+                color: 'primary.500',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -87,10 +93,10 @@ export const LoginPage: React.FC = () => {
             >
               <Shield size={32} />
             </Box>
-            <Typography level="h2" sx={{ color: '#fff', fontWeight: 800 }}>
+            <Typography level="h2" sx={{ color: 'text.primary', fontWeight: 800 }}>
               {BAR_SETTINGS.NAME}
             </Typography>
-            <Typography level="body-sm" sx={{ color: '#ff7a45', fontWeight: 600 }}>
+            <Typography level="body-sm" sx={{ color: 'primary.500', fontWeight: 600 }}>
               Administrator Management Portal
             </Typography>
           </Box>
@@ -104,25 +110,25 @@ export const LoginPage: React.FC = () => {
           <form onSubmit={handleLogin}>
             <Stack spacing={2}>
               <FormControl>
-                <FormLabel sx={{ color: '#a1a1aa' }}>Username</FormLabel>
+                <FormLabel sx={{ color: 'text.secondary' }}>Username</FormLabel>
                 <Input
                   size="lg"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   startDecorator={<User size={18} color="#71717a" />}
-                  sx={{ bgcolor: '#181b2a', borderColor: '#2e3450', color: '#fff' }}
+                  sx={{ bgcolor: 'background.level1', borderColor: 'divider', color: 'text.primary' }}
                 />
               </FormControl>
 
               <FormControl>
-                <FormLabel sx={{ color: '#a1a1aa' }}>Password</FormLabel>
+                <FormLabel sx={{ color: 'text.secondary' }}>Password</FormLabel>
                 <Input
                   size="lg"
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   startDecorator={<Lock size={18} color="#71717a" />}
-                  sx={{ bgcolor: '#181b2a', borderColor: '#2e3450', color: '#fff' }}
+                  sx={{ bgcolor: 'background.level1', borderColor: 'divider', color: 'text.primary' }}
                 />
               </FormControl>
 
@@ -131,12 +137,12 @@ export const LoginPage: React.FC = () => {
                 type="submit"
                 loading={loading}
                 sx={{
-                  bgcolor: '#e05624',
+                  bgcolor: 'primary.solidBg',
                   color: '#fff',
                   mt: 1,
                   borderRadius: '12px',
                   fontWeight: 700,
-                  '&:hover': { bgcolor: '#c8461b' }
+                  '&:hover': { bgcolor: 'primary.solidHoverBg' }
                 }}
               >
                 Sign In to Admin Portal
@@ -144,8 +150,8 @@ export const LoginPage: React.FC = () => {
             </Stack>
           </form>
 
-          <Box sx={{ mt: 3.5, pt: 2.5, borderTop: '1px solid #23273c', textAlign: 'center' }}>
-            <Typography level="body-xs" sx={{ color: '#71717a' }}>
+          <Box sx={{ mt: 3.5, pt: 2.5, borderTop: '1px solid', borderColor: 'divider', textAlign: 'center' }}>
+            <Typography level="body-xs" sx={{ color: 'text.secondary' }}>
               Default credentials: <code>admin</code> / <code>admin123</code>
             </Typography>
           </Box>

@@ -43,6 +43,7 @@ import { connectRealtime } from '../../../../shared/realtime';
 import { createIdempotencyKey } from '../../../../shared/idempotency';
 import { ProductGridCard } from '../components/ProductGridCard';
 import { ProductDetailModal } from '../components/ProductDetailModal';
+import { ThemeToggle } from '../components/ThemeToggle';
 import { getProductImageUrl } from '../utils/productImages';
 
 interface CartItem {
@@ -261,11 +262,11 @@ export const CustomerOrderPage: React.FC = () => {
           justifyContent: 'center',
           gap: 2,
           p: 3,
-          backgroundColor: '#0b0d14'
+          backgroundColor: 'background.body'
         }}
       >
-        <CircularProgress size="lg" sx={{ color: '#e05624' }} />
-        <Typography level="body-md" sx={{ color: '#a1a1aa' }}>
+        <CircularProgress size="lg" sx={{ color: 'primary.500' }} />
+        <Typography level="body-md" sx={{ color: 'text.secondary' }}>
           Loading menu for Table {tableNumber}...
         </Typography>
       </Box>
@@ -282,11 +283,11 @@ export const CustomerOrderPage: React.FC = () => {
           alignItems: 'center',
           justifyContent: 'center',
           p: 3,
-          backgroundColor: '#0b0d14',
+          backgroundColor: 'background.body',
           textAlign: 'center'
         }}
       >
-        <Typography level="h3" sx={{ color: '#ff6b4a', mb: 1, fontWeight: 700 }}>
+        <Typography level="h3" sx={{ color: 'primary.500', mb: 1, fontWeight: 700 }}>
           Welcome to {BAR_SETTINGS.NAME}
         </Typography>
         <Alert
@@ -294,10 +295,7 @@ export const CustomerOrderPage: React.FC = () => {
           variant="soft"
           sx={{
             maxWidth: 420,
-            mb: 3,
-            bgcolor: 'rgba(239, 68, 68, 0.1)',
-            borderColor: 'rgba(239, 68, 68, 0.25)',
-            color: '#fca5a5'
+            mb: 3
           }}
         >
           {error || 'Unable to identify this table. Please scan the QR code located on your table.'}
@@ -306,7 +304,7 @@ export const CustomerOrderPage: React.FC = () => {
           variant="outlined"
           onClick={() => window.location.reload()}
           startDecorator={<RotateCcw size={16} />}
-          sx={{ borderColor: '#333852', color: '#f4f4f5' }}
+          sx={{ borderColor: 'divider', color: 'text.primary' }}
         >
           Retry Connection
         </Button>
@@ -322,7 +320,7 @@ export const CustomerOrderPage: React.FC = () => {
     <Box
       sx={{
         minHeight: '100vh',
-        bgcolor: '#0b0d14',
+        bgcolor: 'background.body',
         pb: cart.length > 0 ? 12 : 6,
         maxWidth: 960,
         mx: 'auto'
@@ -336,36 +334,40 @@ export const CustomerOrderPage: React.FC = () => {
           zIndex: 40,
           px: { xs: 2, sm: 3 },
           py: 2,
-          bgcolor: 'rgba(11, 13, 20, 0.94)',
-          backdropFilter: 'blur(12px)',
-          borderBottom: '1px solid #1f2334'
+          bgcolor: 'background.surface',
+          borderBottom: '1px solid',
+          borderColor: 'divider'
         }}
       >
         <Stack direction="row" justifyContent="space-between" alignItems="center">
           <Box>
-            <Typography level="title-lg" sx={{ color: '#f4f4f5', fontWeight: 800, letterSpacing: '0.03em' }}>
+            <Typography level="title-lg" sx={{ color: 'text.primary', fontWeight: 800, letterSpacing: '0.03em' }}>
               {BAR_SETTINGS.NAME}
             </Typography>
-            <Typography level="body-xs" sx={{ color: '#8f95b0' }}>
+            <Typography level="body-xs" sx={{ color: 'text.secondary' }}>
               {BAR_SETTINGS.TAGLINE}
             </Typography>
           </Box>
-          <Chip
-            variant="soft"
-            size="lg"
-            sx={{
-              bgcolor: 'rgba(224, 86, 36, 0.16)',
-              color: '#ff7a45',
-              fontWeight: 800,
-              fontSize: '0.9rem',
-              border: '1px solid rgba(224, 86, 36, 0.35)',
-              px: 1.8,
-              py: 0.5,
-              borderRadius: '12px'
-            }}
-          >
-            {table.label}
-          </Chip>
+          <Stack direction="row" spacing={1} alignItems="center">
+            <ThemeToggle size="sm" variant="outlined" />
+            <Chip
+              variant="soft"
+              size="lg"
+              sx={{
+                bgcolor: 'primary.softBg',
+                color: 'primary.500',
+                fontWeight: 800,
+                fontSize: '0.9rem',
+                border: '1px solid',
+                borderColor: 'primary.outlinedBorder',
+                px: 1.8,
+                py: 0.5,
+                borderRadius: '12px'
+              }}
+            >
+              {table.label}
+            </Chip>
+          </Stack>
         </Stack>
 
         {/* Search Bar */}
@@ -375,7 +377,7 @@ export const CustomerOrderPage: React.FC = () => {
             startDecorator={<Search size={18} color="#71717a" />}
             endDecorator={
               searchQuery ? (
-                <IconButton size="sm" variant="plain" onClick={() => setSearchQuery('')} sx={{ color: '#8f95b0' }}>
+                <IconButton size="sm" variant="plain" onClick={() => setSearchQuery('')} sx={{ color: 'text.secondary' }}>
                   <X size={16} />
                 </IconButton>
               ) : null
@@ -383,12 +385,12 @@ export const CustomerOrderPage: React.FC = () => {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             sx={{
-              bgcolor: '#151826',
-              borderColor: '#262b42',
-              color: '#f4f4f5',
+              bgcolor: 'background.level1',
+              borderColor: 'divider',
+              color: 'text.primary',
               borderRadius: '12px',
-              '&:hover': { borderColor: '#3b4366' },
-              '&:focus-within': { borderColor: '#e05624' }
+              '&:hover': { borderColor: 'primary.300' },
+              '&:focus-within': { borderColor: 'primary.500' }
             }}
           />
         </Box>
@@ -406,9 +408,9 @@ export const CustomerOrderPage: React.FC = () => {
           position: 'sticky',
           top: 108,
           zIndex: 35,
-          bgcolor: 'rgba(11, 13, 20, 0.95)',
-          backdropFilter: 'blur(10px)',
-          borderBottom: '1px solid #1a1e2f'
+          bgcolor: 'background.surface',
+          borderBottom: '1px solid',
+          borderColor: 'divider'
         }}
       >
         <Button
@@ -419,12 +421,12 @@ export const CustomerOrderPage: React.FC = () => {
           sx={{
             borderRadius: '24px',
             flexShrink: 0,
-            bgcolor: selectedCategory === 'ALL' ? '#e05624' : '#141724',
-            borderColor: selectedCategory === 'ALL' ? '#e05624' : '#272b3f',
-            color: selectedCategory === 'ALL' ? '#fff' : '#a1a1aa',
+            bgcolor: selectedCategory === 'ALL' ? 'primary.solidBg' : 'background.level1',
+            borderColor: selectedCategory === 'ALL' ? 'primary.solidBg' : 'divider',
+            color: selectedCategory === 'ALL' ? '#fff' : 'text.secondary',
             fontWeight: 600,
             fontSize: '0.82rem',
-            '&:hover': { bgcolor: selectedCategory === 'ALL' ? '#c8461b' : '#1c2032' }
+            '&:hover': { bgcolor: selectedCategory === 'ALL' ? 'primary.solidHoverBg' : 'background.level2' }
           }}
         >
           All Items ({products.length})
@@ -442,12 +444,12 @@ export const CustomerOrderPage: React.FC = () => {
               sx={{
                 borderRadius: '24px',
                 flexShrink: 0,
-                bgcolor: isSelected ? '#e05624' : '#141724',
-                borderColor: isSelected ? '#e05624' : '#272b3f',
-                color: isSelected ? '#fff' : '#a1a1aa',
+                bgcolor: isSelected ? 'primary.solidBg' : 'background.level1',
+                borderColor: isSelected ? 'primary.solidBg' : 'divider',
+                color: isSelected ? '#fff' : 'text.secondary',
                 fontWeight: 600,
                 fontSize: '0.82rem',
-                '&:hover': { bgcolor: isSelected ? '#c8461b' : '#1c2032' }
+                '&:hover': { bgcolor: isSelected ? 'primary.solidHoverBg' : 'background.level2' }
               }}
             >
               {cat.name} ({count})
@@ -570,22 +572,22 @@ export const CustomerOrderPage: React.FC = () => {
           sx={{
             maxWidth: 520,
             width: '92vw',
-            bgcolor: '#12141f',
-            borderColor: '#292e47',
-            color: '#f4f4f5',
+            bgcolor: 'background.surface',
+            borderColor: 'divider',
+            color: 'text.primary',
             borderRadius: '22px',
             p: 3
           }}
         >
-          <DialogTitle sx={{ color: '#f4f4f5', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <Typography level="title-lg" sx={{ color: '#f4f4f5', fontWeight: 700 }}>
+          <DialogTitle sx={{ color: 'text.primary', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <Typography level="title-lg" sx={{ color: 'text.primary', fontWeight: 700 }}>
               Review Your Order
             </Typography>
-            <Chip size="sm" variant="soft" sx={{ bgcolor: 'rgba(224, 86, 36, 0.2)', color: '#ff7a45', fontWeight: 700 }}>
+            <Chip size="sm" variant="soft" sx={{ bgcolor: 'primary.softBg', color: 'primary.500', fontWeight: 700 }}>
               {table.label}
             </Chip>
           </DialogTitle>
-          <Divider sx={{ my: 1.5, borderColor: '#23273c' }} />
+          <Divider sx={{ my: 1.5, borderColor: 'divider' }} />
 
           <DialogContent sx={{ maxHeight: '60vh', overflowY: 'auto' }}>
             {submitError && (
@@ -602,9 +604,10 @@ export const CustomerOrderPage: React.FC = () => {
                     key={item.product.id}
                     sx={{
                       p: 1.5,
-                      bgcolor: '#181b29',
+                      bgcolor: 'background.level1',
                       borderRadius: '14px',
-                      border: '1px solid #282d45'
+                      border: '1px solid',
+                      borderColor: 'divider'
                     }}
                   >
                     <Stack direction="row" spacing={1.5} alignItems="center">
@@ -618,7 +621,7 @@ export const CustomerOrderPage: React.FC = () => {
                           height: 48,
                           borderRadius: '10px',
                           objectFit: 'cover',
-                          bgcolor: '#1f2438',
+                          bgcolor: 'background.level2',
                           flexShrink: 0
                         }}
                       />
@@ -627,7 +630,7 @@ export const CustomerOrderPage: React.FC = () => {
                         <Typography
                           level="title-sm"
                           sx={{
-                            color: '#f4f4f5',
+                            color: 'text.primary',
                             fontWeight: 600,
                             whiteSpace: 'nowrap',
                             overflow: 'hidden',
@@ -636,11 +639,11 @@ export const CustomerOrderPage: React.FC = () => {
                         >
                           {item.product.name}
                         </Typography>
-                        <Typography level="body-xs" sx={{ color: '#ff8a4c', fontWeight: 600 }}>
+                        <Typography level="body-xs" sx={{ color: 'primary.500', fontWeight: 600 }}>
                           ₱{Number(item.product.price).toFixed(2)} × {item.quantity} = ₱{(item.product.price * item.quantity).toFixed(2)}
                         </Typography>
                         {item.notes && (
-                          <Typography level="body-xs" sx={{ color: '#8b92ad', fontStyle: 'italic', mt: 0.25 }}>
+                          <Typography level="body-xs" sx={{ color: 'text.secondary', fontStyle: 'italic', mt: 0.25 }}>
                             Note: "{item.notes}"
                           </Typography>
                         )}
@@ -652,18 +655,18 @@ export const CustomerOrderPage: React.FC = () => {
                           size="sm"
                           variant="soft"
                           onClick={() => updateQuantity(item.product.id, -1)}
-                          sx={{ bgcolor: '#24283b', color: '#ff7a45', minWidth: 26, minHeight: 26 }}
+                          sx={{ bgcolor: 'background.level2', color: 'primary.500', minWidth: 26, minHeight: 26 }}
                         >
                           <Minus size={13} />
                         </IconButton>
-                        <Typography level="title-sm" sx={{ minWidth: 18, textAlign: 'center', fontWeight: 700 }}>
+                        <Typography level="title-sm" sx={{ minWidth: 18, textAlign: 'center', fontWeight: 700, color: 'text.primary' }}>
                           {item.quantity}
                         </Typography>
                         <IconButton
                           size="sm"
                           variant="soft"
                           onClick={() => updateQuantity(item.product.id, 1)}
-                          sx={{ bgcolor: '#24283b', color: '#ff7a45', minWidth: 26, minHeight: 26 }}
+                          sx={{ bgcolor: 'background.level2', color: 'primary.500', minWidth: 26, minHeight: 26 }}
                         >
                           <Plus size={13} />
                         </IconButton>
@@ -685,7 +688,7 @@ export const CustomerOrderPage: React.FC = () => {
 
             {/* Special Instructions Note */}
             <Box sx={{ mt: 2 }}>
-              <Typography level="body-xs" sx={{ color: '#a1a1aa', mb: 0.5, fontWeight: 600 }}>
+              <Typography level="body-xs" sx={{ color: 'text.secondary', mb: 0.5, fontWeight: 600 }}>
                 Order instructions / allergies (optional):
               </Typography>
               <Textarea
@@ -694,40 +697,40 @@ export const CustomerOrderPage: React.FC = () => {
                 value={customerNotes}
                 onChange={(e) => setCustomerNotes(e.target.value)}
                 sx={{
-                  bgcolor: '#181b29',
-                  borderColor: '#282d45',
-                  color: '#f4f4f5',
+                  bgcolor: 'background.level1',
+                  borderColor: 'divider',
+                  color: 'text.primary',
                   fontSize: '0.85rem',
                   borderRadius: '12px'
                 }}
               />
             </Box>
 
-            <Divider sx={{ my: 2, borderColor: '#23273c' }} />
+            <Divider sx={{ my: 2, borderColor: 'divider' }} />
 
             {/* Order Summary */}
             <Stack spacing={1}>
               <Stack direction="row" justifyContent="space-between">
-                <Typography level="body-sm" sx={{ color: '#a1a1aa' }}>
+                <Typography level="body-sm" sx={{ color: 'text.secondary' }}>
                   Subtotal
                 </Typography>
-                <Typography level="body-sm" sx={{ color: '#f4f4f5', fontWeight: 600 }}>
+                <Typography level="body-sm" sx={{ color: 'text.primary', fontWeight: 600 }}>
                   ₱{cartTotal.toFixed(2)}
                 </Typography>
               </Stack>
               <Stack direction="row" justifyContent="space-between">
-                <Typography level="body-sm" sx={{ color: '#a1a1aa' }}>
+                <Typography level="body-sm" sx={{ color: 'text.secondary' }}>
                   Tax / Service Charge
                 </Typography>
-                <Typography level="body-sm" sx={{ color: '#f4f4f5', fontWeight: 600 }}>
+                <Typography level="body-sm" sx={{ color: 'text.primary', fontWeight: 600 }}>
                   Included
                 </Typography>
               </Stack>
               <Stack direction="row" justifyContent="space-between" sx={{ pt: 1 }}>
-                <Typography level="title-md" sx={{ color: '#f4f4f5', fontWeight: 700 }}>
+                <Typography level="title-md" sx={{ color: 'text.primary', fontWeight: 700 }}>
                   Total Due
                 </Typography>
-                <Typography level="title-lg" sx={{ color: '#ff7a45', fontWeight: 800 }}>
+                <Typography level="title-lg" sx={{ color: 'primary.500', fontWeight: 800 }}>
                   ₱{cartTotal.toFixed(2)}
                 </Typography>
               </Stack>
@@ -739,12 +742,12 @@ export const CustomerOrderPage: React.FC = () => {
               sx={{
                 mt: 2,
                 bgcolor: 'rgba(234, 179, 8, 0.1)',
-                color: '#facc15',
-                borderColor: 'rgba(234, 179, 8, 0.2)',
+                color: '#eab308',
+                borderColor: 'rgba(234, 179, 8, 0.25)',
                 borderRadius: '12px'
               }}
             >
-              <Typography level="body-xs" sx={{ color: '#fde047' }}>
+              <Typography level="body-xs" sx={{ color: '#ca8a04' }}>
                 💡 <strong>Next Step:</strong> After submitting, proceed to the counter to pay (Cash, GCash, or Card)
                 with your Order Reference number.
               </Typography>
@@ -755,7 +758,7 @@ export const CustomerOrderPage: React.FC = () => {
             <Button
               variant="outlined"
               onClick={() => setIsCartOpen(false)}
-              sx={{ flex: 1, borderColor: '#333852', color: '#a1a1aa', borderRadius: '12px' }}
+              sx={{ flex: 1, borderColor: 'divider', color: 'text.secondary', borderRadius: '12px' }}
             >
               Back
             </Button>
@@ -765,11 +768,11 @@ export const CustomerOrderPage: React.FC = () => {
               onClick={handleSubmitOrder}
               sx={{
                 flex: 2,
-                bgcolor: '#e05624',
+                bgcolor: 'primary.solidBg',
                 color: '#fff',
                 fontWeight: 700,
                 borderRadius: '12px',
-                '&:hover': { bgcolor: '#c8461b' }
+                '&:hover': { bgcolor: 'primary.solidHoverBg' }
               }}
             >
               Confirm Order

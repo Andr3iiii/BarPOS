@@ -4,10 +4,11 @@ import { CssVarsProvider } from '@mui/joy/styles';
 import CssBaseline from '@mui/joy/CssBaseline';
 import { CustomerOrderPage } from './pages/CustomerOrderPage';
 import { OrderConfirmationPage } from './pages/OrderConfirmationPage';
+import { customerTheme } from './theme';
 
 export const App: React.FC = () => {
   return (
-    <CssVarsProvider defaultMode="dark">
+    <CssVarsProvider theme={customerTheme} defaultMode="dark" modeStorageKey="barpos_customer_theme">
       <CssBaseline />
       <BrowserRouter>
         <Routes>
