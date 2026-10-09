@@ -1,8 +1,12 @@
-import { app, BrowserWindow, ipcMain, Menu } from 'electron';
+import { app, BrowserWindow, ipcMain, Menu, dialog } from 'electron';
 import path from 'path';
 import { autoUpdater } from 'electron-updater';
 
 let mainWindow: BrowserWindow | null = null;
+
+// Configure autoUpdater defaults
+autoUpdater.autoDownload = true;
+autoUpdater.autoInstallOnAppQuit = true;
 
 function createWindow(): void {
   mainWindow = new BrowserWindow({
@@ -38,13 +42,15 @@ function createWindow(): void {
     mainWindow = null;
   });
 
-  // Setup auto updater checks if in production
+  // Check for updates when packaged application launches
   if (app.isPackaged) {
-    try {
-      autoUpdater.checkForUpdatesAndNotify();
-    } catch (e) {
-      console.warn('Auto updater check failed:', e);
-    }
+    setTimeout(() => {
+      try {
+        autoUpdater.checkForUpdates();
+      } catch (e) {
+        console.warn('[AutoUpdater] Initial check failed:', e);
+      }
+    }, 4000);
   }
 }
 
@@ -82,19 +88,59 @@ ipcMain.handle('toggle-fullscreen', () => {
 
 // Auto-updater event handlers
 autoUpdater.on('update-available', (info) => {
+  console.log('[AutoUpdater] Update available:', info.version);
   if (mainWindow) {
     mainWindow.webContents.send('update-available', info);
   }
 });
 
-autoUpdater.on('update-downloaded', (info) => {
+autoUpdater.on('update-downloaded', async (info) => {
+  console.log('[AutoUpdater] Update downloaded:', info.version);
   if (mainWindow) {
     mainWindow.webContents.send('update-downloaded', info);
+  }
+
+  // Native application.exe modal popup: ask user to update now or later
+  try {
+    const { response } = await dialog.showMessageBox(mainWindow || (undefined as any), {
+      type: 'info',
+      title: 'Update Ready — BarPOS Terminal',
+      message: `A new version (v${info.version}) of BarPOS Terminal has been downloaded!`,
+      detail: 'Would you like to restart the application now to install the update, or continue working and update later?',
+      buttons: ['Update Now', 'Later'],
+      defaultId: 0,
+      cancelId: 1,
+      noLink: true
+    });
+
+    if (response === 0) {
+      // User clicked "Update Now"
+      autoUpdater.quitAndInstall(false, true);
+    }
+    // If response === 1 ("Later"), dialog closes and app continues running normally
+  } catch (err) {
+    console.warn('[AutoUpdater] Dialog error:', err);
   }
 });
 
 ipcMain.handle('restart-app-for-update', () => {
   autoUpdater.quitAndInstall(false, true);
+});
+
+ipcMain.handle('check-for-updates', async () => {
+  if (!app.isPackaged) {
+    return { available: false, version: app.getVersion(), message: 'Running in development mode.' };
+  }
+  try {
+    const result = await autoUpdater.checkForUpdates();
+    return {
+      available: Boolean(result?.updateInfo),
+      version: result?.updateInfo?.version || app.getVersion(),
+      info: result?.updateInfo
+    };
+  } catch (err: any) {
+    return { available: false, error: err.message };
+  }
 });
 
 app.whenReady().then(createWindow);

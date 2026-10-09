@@ -9,5 +9,6 @@ interface Window {
     onUpdateAvailable: (callback: (info: any) => void) => void;
     onUpdateDownloaded: (callback: (info: any) => void) => void;
     restartAppForUpdate: () => Promise<void>;
+    checkForUpdates: () => Promise<{ available?: boolean; version?: string; message?: string; error?: string; info?: any }>;
   };
 }
